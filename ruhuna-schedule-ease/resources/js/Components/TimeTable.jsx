@@ -40,11 +40,23 @@ export default function TimeTable() {
     }
   };
 
+  const CustomEvent = ({ event }) => {
+    return (
+      <span>
+        <strong>{event.subject_code}</strong>
+        <br />
+        <em>{event.location}</em>
+      </span>
+    );
+  };
+
   return (
     <div style={{ height: '800px' }}>
       <Calendar
         localizer={localizer}
         events={events}
+        defaultView={'week'}
+        views={["month","week","day","agenda"]}
         formats={{ weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture) }}
         max={maxTime}
         min={minTime}
@@ -52,6 +64,9 @@ export default function TimeTable() {
         endAccessor="end"
         style={{ margin: '50px' }}
         selectable={true}
+        components={{
+          event: CustomEvent
+        }}
       />
     </div>
   );
