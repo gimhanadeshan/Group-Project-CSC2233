@@ -10,7 +10,7 @@ export default function Authenticated({ user, header, children }) {
         useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-    const [sidebarDropdownOpen, setSidebarDropdownOpen] = useState(false); 
+    const [sidebarDropdownOpen, setSidebarDropdownOpen] = useState(false);
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
@@ -95,7 +95,7 @@ export default function Authenticated({ user, header, children }) {
                                                     className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
                                                     role="none"
                                                 >
-                                                    {user.email}
+                                                    {user.registration_no}
                                                 </p>
                                             </div>
                                             <ul className="py-1" role="none">
@@ -170,7 +170,7 @@ export default function Authenticated({ user, header, children }) {
                                 <span className="ms-3">Dashboard</span>
                             </Link>
                         </li>
-                        
+
                         <li>
                             <Link
                                 // href={route("roles.index")}
@@ -196,7 +196,6 @@ export default function Authenticated({ user, header, children }) {
                                 class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 aria-controls="dropdown-example"
                                 onClick={toggleSidebarDropdownOpen}
-                               
                             >
                                 <svg
                                     className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -208,7 +207,7 @@ export default function Authenticated({ user, header, children }) {
                                     <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
                                 </svg>
                                 <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">
-                                   User Management
+                                    User Management
                                 </span>
                                 <svg
                                     class="w-3 h-3"
@@ -234,7 +233,7 @@ export default function Authenticated({ user, header, children }) {
                             >
                                 <li>
                                     <Link
-                                       href={route("roles.index")}
+                                        href={route("roles.index")}
                                         class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >
                                         Roles
@@ -250,10 +249,18 @@ export default function Authenticated({ user, header, children }) {
                                 </li>
                                 <li>
                                     <Link
-                                        href={route("users.create")}
+                                        href={route("permissions.index")}
                                         class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                     >
                                         Permissions
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href={route("degree-programs.index")}
+                                        class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                    >
+                                        Degree Programs
                                     </Link>
                                 </li>
                             </ul>

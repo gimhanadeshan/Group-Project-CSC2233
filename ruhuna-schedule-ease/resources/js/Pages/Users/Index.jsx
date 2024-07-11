@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
-export default function Index({ users, auth, roles }) {
+export default function Index({ users, auth, roles, degreePrograms }) {
     const { delete: destroy } = useForm();
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
     const [selectedAcademicYear, setSelectedAcademicYear] = useState("");
+    const [selectedDegreeProgram, setSelectedDegreeProgram] = useState("");
+    const [yearOptions, setYearOptions] = useState([]);
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this user?")) {
@@ -27,24 +29,38 @@ export default function Index({ users, auth, roles }) {
         setSelectedAcademicYear(e.target.value);
     };
 
+    const handleDegreeProgramChange = (e) => {
+        setSelectedDegreeProgram(e.target.value);
+    };
+
     const filteredUsers = users.filter((user) => {
         const matchesSearch =
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.registration_no
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase());
-        const matchesRole = selectedRole
-            ? user.role.name === selectedRole
-            : true;
-        const matchesAcademicYear = selectedAcademicYear
-            ? user.academic_year === selectedAcademicYear
-            : true;
-        return matchesSearch && matchesRole && matchesAcademicYear;
+            user.registration_no.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesRole = selectedRole ? user.role.name === selectedRole : true;
+        const matchesAcademicYear = selectedAcademicYear ? user.academic_year === selectedAcademicYear : true;
+        const matchesDegreeProgram = selectedDegreeProgram ? user.degree_program_id === parseInt(selectedDegreeProgram) : true;
+        return matchesSearch && matchesRole && matchesAcademicYear && matchesDegreeProgram;
     });
 
-    const uniqueAcademicYears = [
-        ...new Set(users.map((user) => user.academic_year)),
-    ];
+    const handleExport = () => {
+        const queryParams = new URLSearchParams({
+            searchQuery,
+            selectedRole,
+            selectedAcademicYear,
+            selectedDegreeProgram,
+        }).toString();
+        window.location.href = `${route("users.export")}?${queryParams}`;
+    };
+
+    useEffect(() => {
+        // Generate last 10 years for academic year dropdown
+        const currentYear = new Date().getFullYear();
+        const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+        setYearOptions(
+            years.map((year) => ({ value: year, label: year.toString() }))
+        );
+    }, []);
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -60,13 +76,13 @@ export default function Index({ users, auth, roles }) {
                     >
                         Create New User
                     </Link>
-                    
-                    <a
-                        href={route("users.export")}
+
+                    <button
+                        onClick={handleExport}
                         className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                        Export to Excel
-                    </a>
+                        Export Filtered Data
+                    </button>
                 </div>
 
                 <div className="flex mb-4 space-x-4">
@@ -95,9 +111,21 @@ export default function Index({ users, auth, roles }) {
                         className="p-2 border rounded w-1/4"
                     >
                         <option value="">All Academic Years</option>
-                        {uniqueAcademicYears.map((year) => (
-                            <option key={year} value={year}>
-                                {year}
+                        {yearOptions.map((year) => (
+                            <option key={year.value} value={year.value}>
+                                {year.label}
+                            </option>
+                        ))}
+                    </select>
+                    <select
+                        value={selectedDegreeProgram}
+                        onChange={handleDegreeProgramChange}
+                        className="p-2 border rounded w-1/4"
+                    >
+                        <option value="">All Degree Programs</option>
+                        {degreePrograms.map((program) => (
+                            <option key={program.id} value={program.id}>
+                                {program.name}
                             </option>
                         ))}
                     </select>

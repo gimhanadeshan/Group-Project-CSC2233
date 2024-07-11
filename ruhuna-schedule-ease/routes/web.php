@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DegreeProgramController;
+use App\Http\Controllers\PermissionController;
+
+
 
 
 Route::middleware(['auth'])->group(function () {
@@ -16,9 +20,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-    Route::get('users/export', [UserController::class, 'export'])->name('users.export');
+    //Route::get('users/export', [UserController::class, 'export'])->name('users.export');
     Route::post('/import-users', [UserController::class, 'import'])->name('users.import');
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
+    Route::resource('degree-programs', DegreeProgramController::class);
+    Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
+
+
     
    
 
@@ -46,6 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('roles', RoleController::class);
+    Route::resource('permissions', PermissionController::class);
    
 });
 

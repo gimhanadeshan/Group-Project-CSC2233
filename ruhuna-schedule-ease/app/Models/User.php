@@ -23,6 +23,7 @@ class User extends Authenticatable
         'registration_no',
         'role_id',
         'academic_year',
+        'degree_program_id',
 
     ];
 
@@ -53,4 +54,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class,'role_id','id');
     }
+
+    public function degreeProgram()
+    {
+        return $this->belongsTo(DegreeProgram::class,'degree_program_id','id');
+    }
 }
+
