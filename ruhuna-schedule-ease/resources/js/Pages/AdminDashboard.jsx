@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import TimeTable from '../Components/TimeTable';
 
-export default function Dashboard({ auth }) {
+export default function AdminDashboard({ auth }) {
     return (
         <AuthenticatedLayout
             user={auth.user}

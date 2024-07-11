@@ -20,6 +20,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "react-big-calendar": "^1.13.0",
         "react-csv": "^2.2.2"
     }
 }

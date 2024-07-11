@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DegreeProgramController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\EventController;
 
 
 
@@ -25,6 +26,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
     Route::resource('degree-programs', DegreeProgramController::class);
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
+
+    Route::get('/events', [EventController::class, 'index']);
 
 
     
