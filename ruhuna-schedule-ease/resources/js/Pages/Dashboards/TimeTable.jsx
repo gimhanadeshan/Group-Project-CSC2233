@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import '../../css/TimeTable.css';
-import Modal from './Modal';
+
+
 
 const localizer = momentLocalizer(moment);
 
@@ -19,26 +19,36 @@ moment.updateLocale('en', {
 const minTime = new Date(1970, 1, 1, 8, 0); // 8:00 AM
 const maxTime = new Date(1970, 1, 1, 19, 0); // 6:00 PM
 
-export default function TimeTable({ Allevents}) {
-  const [events, setEvents] = useState(Allevents);
+const TimeTable = ({ allevents})=> {
+
+
+
+  const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [eventTitle, setEventTitle] = useState('');
   const [selectEvent, setSelectEvent] = useState(null);
-console.log(Allevents);
+//console.log(Allevents);
 
 
-  // useEffect(() => {
-  //  // console.log('Initial events:', initialEvents); // Debug: Check initial events
-  //   const parsedEvents = events.map(event => ({
-  //     ...event,
-  //     start: new Date(event.start),
-  //     end: new Date(event.end),
-  //   }));
-  //   //console.log('Parsed events:', parsedEvents); // Debug: Check parsed events
+  useEffect(() => {
+   
+   if(allevents){
+    console.log('okokok')
+      const parsedEvents = allevents.map(event => ({
+          ...event,
+          start: new Date(event.start),
+          end: new Date(event.end),
+        }));
 
-  //   setEvents(parsedEvents);
-  // }, [events]);
+    
+        setEvents(parsedEvents);
+
+    }     
+    else{
+      console.log('No Allevents')
+    }
+  }, [allevents]);
 
   const handleSelectSlot = (slotInfo) => {
     setShowModal(true);
@@ -85,7 +95,6 @@ console.log(Allevents);
       setSelectEvent(null);
     }
   };
-
   const CustomEvent = ({ event }) => {
     return (
       <span>
@@ -95,14 +104,15 @@ console.log(Allevents);
       </span>
     );
   };
-
+ 
   return (
+
     <>
       
       <div style={{ height: '800px' }}>
         <Calendar
           localizer={localizer}
-          events={Allevents}
+          events={events}
           defaultView={'week'}
           views={["month","week","day","agenda"]}
           formats={{ weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture) }}
@@ -192,3 +202,5 @@ console.log(Allevents);
     </>
   );
 }
+
+export default TimeTable;

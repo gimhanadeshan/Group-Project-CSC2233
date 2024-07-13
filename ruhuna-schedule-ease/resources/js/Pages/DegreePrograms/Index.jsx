@@ -4,6 +4,10 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
 const Index = ({ auth, degreePrograms }) => {
+
+    if(degreePrograms){
+        console.log('okokokokok')
+    }
     const { delete: destroy } = useForm();
 
     const handleDelete = (id) => {

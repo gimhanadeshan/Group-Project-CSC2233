@@ -1,8 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import TimeTable from '../Components/TimeTable';
+import TimeTable from './TimeTable';
 
-export default function AdminDashboard({ auth }) {
+export default function Dashboard({ auth }) {
+
+
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -13,7 +16,15 @@ export default function AdminDashboard({ auth }) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <TimeTable/>
+                       
+                       
+                        <TimeTable />
+
+
+
+
+
+
                     </div>
                 </div>
             </div>

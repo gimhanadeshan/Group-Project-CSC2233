@@ -25,9 +25,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import-users', [UserController::class, 'import'])->name('users.import');
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
     Route::resource('degree-programs', DegreeProgramController::class);
+    Route::resource('stdashboard', EventController::class);
+
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
 
-    Route::get('/events', [EventController::class, 'index']);
+
 
 
     
@@ -52,12 +54,20 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Route::get('/stdashboard', function () {
+//     return Inertia::render('Dashboards/StudentDashboard');
+// })->middleware(['auth', 'verified'])->name('stdashboard');
+
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
+    //Route::resource('stdashboard', EventController::class);
    
 });
 
