@@ -156,7 +156,8 @@ export default function Dashboard({ auth, allevents }) {
                                             <div className="sm:flex sm:items-start">
                                                 <div className="mt-3 text-center sm:mt-0 sm:text-left">
                                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                                        {selectEvent ? "Edit Event" : "Add Event"}
+                                                        {/* {selectEvent ? "Edit Event" : "Add Event"} */}
+                                                        Event
                                                     </h3>
                                                 </div>
                                                 <div className="mt-3 sm:mt-0 sm:ml-4 sm:flex-shrink-0">
@@ -193,6 +194,7 @@ export default function Dashboard({ auth, allevents }) {
                                                     id="eventTitle"
                                                     value={data.title}
                                                     onChange={(e) => setData('title', e.target.value)}
+                                                    disabled
                                                 />
                                                 <label htmlFor="subjectCode" className="block text-sm font-medium text-gray-700">
                                                     Subject Code:
@@ -203,6 +205,7 @@ export default function Dashboard({ auth, allevents }) {
                                                     id="subjectCode"
                                                     value={data.subject_code}
                                                     onChange={(e) => setData('subject_code', e.target.value)}
+                                                    disabled
                                                 />
                                                 <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
                                                     Start Time:
@@ -215,6 +218,7 @@ export default function Dashboard({ auth, allevents }) {
                                                     onChange={
                                                         (e) => {setData('start', new Date(e.target.value));console.log(new Date(e.target.value))}
                                                     }
+                                                    disabled
                                                 />
                                                 <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
                                                     End Time:
@@ -225,21 +229,24 @@ export default function Dashboard({ auth, allevents }) {
                                                     id="endTime"
                                                     value={moment(data.end).format('YYYY-MM-DDTHH:mm')}
                                                     onChange={(e) => setData('end', new Date(e.target.value))}
+                                                    disabled
                                                 />
                                                 <label htmlFor="location" className="block text-sm font-medium text-gray-700">
                                                     Location:
                                                 </label>
                                                 <input
                                                     type="text"
+
                                                     className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                                     id="location"
                                                     value={data.location}
                                                     onChange={(e) => setData('location', e.target.value)}
+                                                    disabled
                                                 />
                                             </div>
                                         </div>
                                         <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                            {selectEvent && (
+                                            {/* {selectEvent && (
                                                 <button
                                                     type="button"
                                                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -254,7 +261,7 @@ export default function Dashboard({ auth, allevents }) {
                                                 onClick={saveEvent}
                                             >
                                                 Save
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </div>
                                 </div>

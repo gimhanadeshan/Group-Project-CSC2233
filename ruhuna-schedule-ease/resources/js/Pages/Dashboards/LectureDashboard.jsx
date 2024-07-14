@@ -1,10 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import TimeTable from './TimeTable';
+import { Head, useForm } from '@inertiajs/react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import React, { useState, useEffect } from 'react';
+import { Inertia } from '@inertiajs/inertia';
+
 
 const localizer = momentLocalizer(moment);
 
@@ -12,7 +13,7 @@ const localizer = momentLocalizer(moment);
 moment.updateLocale('en', {
     week: {
         dow: 1, // Monday is the first day of the week
-        doy: 1, 
+        doy: 1,
     },
 });
 
@@ -20,102 +21,106 @@ moment.updateLocale('en', {
 const minTime = new Date(1970, 1, 1, 8, 0); // 8:00 AM
 const maxTime = new Date(1970, 1, 1, 19, 0); // 6:00 PM
 
-
-export default function LectureDashboard({ auth ,allevents}) {
-
-
-
-
+export default function Dashboard({ auth, allevents }) {
     const [events, setEvents] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [eventTitle, setEventTitle] = useState('');
     const [selectEvent, setSelectEvent] = useState(null);
 
+    const { delete: destroy } = useForm();
 
-    
-
+    const { data, setData, post, put, reset } = useForm({
+        id: '',
+        title: '',
+        subject_code: '',
+        location: '',
+        start: '',
+        end: ''
+    });
 
     useEffect(() => {
-
         if (allevents) {
-            console.log('okokok')
             const parsedEvents = allevents.map(event => ({
                 ...event,
                 start: new Date(event.start),
                 end: new Date(event.end),
             }));
-
-
             setEvents(parsedEvents);
-
-        }
-        else {
-            console.log('No Allevents')
         }
     }, [allevents]);
 
     const handleSelectSlot = (slotInfo) => {
         setShowModal(true);
         setSelectedDate(slotInfo.start);
+        console.log('DATE = '+slotInfo.start);
         setSelectEvent(null);
+        reset();
     };
 
     const handleSelectedEvent = (event) => {
         setShowModal(true);
         setSelectEvent(event);
-        setEventTitle(event.title);
+        setData({
+            id: event.id,
+            title: event.title,
+            subject_code: event.subject_code,
+            location: event.location,
+            start: event.start,
+            end: event.end,
+        });
     };
 
     const saveEvent = () => {
-        if (eventTitle && selectedDate) {
-            if (selectEvent) {
-                const updatedEvent = { ...selectEvent, title: eventTitle };
-                const updatedEvents = events.map((event) =>
-                    event === selectEvent ? updatedEvent : event
-                );
-                setEvents(updatedEvents);
-            } else {
-                const newEvent = {
-                    title: eventTitle,
-                    start: selectedDate,
-                    end: moment(selectedDate)
-                        .add(2, "hours")
-                        .toDate(),
-                };
-                setEvents([...events, newEvent]);
-            }
-            setShowModal(false);
-            setEventTitle("");
-            setSelectEvent(null);
+        const formattedData = {
+            ...data,
+            //start: moment(data.start).format('YYYY-MM-DD HH:mm:ss'),
+            //end: moment(data.end).format('YYYY-MM-DD HH:mm:ss')
+            //start: moment(data.start).toISOString(),
+            //end: moment(data.end).toISOString()
+            
+        };
+        console.log('Start='+formattedData.start);
+        console.log('Start='+formattedData.end);
+    
+        if (data.id) {
+            // Use Inertia's put method for updating existing events
+            put(route('events.update', data.id), {
+                data: formattedData,
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectEvent(null);
+                }
+            });
+        } else {
+            // Use Inertia's post method for creating new events
+            post(route('events.store'), {
+                data: formattedData,
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectEvent(null);
+                }
+            });
         }
     };
+    
+    
 
-    const deleteEvent = () => {
+    const deleteEvent =  () => {
         if (selectEvent) {
-            const updatedEvents = events.filter((event) => event !== selectEvent);
-            setEvents(updatedEvents);
+            console.log('id = '+selectEvent.id);
+            const response =  Inertia.delete(route('events.destroy', selectEvent.id));
             setShowModal(false);
-            setEventTitle('');
+            Inertia.reload();
             setSelectEvent(null);
+            const updatedEvents = events.filter(event => event.id !== selectEvent.id);
+            setEvents(updatedEvents);
+            Inertia.reload();
+
+            
         }
     };
-    const CustomEvent = ({ event }) => {
-        return (
-            <span>
-                <strong>{event.subject_code}</strong>
-                <br />
-                <em>{event.location}</em>
-            </span>
-        );
-    };
-
-
-
-
-
-
-
+    
+    
 
     return (
         <AuthenticatedLayout
@@ -127,16 +132,6 @@ export default function LectureDashboard({ auth ,allevents}) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-
-
-
-
-
-
-
-
-
-
                         <div style={{ height: '800px' }}>
                             <Calendar
                                 localizer={localizer}
@@ -150,9 +145,6 @@ export default function LectureDashboard({ auth ,allevents}) {
                                 endAccessor="end"
                                 style={{ margin: '50px' }}
                                 selectable={true}
-                                components={{
-                                    event: CustomEvent
-                                }}
                                 onSelectSlot={handleSelectSlot}
                                 onSelectEvent={handleSelectedEvent}
                             />
@@ -173,8 +165,7 @@ export default function LectureDashboard({ auth ,allevents}) {
                                                         className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                                                         onClick={() => {
                                                             setShowModal(false);
-                                                            setEventTitle("");
-                                                            setSelectEvent(null);
+                                                            reset();
                                                         }}
                                                     >
                                                         <svg
@@ -200,8 +191,50 @@ export default function LectureDashboard({ auth ,allevents}) {
                                                     type="text"
                                                     className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                                     id="eventTitle"
-                                                    value={eventTitle}
-                                                    onChange={(e) => setEventTitle(e.target.value)}
+                                                    value={data.title}
+                                                    onChange={(e) => setData('title', e.target.value)}
+                                                />
+                                                <label htmlFor="subjectCode" className="block text-sm font-medium text-gray-700">
+                                                    Subject Code:
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    id="subjectCode"
+                                                    value={data.subject_code}
+                                                    onChange={(e) => setData('subject_code', e.target.value)}
+                                                />
+                                                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+                                                    Start Time:
+                                                </label>
+                                                <input
+                                                    type="datetime-local"
+                                                    className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    id="startTime"
+                                                    value={moment(data.start).format('YYYY-MM-DDTHH:mm')}
+                                                    onChange={
+                                                        (e) => {setData('start', new Date(e.target.value));console.log(new Date(e.target.value))}
+                                                    }
+                                                />
+                                                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+                                                    End Time:
+                                                </label>
+                                                <input
+                                                    type="datetime-local"
+                                                    className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    id="endTime"
+                                                    value={moment(data.end).format('YYYY-MM-DDTHH:mm')}
+                                                    onChange={(e) => setData('end', new Date(e.target.value))}
+                                                />
+                                                <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                                                    Location:
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    id="location"
+                                                    value={data.location}
+                                                    onChange={(e) => setData('location', e.target.value)}
                                                 />
                                             </div>
                                         </div>
@@ -227,12 +260,6 @@ export default function LectureDashboard({ auth ,allevents}) {
                                 </div>
                             )}
                         </div>
-
-
-
-
-
-
                     </div>
                 </div>
             </div>
