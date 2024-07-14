@@ -9,6 +9,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DegreeProgramController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LectureHallController;
+use App\Http\Controllers\ResourceAllocationController;
+use App\Http\Controllers\TimetableController;
+use App\Http\Controllers\SemesterController;
+
 
 
 
@@ -20,15 +24,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-    //Route::get('users/export', [UserController::class, 'export'])->name('users.export');
     Route::post('/import-users', [UserController::class, 'import'])->name('users.import');
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
     Route::resource('degree-programs', DegreeProgramController::class);
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('lecture-halls', LectureHallController::class);
-
-    
-   
+    Route::resource('semesters', SemesterController::class);
 
 });
 
