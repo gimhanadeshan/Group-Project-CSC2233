@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TimetableController;
 
 
 Route::middleware(['auth'])->group(function () {
@@ -19,8 +20,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('users/export', [UserController::class, 'export'])->name('users.export');
     Route::post('/import-users', [UserController::class, 'import'])->name('users.import');
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
-    
-   
+
+
 
 });
 
@@ -36,7 +37,7 @@ Route::get('/', function () {
     ]);
 });
 
-   
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -46,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('roles', RoleController::class);
-   
+    Route::get('/timetable',[TimetableController::class,'create'])->name('timetable.create');
 });
 
 

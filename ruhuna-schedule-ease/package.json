@@ -20,6 +20,8 @@
         "vite": "^5.0"
     },
     "dependencies": {
-        "react-csv": "^2.2.2"
+        "@inertiajs/inertia-react": "^0.8.1",
+        "react-csv": "^2.2.2",
+        "react-select": "^5.8.0"
     }
 }
