@@ -102,7 +102,7 @@ export default function Authenticated({ user, header, children }) {
                                                 <li>
                                                     <Dropdown.Link
                                                         href={route(
-                                                            "dashboard"
+                                                            "events.stu"
                                                         )}
                                                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                                                         role="menuitem"
@@ -154,7 +154,7 @@ export default function Authenticated({ user, header, children }) {
                     <ul className="space-y-2 font-medium">
                         <li>
                             <Link
-                                href={route("stdashboard")}
+                                href={route("events.stu")}
                                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                             >
                                 <svg

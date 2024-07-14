@@ -25,7 +25,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import-users', [UserController::class, 'import'])->name('users.import');
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
     Route::resource('degree-programs', DegreeProgramController::class);
-    Route::resource('stdashboard', EventController::class);
+    Route::get('/dashboard', [EventController::class,'timetable'])->name('events.timetable');
+    Route::get('/stdashboard', [EventController::class,'stu'])->name('events.stu');
+    Route::get('/lecdashboard', [EventController::class,'lec'])->name('events.lec');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::put('/events/{id}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
+
+    //Route::resource('stdashboard', EventController::class);
 
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
 
@@ -50,13 +57,7 @@ Route::get('/', function () {
 });
 
    
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::get('/stdashboard', function () {
-//     return Inertia::render('Dashboards/StudentDashboard');
-// })->middleware(['auth', 'verified'])->name('stdashboard');
 
 
 

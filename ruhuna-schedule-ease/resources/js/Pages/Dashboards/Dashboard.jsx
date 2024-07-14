@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import TimeTable from '../Components/TimeTable';
+import TimeTable from './TimeTable';
 
 export default function Dashboard({ auth }) {
     return (
