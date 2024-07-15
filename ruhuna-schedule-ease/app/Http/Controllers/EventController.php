@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon; // Import Carbon
 
+use Illuminate\Support\Facades\Auth; // Import Auth facade
+
 
 class EventController extends Controller
 {
@@ -26,6 +28,22 @@ class EventController extends Controller
         return Inertia::render($viewName, [
             'allevents' => $allevents,
         ]);
+    }
+
+    public function dashboard()
+    {
+        $user = Auth::user();
+
+        switch ($user->role_id) {
+            case 1:
+                return $this->renderViewWithEvents('Dashboards/AdminDashboard');
+            case 2:
+                return $this->renderViewWithEvents('Dashboards/StudentDashboard');
+            case 3:
+                return $this->renderViewWithEvents('Dashboards/LectureDashboard');
+            default:
+                return $this->renderViewWithEvents('Dashboard');
+        }
     }
 
     public function stu()

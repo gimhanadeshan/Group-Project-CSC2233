@@ -1,4 +1,4 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import StuAuthenticatedLayout from '@/Layouts/StuAuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
@@ -123,15 +123,17 @@ export default function Dashboard({ auth, allevents }) {
     
 
     return (
-        <AuthenticatedLayout
+        <StuAuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Student Dashboard</h2>}
         >
             <Head title="Dashboard" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        Stu
+                        
                         <div style={{ height: '800px' }}>
                             <Calendar
                                 localizer={localizer}
@@ -270,6 +272,6 @@ export default function Dashboard({ auth, allevents }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </StuAuthenticatedLayout>
     );
 }

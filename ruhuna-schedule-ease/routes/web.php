@@ -25,9 +25,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import-users', [UserController::class, 'import'])->name('users.import');
     Route::post('/users/storeMany', [UserController::class, 'storeMany'])->name('users.storeMany');
     Route::resource('degree-programs', DegreeProgramController::class);
-    Route::get('/dashboard', [EventController::class,'timetable'])->name('events.timetable');
-    Route::get('/stdashboard', [EventController::class,'stu'])->name('events.stu');
-    Route::get('/lecdashboard', [EventController::class,'lec'])->name('events.lec');
+
+
+    // Route::get('dashboard', [EventController::class,'timetable'])->name('events.timetable');
+    // Route::get('/stdashboard', [EventController::class,'stu'])->name('events.stu');
+    // Route::get('/lecdashboard', [EventController::class,'lec'])->name('events.lec');
+
+    Route::get('/dashboard', [EventController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+
+
+
+
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
@@ -57,9 +65,25 @@ Route::get('/', function () {
 });
 
    
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 
+// Route::get('/dashboard', function () {
+//     $user = Auth::user();
 
+//     switch ($user->role_id) {
+//         case 1:
+//             return Inertia::render('Dashboards/AdminDashboard');
+//         case 2:
+//             return Inertia::render('Dashboards/StudentDashboard');
+//         case 3:
+//             return Inertia::render('Dashboards/LectureDashboard');
+//         default:
+//             return Inertia::render('Dashboard');
+//     }
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {
