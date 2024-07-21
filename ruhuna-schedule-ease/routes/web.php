@@ -32,10 +32,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
-    Route::post('/events', [EventController::class, 'store'])->name('events.store');
-    Route::put('/events/{id}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+
 });
 
 
