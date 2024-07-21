@@ -17,10 +17,7 @@ use App\Models\DegreeProgram;
 
 class UserController extends Controller
 {
-
-
-
-    
+  
     public function index()
     {
         $roles = Role::all();
