@@ -5,7 +5,7 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
 
-export default function Authenticated({ user, header, children }) {
+export default function Authenticated({ user, header, children,auth }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,6 +22,8 @@ export default function Authenticated({ user, header, children }) {
     const toggleSidebarDropdownOpen = () => {
         setSidebarDropdownOpen(!sidebarDropdownOpen);
     };
+
+    let roleID=user.role_id;
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -171,6 +173,17 @@ export default function Authenticated({ user, header, children }) {
                             </Link>
                         </li>
 
+
+
+{/* 
+
+Filter according to role_Id 
+
+*/}
+
+
+
+
                         <li>
                             <Link
                                 //href={route("timetables.index")}
@@ -310,6 +323,10 @@ export default function Authenticated({ user, header, children }) {
                                 <span className="ms-3">LectureHall</span>
                             </Link>
                         </li>
+
+
+
+
                     </ul>
                 </div>
             </aside>

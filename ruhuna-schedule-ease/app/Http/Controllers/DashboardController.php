@@ -25,7 +25,7 @@ class DashboardController extends Controller
                 
                 return Inertia::render('Dashboards/LectureDashboard');
             default:
-                return $this->renderViewWithEvents('Dashboard');
+                return Inertia::render('Dashboard');
         }
     }
 }
