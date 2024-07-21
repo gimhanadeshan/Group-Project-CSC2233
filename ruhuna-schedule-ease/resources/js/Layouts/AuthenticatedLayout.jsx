@@ -181,9 +181,9 @@ Filter according to role_Id
 
 */}
 
+{ roleID ==1 &&
 
-
-
+<>
                         <li>
                             <Link
                                 //href={route("timetables.index")}
@@ -323,8 +323,8 @@ Filter according to role_Id
                                 <span className="ms-3">LectureHall</span>
                             </Link>
                         </li>
-
-
+</>
+}
 
 
                     </ul>
