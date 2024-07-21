@@ -12,6 +12,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
 
     const [smsN, setSMSEnabled] = useState(false);
     const [emailN, setEmailEnabled] = useState(false);
+    const [pushN, setPushEnabled] = useState(false);
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
@@ -38,32 +39,43 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
             <div class="grid grid-flow-row-dense mt-1 gap-3 grid-cols-4 grid-rows-3 ...">
                 <div class="col-span-2">Email</div>
                 <div class="col-span-2">
-                <Switch
-                            checked={smsN}
-                            onChange={setSMSEnabled}
-                            className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
-                        >
-                            <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
-                        </Switch>
+                    <Switch
+                        checked={smsN}
+                        onChange={setSMSEnabled}
+                        className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
+                    >
+                        <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+                    </Switch>
                 </div>
 
-                
+
                 <div class="col-span-2">SMS</div>
                 <div class="col-span-2">
-                <Switch
-                            checked={emailN}
-                            onChange={setEmailEnabled}
-                            className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
-                        >
-                            <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
-                        </Switch>
+                    <Switch
+                        checked={emailN}
+                        onChange={setEmailEnabled}
+                        className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
+                    >
+                        <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+                    </Switch>
                 </div>
 
-                
-                
+                <div class="col-span-2">Push</div>
+                <div class="col-span-2">
+                    <Switch
+                        checked={pushN}
+                        onChange={setPushEnabled}
+                        className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
+                    >
+                        <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+                    </Switch>
+                </div>
+
+
+
             </div>
 
-            
+
         </section>
     );
 }
