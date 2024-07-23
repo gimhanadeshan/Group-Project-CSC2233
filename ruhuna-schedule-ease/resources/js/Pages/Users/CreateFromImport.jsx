@@ -1,16 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import PrimaryButton from "@/Components/PrimaryButton";
 import { Head } from "@inertiajs/react";
 
-export default function CreateFromImport({ auth, roles }) {
+export default function CreateFromImport({ auth, roles, degreePrograms }) {
     const [file, setFile] = useState(null);
     const [academicYear, setAcademicYear] = useState("");
     const [temporaryPassword, setTemporaryPassword] = useState("");
     const [roleId, setRoleId] = useState("");
+    const [degreeProgramId, setDegreeProgramId] = useState("");
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     const [importedUsers, setImportedUsers] = useState([]);
+    const [roleRequiresAcademicInfo, setRoleRequiresAcademicInfo] =
+        useState(false);
+    const [yearOptions, setYearOptions] = useState([]);
+
+    useEffect(() => {
+        // Generate last 10 years for academic year dropdown
+        const currentYear = new Date().getFullYear();
+        const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+        setYearOptions(
+            years.map((year) => ({ value: year, label: year.toString() }))
+        );
+    }, []);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -24,6 +37,7 @@ export default function CreateFromImport({ auth, roles }) {
         formData.append("academic_year", academicYear);
         formData.append("temporary_password", temporaryPassword);
         formData.append("role_id", roleId);
+        formData.append("degree_program_id", degreeProgramId); // Include degree_program_id
 
         try {
             const response = await fetch("/import-users", {
@@ -54,6 +68,18 @@ export default function CreateFromImport({ auth, roles }) {
         }
     };
 
+    const handleRoleChange = (e) => {
+        const selectedRoleId = e.target.value;
+        setRoleId(selectedRoleId);
+
+        // Check if selected role requires academic info
+        if (selectedRoleId === "2") {
+            setRoleRequiresAcademicInfo(true); // Set to true for Student role
+        } else {
+            setRoleRequiresAcademicInfo(false); // Set to false for other roles
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Import Users" />
@@ -78,21 +104,94 @@ export default function CreateFromImport({ auth, roles }) {
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label
-                            htmlFor="academic_year"
+                            htmlFor="role_id"
                             className="block text-sm font-medium text-gray-700"
                         >
-                            Academic Year
+                            Role
                         </label>
-                        <input
-                            type="text"
-                            id="academic_year"
-                            name="academic_year"
-                            value={academicYear}
-                            onChange={(e) => setAcademicYear(e.target.value)}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        <select
+                            id="role_id"
+                            name="role_id"
+                            value={roleId}
+                            className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                            onChange={handleRoleChange}
                             required
-                        />
+                        >
+                            <option value="">Select Role</option>
+                            {roles.map((role) => (
+                                <option key={role.id} value={role.id}>
+                                    {role.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+
+                    {roleRequiresAcademicInfo && (
+                        <div>
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="academic_year"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Academic Year
+                                </label>
+                                <select
+                                    id="academic_year"
+                                    name="academic_year"
+                                    value={academicYear}
+                                    onChange={(e) =>
+                                        setAcademicYear(e.target.value)
+                                    }
+                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                    required
+                                >
+                                    <option value="">
+                                        Select Academic Year
+                                    </option>
+                                    {yearOptions.map((option) => (
+                                        <option
+                                            key={option.value}
+                                            value={option.value}
+                                        >
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="degree_program_id"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Degree Program
+                                </label>
+                                <select
+                                    id="degree_program_id"
+                                    name="degree_program_id"
+                                    value={degreeProgramId}
+                                    onChange={(e) =>
+                                        setDegreeProgramId(e.target.value)
+                                    }
+                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                    required
+                                >
+                                    <option value="">
+                                        Select Degree Program
+                                    </option>
+                                    {degreePrograms.map((program) => (
+                                        <option
+                                            key={program.id}
+                                            value={program.id}
+                                        >
+                                            {program.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mb-4">
                         <label
                             htmlFor="temporary_password"
@@ -113,29 +212,6 @@ export default function CreateFromImport({ auth, roles }) {
                         />
                     </div>
 
-                    <div className="mb-4">
-                        <label
-                            htmlFor="role_id"
-                            className="block text-sm font-medium text-gray-700"
-                        >
-                            Role
-                        </label>
-                        <select
-                            id="role_id"
-                            name="role_id"
-                            value={roleId}
-                            className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            onChange={(e) => setRoleId(e.target.value)}
-                            required
-                        >
-                            <option value="">Select Role</option>
-                            {roles.map((role) => (
-                                <option key={role.id} value={role.id}>
-                                    {role.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
                     <div className="mb-4">
                         <label
                             htmlFor="file"
@@ -179,9 +255,16 @@ export default function CreateFromImport({ auth, roles }) {
                                     <th className="px-4 py-2 border">
                                         Role ID
                                     </th>
-                                    <th className="px-4 py-2 border">
-                                        Academic Year
-                                    </th>
+                                    {roleRequiresAcademicInfo && (
+                                        <>
+                                            <th className="px-4 py-2 border">
+                                                Academic Year
+                                            </th>
+                                            <th className="px-4 py-2 border">
+                                                Degree Program ID
+                                            </th>
+                                        </>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody>
@@ -199,9 +282,16 @@ export default function CreateFromImport({ auth, roles }) {
                                         <td className="px-4 py-2 border">
                                             {user.role_id}
                                         </td>
-                                        <td className="px-4 py-2 border">
-                                            {user.academic_year}
-                                        </td>
+                                        {roleRequiresAcademicInfo && (
+                                            <>
+                                                <td className="px-4 py-2 border">
+                                                    {user.academic_year}
+                                                </td>
+                                                <td className="px-4 py-2 border">
+                                                    {user.degree_program_id}
+                                                </td>
+                                            </>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

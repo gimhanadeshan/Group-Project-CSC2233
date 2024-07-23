@@ -11,12 +11,15 @@ class UsersImport implements ToCollection
     protected $academicYear;
     protected $temporaryPassword;
     protected $roleId;
+    protected $degreeProgramId;
 
-    public function __construct($academicYear, $temporaryPassword, $roleId)
+    public function __construct($academicYear, $temporaryPassword, $roleId,$degreeProgramId)
     {
         $this->academicYear = $academicYear;
         $this->temporaryPassword = $temporaryPassword;
         $this->roleId = $roleId;
+        $this->degreeProgramId = $degreeProgramId;
+
     }
 
     public function collection(Collection $rows)
@@ -29,6 +32,7 @@ class UsersImport implements ToCollection
                 'role_id' => $this->roleId,
                 'academic_year' => $this->academicYear,
                 'password' => $this->temporaryPassword,
+                'degree_program_id'=>$this->degreeProgramId,
 ]);
 
 // Add the imported user to the array

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import InputError from "@/Components/InputError";
@@ -7,14 +7,26 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import { Head } from "@inertiajs/react";
 
-export default function Edit({ user, auth, roles }) {
+export default function Edit({ user, auth, roles, degreePrograms }) {
     const { data, setData, put, processing, errors, reset } = useForm({
         name: user.name,
         email: user.email,
         registration_no: user.registration_no,
         role_id: user.role_id.toString(),
-        academic_year: user.academic_year,
+        academic_year: user.academic_year || "",
+        degree_program_id: user.degree_program_id?.toString() || "",
     });
+
+    const [yearOptions, setYearOptions] = useState([]);
+
+    useEffect(() => {
+        // Generate last 10 years for academic year dropdown
+        const currentYear = new Date().getFullYear();
+        const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+        setYearOptions(
+            years.map((year) => ({ value: year, label: year.toString() }))
+        );
+    }, []);
 
     useEffect(() => {
         reset();
@@ -103,27 +115,76 @@ export default function Edit({ user, auth, roles }) {
                         <InputError message={errors.role_id} className="mt-2" />
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel
-                            htmlFor="academic_year"
-                            value="Academic Year"
-                        />
-                        <TextInput
-                            id="academic_year"
-                            name="academic_year"
-                            value={data.academic_year}
-                            className="mt-1 block w-full"
-                            autoComplete="academic_year"
-                            onChange={(e) =>
-                                setData("academic_year", e.target.value)
-                            }
-                            required
-                        />
-                        <InputError
-                            message={errors.academic_year}
-                            className="mt-2"
-                        />
-                    </div>
+                    {data.role_id === "2" && (
+                    <>
+                        {yearOptions.length > 0 && (
+                            <div className="mt-4">
+                                <InputLabel
+                                    htmlFor="academic_year"
+                                    value="Academic Year"
+                                />
+                                <select
+                                    id="academic_year"
+                                    name="academic_year"
+                                    value={data.academic_year}
+                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                    onChange={(e) =>
+                                        setData("academic_year", e.target.value)
+                                    }
+                                    required
+                                >
+                                    <option value="">
+                                        Select Academic Year
+                                    </option>
+                                    {yearOptions.map((year) => (
+                                        <option
+                                            key={year.value}
+                                            value={year.value}
+                                        >
+                                            {year.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                <InputError message={errors.academic_year} className="mt-2" />
+                            </div>
+                        )}
+
+                        {degreePrograms.length > 0 && (
+                            <div className="mt-4">
+                                <InputLabel
+                                    htmlFor="degree_program_id"
+                                    value="Degree Program"
+                                />
+                                <select
+                                    id="degree_program_id"
+                                    name="degree_program_id"
+                                    value={data.degree_program_id}
+                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                    onChange={(e) =>
+                                        setData(
+                                            "degree_program_id",
+                                            e.target.value
+                                        )
+                                    }
+                                    required
+                                >
+                                    <option value="">
+                                        Select Degree Program
+                                    </option>
+                                    {degreePrograms.map((program) => (
+                                        <option
+                                            key={program.id}
+                                            value={program.id}
+                                        >
+                                            {program.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <InputError message={errors.degree_program_id} className="mt-2" />
+                            </div>
+                        )}
+                    </>
+                    )}
 
                     <div className="flex items-center justify-end mt-6">
                         <PrimaryButton

@@ -2,24 +2,22 @@
 
 namespace App\Exports;
 
-use App\Models\User;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 
-class UsersExport implements FromCollection, WithHeadings
+class UsersExport implements FromView
 {
-    public function collection()
+    protected $users;
+
+    public function __construct($users)
     {
-        return User::all(['name', 'email', 'registration_no','academic_year']);
+        $this->users = $users;
     }
 
-    public function headings(): array
+    public function view(): View
     {
-        return [
-            'Name',
-            'Email',
-            'Registration No',
-            'Academic Year',
-        ];
+        return view('exports.users', [
+            'users' => $this->users
+        ]);
     }
 }
