@@ -4,8 +4,10 @@ import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 
-export default function Authenticated({ user, header, children }) {
+
+export default function Authenticated({ user, header, children,auth }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -23,8 +25,14 @@ export default function Authenticated({ user, header, children }) {
         setSidebarDropdownOpen(!sidebarDropdownOpen);
     };
 
+    let roleID=user.role_id;
+
     return (
+        <>
+                    
+
         <div className="min-h-screen bg-gray-100">
+        
             <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-between">
@@ -171,6 +179,17 @@ export default function Authenticated({ user, header, children }) {
                             </Link>
                         </li>
 
+
+
+{/* 
+
+Filter according to role_Id 
+
+*/}
+
+{ roleID ==1 &&
+
+<>
                         <li>
                             <Link
                                 //href={route("timetables.index")}
@@ -310,6 +329,10 @@ export default function Authenticated({ user, header, children }) {
                                 <span className="ms-3">LectureHall</span>
                             </Link>
                         </li>
+</>
+}
+
+
                     </ul>
                 </div>
             </aside>
@@ -326,5 +349,6 @@ export default function Authenticated({ user, header, children }) {
                 <main className="flex-grow">{children}</main>
             </div>
         </div>
+        </>
     );
 }
