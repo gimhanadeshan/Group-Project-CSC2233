@@ -1,6 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import TimeTable from '@/Components/TimeTable';
 
 export default function Dashboard({ auth }) {
     let roleID=auth.user.role_id;
@@ -12,7 +11,7 @@ export default function Dashboard({ auth }) {
             <Head title="Dashboard" />
 
             
-            <TimeTable/>
+           
 
             
         </AuthenticatedLayout>
