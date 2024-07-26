@@ -10,7 +10,7 @@ export default function UpdateProfilePhotoForm({ user, className }) {
         profile_img: null
     });
 
-    const [preview, setPreview] = useState(user.profile_img ? '/profile_photos/' + user.profile_img : '/profile_photos/default-profile.jpg' );
+    const [preview, setPreview] = useState(user.profile_img ? '/profile_photos/' + user.profile_img : '/profile_photos/default-profile-image.png' );
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -28,7 +28,7 @@ export default function UpdateProfilePhotoForm({ user, className }) {
         if (file) {
             reader.readAsDataURL(file);
         } else {
-            setPreview('/profile_photos/default-profile.jpg');
+            setPreview('/profile_photos/default-profile-image.png');
         }
         event.target.value = '';
     };
@@ -46,7 +46,7 @@ export default function UpdateProfilePhotoForm({ user, className }) {
 
     const handleDelete = (event) => {
         event.preventDefault();
-        setPreview('/profile_photos/default-profile.jpg');
+        setPreview('/profile_photos/default-profile-image.png');
         destroy(route('profile.photo.delete'));
         setData('profile_img', null);
         

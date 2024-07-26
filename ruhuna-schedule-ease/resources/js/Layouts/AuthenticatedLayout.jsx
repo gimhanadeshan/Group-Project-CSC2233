@@ -77,7 +77,7 @@ export default function Authenticated({ user, header, children,auth }) {
                                                 </span>
                                                 <img
                                                     className="w-8 h-8 rounded-full"
-                                                    src={user.profile_img ? 'profile_photos/' +user.profile_img : 'profile_photos/default-profile.jpg'}
+                                                    src={user.profile_img ? 'profile_photos/' +user.profile_img : 'profile_photos/default-profile-image.png'}
                                                     alt="userPhoto"
                                                 />
                                             </button>
