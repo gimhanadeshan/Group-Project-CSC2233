@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
        
 
         $this->call([RoleSeeder::class]);
-        $this->call(EventsTableSeeder::class);
 
 
         User::factory()->create([
