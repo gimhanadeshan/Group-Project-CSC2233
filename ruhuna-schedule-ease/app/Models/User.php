@@ -24,6 +24,7 @@ class User extends Authenticatable
         'role_id',
         'academic_year',
         'degree_program_id',
+        'profile_img',
 
     ];
 

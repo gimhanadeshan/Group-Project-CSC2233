@@ -15,6 +15,8 @@ export default function Dashboard({ auth, allevents }) {
         >
             <Head title=" Lecturer Dashboard" />
 
+            
+        
            
         </AuthenticatedLayout>
     );

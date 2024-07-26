@@ -22,26 +22,35 @@ class DatabaseSeeder extends Seeder
        
 
         $this->call([RoleSeeder::class]);
+        $this->call(EventsTableSeeder::class);
+
 
         User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test1@example.com',
             'registration_no'=>'Admin',
             'role_id'=>1,
            
         ]);
         User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test2@example.com',
             'registration_no'=>'Lecturer',
             'role_id'=>2,
            
         ]);
         User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test3@example.com',
             'registration_no'=>'Student',
             'role_id'=>3,
+           
+        ]);
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test4@example.com',
+            'registration_no'=>'Student',
+            'role_id'=>6,
            
         ]);
 

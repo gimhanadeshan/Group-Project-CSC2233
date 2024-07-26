@@ -16,7 +16,7 @@ export default function Dashboard({ auth, allevents }) {
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>}
         >
             
-
+        
             
         </AuthenticatedLayout>
         </>
