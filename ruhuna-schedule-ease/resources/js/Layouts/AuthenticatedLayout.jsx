@@ -77,8 +77,8 @@ export default function Authenticated({ user, header, children,auth }) {
                                                 </span>
                                                 <img
                                                     className="w-8 h-8 rounded-full"
-                                                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                                                    alt="user photo"
+                                                    src={user.profile_img ? 'profile_photos/' +user.profile_img : 'profile_photos/default-profile-image.png'}
+                                                    alt="userPhoto"
                                                 />
                                             </button>
                                         </div>

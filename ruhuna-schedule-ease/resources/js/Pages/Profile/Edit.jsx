@@ -4,7 +4,7 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import NotificationSettings from './Partials/NotificationSettings';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import { Head } from '@inertiajs/react';
-import UpdateProfileInformation from './Partials/UpdateProfileInformationForm';
+import UpdateProfilePhotoForm from './Partials/UpdateProfilePhotoForm';
 
 export default function Edit({ auth, mustVerifyEmail, status }) {
 
@@ -26,6 +26,15 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
                             className="max-w-xl"
                         />
                     </div>
+                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <UpdateProfilePhotoForm
+                            user={auth.user}
+                            className="max-w-xl"
+                        />
+                    </div>
+
+
+
 
                     <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                         <UpdatePasswordForm className="max-w-xl" />

@@ -34,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('semesters', SemesterController::class);
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
+
+
+
 });
 
 
@@ -57,8 +60,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.updatePhoto');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
+
+
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
+
    
 });
 

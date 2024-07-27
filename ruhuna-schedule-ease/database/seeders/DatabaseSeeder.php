@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([RoleSeeder::class]);
 
+
         User::factory()->create([
+
             'name' => 'Admin',
             'email' => 'admin@example.com',
             'registration_no'=>'Admin',
@@ -31,6 +33,7 @@ class DatabaseSeeder extends Seeder
            
         ]);
         User::factory()->create([
+
             'name' => 'Lecturer',
             'email' => 'lecturer@example.com',
             'registration_no'=>'Lecturer',
@@ -38,10 +41,18 @@ class DatabaseSeeder extends Seeder
            
         ]);
         User::factory()->create([
+
             'name' => 'Student',
             'email' => 'student@example.com',
             'registration_no'=>'Student',
             'role_id'=>3,
+           
+        ]);
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test4@example.com',
+            'registration_no'=>'Student',
+            'role_id'=>6,
            
         ]);
 
