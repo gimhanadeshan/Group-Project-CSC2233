@@ -9,9 +9,14 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DegreeProgramController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LectureHallController;
-use App\Http\Controllers\ResourceAllocationController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\SemesterController;
+<<<<<<< Updated upstream
+=======
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CourseController;
+>>>>>>> Stashed changes
 
 
 
@@ -31,6 +36,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
 
+
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::post('/courses/{course}/register', [CourseController::class, 'register'])->name('course.register');
+    Route::post('/courses/registration/{registration}/confirm', [CourseController::class, 'confirmRegistration'])->name('course.registration.confirm');
 });
 
 

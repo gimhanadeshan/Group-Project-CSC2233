@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,5 +16,10 @@ class Course extends Model
         'type', // Add this line
         'description',
     ];
+
+    public function registrations()
+    {
+        return $this->hasMany(CourseRegistration::class);
+    }
 }
 
