@@ -27,14 +27,31 @@ class DatabaseSeeder extends Seeder
         $this->call([CourseSeeder::class]);
         $this->call([SemesterSeeder::class]);
 
-        User::factory(50)->create();
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'registration_no'=>'sc11111',
+
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'registration_no'=>'Admin',
             'role_id'=>1,
 
         ]);
+        User::factory()->create([
+
+            'name' => 'Lecturer',
+            'email' => 'lecturer@example.com',
+            'registration_no'=>'Lecturer',
+            'role_id'=>2,
+           
+        ]);
+        User::factory()->create([
+
+            'name' => 'Student',
+            'email' => 'student@example.com',
+            'registration_no'=>'Student',
+            'role_id'=>3,
+           
+        ]);
+       
 
 
 
