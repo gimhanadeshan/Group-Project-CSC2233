@@ -10,7 +10,7 @@ use App\Http\Controllers\DegreeProgramController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LectureHallController;
 use App\Http\Controllers\ResourceAllocationController;
-use App\Http\Controllers\TimetableController;
+use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
@@ -32,10 +32,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
+    Route::resource('timetables', TimeTableController::class);
+    Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
-
-
 
 });
 
@@ -51,10 +50,12 @@ Route::get('/', function () {
     ]);
 });
 
+
    
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -62,12 +63,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.updatePhoto');
     Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
-
-
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
 
-   
 });
 
 

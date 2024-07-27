@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Course;
 use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -14,15 +15,17 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-   
+
     public function run(): void
     {
-        // User::factory(10)->create();
 
-       
+
+
 
         $this->call([RoleSeeder::class]);
-
+        $this->call([LectureHallSeeder::class]);
+        $this->call([CourseSeeder::class]);
+        $this->call([SemesterSeeder::class]);
 
         User::factory()->create([
 
@@ -30,7 +33,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'registration_no'=>'Admin',
             'role_id'=>1,
-           
+
         ]);
         User::factory()->create([
 
@@ -48,17 +51,11 @@ class DatabaseSeeder extends Seeder
             'role_id'=>3,
            
         ]);
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test4@example.com',
-            'registration_no'=>'Student',
-            'role_id'=>6,
-           
-        ]);
+       
 
-       
-       
+
+
     }
 
-    
+
 }
