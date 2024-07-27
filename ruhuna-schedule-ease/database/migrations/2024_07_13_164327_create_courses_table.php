@@ -15,9 +15,9 @@ class CreateCoursesTable extends Migration
             $table->integer('credit_hours');
             $table->integer('level');
             $table->integer('semester');
-            $table->integer('theory_hours');
-            $table->integer('practical_hours');
-            $table->integer('tutorial_hours');
+            $table->integer('theory_hours')->nullable();
+            $table->integer('practical_hours')->nullable();;
+            $table->integer('tutorial_hours')->nullable();;
             $table->text('description')->nullable();
             $table->timestamps();
         });
