@@ -12,12 +12,12 @@ class Semester extends Model
     use HasFactory;
 
     protected $fillable = [
-        'academic_year', 
-        'level', 
-        'semester', 
-        'reference_number', 
-        'name', 
-        'start_date', 
+        'academic_year',
+        'level',
+        'semester',
+        'reference_number',
+        'name',
+        'start_date',
         'end_date'
     ];
 
@@ -30,5 +30,9 @@ class Semester extends Model
         $numericSemester = (int) filter_var($semester, FILTER_SANITIZE_NUMBER_INT);
 
         return 'L' . $numericLevel . 'S' . $numericSemester . $academic_year;
+    }
+    public function timetables()
+    {
+        return $this->belongsTo(TimeTable::class, 'id');
     }
 }

@@ -31,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
     Route::resource('timetables', TimeTableController::class);
+    Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
+
 
 });
 

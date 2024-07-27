@@ -15,13 +15,22 @@ class CourseFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
-        return [
-            'name' => $this->faker->word . ' Course',
-            'code' => 'CSC' . $this->faker->numberBetween(1000, 9999),
-            'credit_hours' => $this->faker->numberBetween(1, 6),
-            'type' => $this->faker->randomElement(['practical', 'theory']),
-            'description' => $this->faker->optional()->paragraph,
-        ];
-    }
+{
+    $level = $this->faker->numberBetween(1, 4);
+    $semester = $this->faker->numberBetween(1, 2);
+    $code = $this->faker->unique()->regexify("CSC{$level}{$semester}[0-9][1-3]");
+
+    return [
+        'name' => $this->faker->word . ' Course',
+        'code' => $code,
+        'credit_hours' => $this->faker->numberBetween(1, 6),
+        'level' => $level,
+        'semester' => $semester,
+        'theory_hours'=>$this->faker->randomElement([NULL,1,2,3]),
+        'practical_hours'=>$this->faker->randomElement([NULL,1,2,3]),
+        'tutorial_hours'=>$this->faker->randomElement([NULL,1]),
+        'description' => $this->faker->optional()->paragraph,
+    ];
+}
+
 }

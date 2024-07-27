@@ -14,8 +14,9 @@ class Course extends Model
     protected $fillable = [
         'name',
         'code',
-        'credit_hours',
-        'type', // Add this line
+        'theory_hours',
+        'practical_hours',
+        'tutorial_hours',
         'description',
     ];
 }

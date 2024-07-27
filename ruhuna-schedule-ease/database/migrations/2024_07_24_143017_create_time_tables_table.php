@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('time_tables', function (Blueprint $table) {
             $table->id('slot_id');
-            $table->timestamp('start_time')->nullable();
-            $table->timestamp('end_time')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->String('type');
             $table->enum('day_of_week', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
             $table->foreignId('course')->constrained('courses')->onDelete('cascade');
-            $table->foreignId('hall_id')->condtrained('lecture_halls')->onDelete('cascade');
+            $table->foreignId('hall_id')->constrained('lecture_halls')->onDelete('cascade');
             $table->foreignId('lecturer')->constrained('users')->onDelete('cascade');
             $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
         });
