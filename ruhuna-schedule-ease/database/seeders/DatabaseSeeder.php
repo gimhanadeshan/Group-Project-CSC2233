@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Lecturer',
             'email' => 'lecturer@example.com',
             'registration_no'=>'Lecturer',
-            'role_id'=>2,
+            'role_id'=>3,
            
         ]);
         User::factory()->create([
@@ -48,9 +48,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Student',
             'email' => 'student@example.com',
             'registration_no'=>'Student',
-            'role_id'=>3,
+            'role_id'=>2,
            
         ]);
+
+        User::factory()->count(30)->create();
+
+
        
 
 
