@@ -19,6 +19,7 @@ class CreateCoursesTable extends Migration
             $table->integer('practical_hours')->nullable();;
             $table->integer('tutorial_hours')->nullable();;
             $table->text('description')->nullable();
+            $table->boolean('is_core')->default(true);
             $table->timestamps();
         });
     }
