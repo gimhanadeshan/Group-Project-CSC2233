@@ -225,8 +225,18 @@ Filter according to role_Id
                                                 fill="currentColor"
                                                 viewBox="0 0 18 18"
                                             >
-                                                <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8.000 1.857 8.000h4.286A1.857 1.857 0 0 0 8.000 6.143v-4.286A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10.000 1.857v4.286C10.000 7.169 10.831 8.000 11.857 8.000h4.286A1.857 1.857 0 0 0 18.000 6.143v-4.286A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0.000 11.857v4.286C0.000 17.169.831 18.000 1.857 18.000h4.286A1.857 1.857 0 0 0 8.000 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10.000 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18.000 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M12.512 8.72a2.46 2.46 0 0 1 3.479 0 2.461 2.461 0 0 1 0 3.479l-.004.005-1.094 1.08a.998.998 0 0 0-.194-.272l-3-3a1 1 0 0 0-.272-.193l1.085-1.1Zm-2.415 2.445L7.28 14.017a1 1 0 0 0-.289.702v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .703-.288l2.851-2.816a.995.995 0 0 1-.26-.189l-3-3a.998.998 0 0 1-.19-.26Z"
+                                                    clip-rule="evenodd"
+                                                />
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M7 3a1 1 0 0 1 1 1v1h3V4a1 1 0 1 1 2 0v1h3V4a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1V4a1 1 0 0 1 1-1Zm10.67 8H19v8H5v-8h3.855l.53-.537a1 1 0 0 1 .87-.285c.097.015.233.13.277.087.045-.043-.073-.18-.09-.276a1 1 0 0 1 .274-.873l1.09-1.104a3.46 3.46 0 0 1 4.892 0l.001.002A3.461 3.461 0 0 1 17.67 11Z"
+                                                    clip-rule="evenodd"
+                                                />
                                             </svg>
+
                                             <span className="flex-1 ms-3 whitespace-nowrap">
                                                 Semesters
                                             </span>
@@ -252,11 +262,11 @@ Filter according to role_Id
                                                 User Management
                                             </span>
                                             <svg
-                                                class="w-3 h-3"
+                                                className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                                 aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 10 6"
+                                                fill="currentColor"
+                                                viewBox="0 0 18 18"
                                             >
                                                 <path
                                                     stroke="currentColor"
@@ -335,7 +345,31 @@ Filter according to role_Id
                                             </svg>
 
                                             <span className="ms-3">
-                                                LectureHall
+                                                Lecture Hall
+                                            </span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            href={route("courses.index")}
+                                            className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                        >
+                                            <svg
+                                                className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="currentColor"
+                                                viewBox="0 0 18 18"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M6 2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 1 0 0-2h-2v-2h2a1 1 0 0 0 1-1V4a2 2 0 0 0-2-2h-8v16h5v2H7a1 1 0 1 1 0-2h1V2H6Z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+
+                                            <span className="ms-3">
+                                                Courses
                                             </span>
                                         </Link>
                                     </li>
