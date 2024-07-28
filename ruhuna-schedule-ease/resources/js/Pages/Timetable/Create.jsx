@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import { useForm, Head } from '@inertiajs/react';
 
-export default function Create({ auth, courses, lecturers, halls }) {
+export default function Create({ auth, courses, lecturers, halls ,semester}) {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLecturer, setSelectedLecturer] = useState(null);
   const [selectedHall, setSelectedHall] = useState(null);
@@ -13,6 +13,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
 
   const { data, setData, post, processing } = useForm({
     timetable: [],
+    semester_id: semester,
   });
 
   const courseOptions = courses.map((course) => ({
@@ -64,6 +65,12 @@ export default function Create({ auth, courses, lecturers, halls }) {
     }
   };
 
+  const handleRemoveFromTable = (index) => {
+    const newTableData = tableData.filter((_, i) => i !== index);
+    setTableData(newTableData);
+    setData('timetable', newTableData); // Update the form data
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (tableData.length === 0) {
@@ -84,7 +91,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
     >
       <Head title="TimeTable" />
       <div className="container mt-4 bg-white-900 text-white-100 p-4 rounded-lg shadow-lg">
-        <h1 className="mb-4 text-2xl font-bold">TimeTable Create</h1>
+        <h1 className="mb-4 text-2xl font-bold">Create Time table for {semester}</h1>
         <form onSubmit={handleSubmit}>
           <div className="row mb-3">
             <div className="col-md-6 mb-3">
@@ -235,6 +242,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Lecturer</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Hall</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white-900 divide-y divide-white-700">
@@ -244,6 +252,15 @@ export default function Create({ auth, courses, lecturers, halls }) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.lecturer.label}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.hall.value.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.type.label}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">
+                          <button
+                            type="button"
+                            className="btn btn-danger bg-red-600 text-white hover:bg-red-700"
+                            onClick={() => handleRemoveFromTable(index)}
+                          >
+                            Remove
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
