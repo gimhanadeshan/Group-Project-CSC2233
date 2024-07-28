@@ -27,7 +27,6 @@ const Create = ({ auth }) => {
         post(route("semesters.store"));
     };
 
-    // Options for select dropdowns
     const levels = ["Level 1", "Level 2", "Level 3", "Level 4"];
     const semesters = ["Semester 1", "Semester 2"];
     const currentYear = new Date().getFullYear();
@@ -35,6 +34,21 @@ const Create = ({ auth }) => {
         { length: 10 },
         (_, index) => currentYear - index
     );
+
+    const renderErrors = () => {
+        if (!Object.keys(errors).length) return null;
+
+        return (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong className="font-bold">Whoops! Something went wrong.</strong>
+                <ul className="mt-3 list-disc list-inside text-sm">
+                    {Object.values(errors).map((error, index) => (
+                        <li key={index}>{error}</li>
+                    ))}
+                </ul>
+            </div>
+        );
+    };
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -49,12 +63,10 @@ const Create = ({ auth }) => {
                     <div className="border-t border-gray-200">
                         <form onSubmit={handleSubmit}>
                             <div className="px-4 py-5 sm:p-6">
+                                {renderErrors()}
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="academic_year"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
+                                        <label htmlFor="academic_year" className="block text-sm font-medium text-gray-700">
                                             Academic Year
                                         </label>
                                         <select
@@ -65,9 +77,7 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         >
-                                            <option value="">
-                                                Select Academic Year
-                                            </option>
+                                            <option value="">Select Academic Year</option>
                                             {academicYears.map((year) => (
                                                 <option key={year} value={year}>
                                                     {year}
@@ -82,10 +92,7 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="level"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
+                                        <label htmlFor="level" className="block text-sm font-medium text-gray-700">
                                             Level
                                         </label>
                                         <select
@@ -96,14 +103,9 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         >
-                                            <option value="">
-                                                Select Level
-                                            </option>
+                                            <option value="">Select Level</option>
                                             {levels.map((level, index) => (
-                                                <option
-                                                    key={index}
-                                                    value={level}
-                                                >
+                                                <option key={index} value={index + 1}>
                                                     {level}
                                                 </option>
                                             ))}
@@ -116,10 +118,7 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="semester"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
+                                        <label htmlFor="semester" className="block text-sm font-medium text-gray-700">
                                             Semester
                                         </label>
                                         <select
@@ -130,19 +129,12 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         >
-                                            <option value="">
-                                                Select Semester
-                                            </option>
-                                            {semesters.map(
-                                                (semester, index) => (
-                                                    <option
-                                                        key={index}
-                                                        value={semester}
-                                                    >
-                                                        {semester}
-                                                    </option>
-                                                )
-                                            )}
+                                            <option value="">Select Semester</option>
+                                            {semesters.map((semester, index) => (
+                                                <option key={index} value={index + 1}>
+                                                    {semester}
+                                                </option>
+                                            ))}
                                         </select>
                                         {errors.semester && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -152,10 +144,7 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="name"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
+                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                                             Remarks
                                         </label>
                                         <input
@@ -174,10 +163,7 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="start_date"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
+                                        <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
                                             Start Date
                                         </label>
                                         <input
@@ -197,10 +183,7 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="end_date"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
+                                        <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
                                             End Date
                                         </label>
                                         <input
@@ -225,16 +208,11 @@ const Create = ({ auth }) => {
                                                 id="course_registration_open"
                                                 name="course_registration_open"
                                                 type="checkbox"
-                                                checked={
-                                                    data.course_registration_open
-                                                }
+                                                checked={data.course_registration_open}
                                                 onChange={handleChange}
                                                 className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                                             />
-                                            <label
-                                                htmlFor="course_registration_open"
-                                                className="ml-2 block text-sm font-medium text-gray-700"
-                                            >
+                                            <label htmlFor="course_registration_open" className="ml-2 block text-sm font-medium text-gray-700">
                                                 Open Course Registration
                                             </label>
                                         </div>
@@ -243,55 +221,41 @@ const Create = ({ auth }) => {
                                     {data.course_registration_open && (
                                         <>
                                             <div className="col-span-6 sm:col-span-3">
-                                                <label
-                                                    htmlFor="registration_start_date"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                >
+                                                <label htmlFor="registration_start_date" className="block text-sm font-medium text-gray-700">
                                                     Registration Start Date
                                                 </label>
                                                 <input
                                                     type="date"
                                                     id="registration_start_date"
                                                     name="registration_start_date"
-                                                    value={
-                                                        data.registration_start_date
-                                                    }
+                                                    value={data.registration_start_date}
                                                     onChange={handleChange}
                                                     className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     required
                                                 />
                                                 {errors.registration_start_date && (
                                                     <div className="text-red-600 text-sm mt-2">
-                                                        {
-                                                            errors.registration_start_date
-                                                        }
+                                                        {errors.registration_start_date}
                                                     </div>
                                                 )}
                                             </div>
 
                                             <div className="col-span-6 sm:col-span-3">
-                                                <label
-                                                    htmlFor="registration_end_date"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                >
+                                                <label htmlFor="registration_end_date" className="block text-sm font-medium text-gray-700">
                                                     Registration End Date
                                                 </label>
                                                 <input
                                                     type="date"
                                                     id="registration_end_date"
                                                     name="registration_end_date"
-                                                    value={
-                                                        data.registration_end_date
-                                                    }
+                                                    value={data.registration_end_date}
                                                     onChange={handleChange}
                                                     className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                     required
                                                 />
                                                 {errors.registration_end_date && (
                                                     <div className="text-red-600 text-sm mt-2">
-                                                        {
-                                                            errors.registration_end_date
-                                                        }
+                                                        {errors.registration_end_date}
                                                     </div>
                                                 )}
                                             </div>
@@ -299,24 +263,16 @@ const Create = ({ auth }) => {
                                     )}
                                 </div>
                             </div>
-                            <div className="px-4 py-3 text-right sm:px-6">
+                            <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                                 <button
                                     type="submit"
                                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     disabled={processing}
                                 >
-                                    Create
+                                    Create Semester
                                 </button>
                             </div>
                         </form>
-                    </div>
-                    <div className="px-4 py-3 text-left sm:px-6">
-                        <Link
-                            href={route("semesters.index")}
-                            className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Back to Semesters
-                        </Link>
                     </div>
                 </div>
             </div>
