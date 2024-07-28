@@ -13,8 +13,13 @@ class CreateCoursesTable extends Migration
             $table->string('name');
             $table->string('code')->unique();
             $table->integer('credit_hours');
-            $table->enum('type', ['practical', 'theory']); // Add this line
+            $table->integer('level');
+            $table->integer('semester');
+            $table->integer('theory_hours')->nullable();
+            $table->integer('practical_hours')->nullable();;
+            $table->integer('tutorial_hours')->nullable();;
             $table->text('description')->nullable();
+            $table->boolean('is_core')->default(true);
             $table->timestamps();
         });
     }
