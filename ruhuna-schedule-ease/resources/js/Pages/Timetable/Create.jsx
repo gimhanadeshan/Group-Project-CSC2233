@@ -2,6 +2,7 @@ import Authenticated from '@/Layouts/AuthenticatedLayout';
 import React, { useState } from 'react';
 import Select from 'react-select';
 import { useForm, Head } from '@inertiajs/react';
+import Popup from '@/Components/Popup';
 
 export default function Create({ auth, courses, lecturers, halls, semester }) {
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -10,10 +11,18 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
   const [selectedType, setSelectedType] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [settings, setSettings] = useState({
+    lunchTime: { start: '', end: '' },
+    lectureTime: { start: '', end: '' },
+    practicalTime: { start: '', end: '' },
+    freeTimeslots: [{ start: '', end: '', day: '' }],
+  });
 
   const { data, setData, post, processing } = useForm({
     timetable: [],
     semester_id: semester,
+    conditions:settings,
   });
 
   const courseOptions = courses.map((course) => ({
@@ -34,7 +43,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
     selectedCourse?.value.theory_hours ? { value: 'Theory', label: 'Theory' } : null,
     selectedCourse?.value.practical_hours ? { value: 'Practical', label: 'Practical' } : null,
     selectedCourse?.value.tutorial_hours ? { value: 'Tutorial', label: 'Tutorial' } : null,
-  ].filter(Boolean); // Remove null options
+  ].filter(Boolean);
 
   const handleAddToTable = (e) => {
     e.preventDefault();
@@ -55,7 +64,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
           { course: selectedCourse, lecturer: selectedLecturer, hall: selectedHall, type: selectedType },
         ];
         setTableData(newTableData);
-        setData('timetable', newTableData); // Update the form data
+        setData('timetable', newTableData);
         setSelectedCourse(null);
         setSelectedLecturer(null);
         setSelectedHall(null);
@@ -68,7 +77,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
   const handleRemoveFromTable = (index) => {
     const newTableData = tableData.filter((_, i) => i !== index);
     setTableData(newTableData);
-    setData('timetable', newTableData); // Update the form data
+    setData('timetable', newTableData);
   };
 
   const handleSubmit = (e) => {
@@ -84,10 +93,17 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
     }
   };
 
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+  };
+
+  const handleSaveSettings = (newSettings) => {
+    setSettings(newSettings);
+    setShowPopup(false);
+  };
+
   return (
-    <Authenticated
-      user={auth.user}
-    >
+    <Authenticated user={auth.user}>
       <Head title="TimeTable" />
       <div className="container mt-4 bg-white-900 text-white-100 p-4 rounded-lg shadow-lg">
         <h1 className="mb-4 text-2xl font-bold">Create Time table for {semester}</h1>
@@ -230,7 +246,13 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
               Add to Table
             </button>
           </div>
+          <div className="mb-4">
+            <button type="button" onClick={togglePopup} className="bg-yellow-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+              Advanced
+            </button>
+          </div>
           <div className="mt-4">
+          {showPopup && <Popup closePopup={togglePopup} saveSettings={handleSaveSettings} initialSettings={settings} />}
             {tableData.length > 0 && (
               <div>
                 <h2 className="mb-3 text-xl font-semibold">Selected Courses, Lecturers, Halls, and Types</h2>
@@ -274,6 +296,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
           </div>
         </form>
       </div>
+
     </Authenticated>
   );
 }
