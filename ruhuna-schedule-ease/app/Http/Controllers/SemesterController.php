@@ -99,6 +99,14 @@ class SemesterController extends Controller
         }
     }
 
+    public function show(Semester $semester)
+    {
+        return Inertia::render('Semesters/Show', [
+            'semester' => $semester,
+            'auth' => auth()->user(),
+        ]);
+    }
+
     public function destroy(Semester $semester)
     {
         try {
