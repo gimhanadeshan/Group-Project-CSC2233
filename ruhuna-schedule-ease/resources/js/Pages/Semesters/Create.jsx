@@ -12,10 +12,14 @@ const Create = ({ auth }) => {
         name: "",
         start_date: "",
         end_date: "",
+        registration_start_date: "",
+        registration_end_date: "",
+        course_registration_open: false,
     });
 
     const handleChange = (e) => {
-        setData(e.target.id, e.target.value);
+        const { id, value, type, checked } = e.target;
+        setData(id, type === "checkbox" ? checked : value);
     };
 
     const handleSubmit = (e) => {
@@ -70,6 +74,11 @@ const Create = ({ auth }) => {
                                                 </option>
                                             ))}
                                         </select>
+                                        {errors.academic_year && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.academic_year}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -99,6 +108,11 @@ const Create = ({ auth }) => {
                                                 </option>
                                             ))}
                                         </select>
+                                        {errors.level && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.level}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -130,6 +144,11 @@ const Create = ({ auth }) => {
                                                 )
                                             )}
                                         </select>
+                                        {errors.semester && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.semester}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -137,7 +156,7 @@ const Create = ({ auth }) => {
                                             htmlFor="name"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            Name
+                                            Remarks
                                         </label>
                                         <input
                                             type="text"
@@ -146,7 +165,6 @@ const Create = ({ auth }) => {
                                             value={data.name}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         />
                                         {errors.name && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -171,6 +189,11 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         />
+                                        {errors.start_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.start_date}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -189,7 +212,91 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         />
+                                        {errors.end_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.end_date}
+                                            </div>
+                                        )}
                                     </div>
+
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <div className="flex items-center">
+                                            <input
+                                                id="course_registration_open"
+                                                name="course_registration_open"
+                                                type="checkbox"
+                                                checked={
+                                                    data.course_registration_open
+                                                }
+                                                onChange={handleChange}
+                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                            />
+                                            <label
+                                                htmlFor="course_registration_open"
+                                                className="ml-2 block text-sm font-medium text-gray-700"
+                                            >
+                                                Open Course Registration
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {data.course_registration_open && (
+                                        <>
+                                            <div className="col-span-6 sm:col-span-3">
+                                                <label
+                                                    htmlFor="registration_start_date"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                >
+                                                    Registration Start Date
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="registration_start_date"
+                                                    name="registration_start_date"
+                                                    value={
+                                                        data.registration_start_date
+                                                    }
+                                                    onChange={handleChange}
+                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    required
+                                                />
+                                                {errors.registration_start_date && (
+                                                    <div className="text-red-600 text-sm mt-2">
+                                                        {
+                                                            errors.registration_start_date
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="col-span-6 sm:col-span-3">
+                                                <label
+                                                    htmlFor="registration_end_date"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                >
+                                                    Registration End Date
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="registration_end_date"
+                                                    name="registration_end_date"
+                                                    value={
+                                                        data.registration_end_date
+                                                    }
+                                                    onChange={handleChange}
+                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    required
+                                                />
+                                                {errors.registration_end_date && (
+                                                    <div className="text-red-600 text-sm mt-2">
+                                                        {
+                                                            errors.registration_end_date
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="px-4 py-3 text-right sm:px-6">
