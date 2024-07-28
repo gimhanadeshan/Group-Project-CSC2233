@@ -8,24 +8,23 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
   const [selectedSemesterNotIn, setSelectedSemesterNotIn] = useState(null);
   const semesterInOptions = semestersInTimeTable.map((semester) => ({
     value: semester,
-    label: `Level ${semester.level} - Semester ${semester.semester}`
+    label: `Level ${semester.level} - Semester ${semester.semester} - ${semester.academic_year}`
   }));
   const semesterNotInOptions = semestersNotInTimeTable.map((semester) => ({
     value: semester,
-    label: `Level ${semester.level} - Semester ${semester.semester}`
+    label: `Level ${semester.level} - Semester ${semester.semester} - ${semester.academic_year}`
   }));
 
   return (
-    <Authenticated
-      user={auth.user}
-      header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Manage TimeTables</h2>}
-    >
+    <Authenticated user={auth.user}>
       <Head title="TimeTable" />
       <div className="container mx-auto px-4 py-6">
         <div className="flex justify-between gap-6">
           {/* Create TimeTable Form */}
           <div className="w-full lg:w-1/2 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-center">Create a TimeTable</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
+              Create a TimeTable
+            </h2>
             <div className="mb-6">
               <Select
                 options={semesterNotInOptions}
@@ -34,6 +33,16 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
                 isClearable
                 className="basic-single"
                 classNamePrefix="select"
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: '#c7d2fe', // light blue for light mode
+                    primary: '#4f46e5', // indigo for light mode
+                    neutral0: theme.colors.neutral0 === '#fff' ? '#1f2937' : theme.colors.neutral0, // dark bg
+                    neutral80: theme.colors.neutral80 === '#333' ? '#e5e7eb' : theme.colors.neutral80 // light text for dark mode
+                  }
+                })}
               />
             </div>
             <div className="flex justify-center">
@@ -42,9 +51,9 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
                   href={route('timetables.create', {
                     level: selectedSemesterNotIn.value.level,
                     semester: selectedSemesterNotIn.value.semester,
-                    semester_id:selectedSemesterNotIn.value.id,
+                    semester_id: selectedSemesterNotIn.value.id,
                   })}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                  className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   Create
                 </Link>
@@ -54,7 +63,9 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
 
           {/* View TimeTable Form */}
           <div className="w-full lg:w-1/2 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4 text-center">View a TimeTable</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
+              View a TimeTable
+            </h2>
             <div className="mb-6">
               <Select
                 options={semesterInOptions}
@@ -63,6 +74,16 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
                 isClearable
                 className="basic-single"
                 classNamePrefix="select"
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: '#c7d2fe', // light blue for light mode
+                    primary: '#4f46e5', // indigo for light mode
+                    neutral0: theme.colors.neutral0 === '#fff' ? '#1f2937' : theme.colors.neutral0, // dark bg
+                    neutral80: theme.colors.neutral80 === '#333' ? '#e5e7eb' : theme.colors.neutral80 // light text for dark mode
+                  }
+                })}
               />
             </div>
             <div className="flex justify-center">
