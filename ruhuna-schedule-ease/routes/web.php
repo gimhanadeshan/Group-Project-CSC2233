@@ -14,6 +14,7 @@ use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CourseController;
 
 
 
@@ -34,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('semesters', SemesterController::class);
     Route::resource('timetables', TimeTableController::class);
     Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
+    Route::resource('courses', CourseController::class);
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
 });
