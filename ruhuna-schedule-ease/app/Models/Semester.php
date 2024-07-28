@@ -1,7 +1,5 @@
 <?php
 
-// app/Models/Semester.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +16,10 @@ class Semester extends Model
         'reference_number',
         'name',
         'start_date',
-        'end_date'
+        'end_date',
+        'registration_start_date',
+        'registration_end_date',
+        'course_registration_open'
     ];
 
     public static function generateReferenceNumber($level, $semester, $academic_year)
@@ -31,8 +32,9 @@ class Semester extends Model
 
         return 'L' . $numericLevel . 'S' . $numericSemester . $academic_year;
     }
+
     public function timetables()
     {
-        return $this->belongsTo(TimeTable::class, 'id');
+        return $this->hasMany(TimeTable::class, 'semester_id');
     }
 }
