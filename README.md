@@ -1,6 +1,5 @@
 
 ---
-
 # RUHUNA ScheduleEase
 
 RUHUNA ScheduleEase is an academic management system designed for the University of Ruhuna's Department of Computer Science. The system streamlines academic operations, including user account management, semester initialization, course registration, timetable generation, lecture scheduling, personalized dashboards, and automated notifications.
@@ -106,6 +105,9 @@ Contributions are welcome! Please read the [contributing guidelines](CONTRIBUTIN
 ## License
 
 RUHUNA ScheduleEase is free software: you can redistribute it and/or modify it under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+![design-a-logo-for-ruhunascheduleease-using-geometr-N5I_M9dWQ2SUsuFv8FRyHw-lqj0Q5ocSxiVR33lbvrROg](https://github.com/user-attachments/assets/4893cde4-c96a-48d9-be9a-3689fc7fb982)
+
 
 ---
 
