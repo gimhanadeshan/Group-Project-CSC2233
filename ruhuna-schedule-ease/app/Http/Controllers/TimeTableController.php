@@ -21,22 +21,22 @@ class TimeTableController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $semestersInTimeTable = Semester::whereIn('id', function($query) {
-            $query->select('semester_id')
-                  ->from('time_tables');
-        })->get();
+{
+    $semestersInTimeTable = Semester::whereIn('id', function($query) {
+        $query->select('semester_id')
+              ->from('time_tables');
+    })->orderBy('id')->get();
 
-        $semestersNotInTimeTable = Semester::whereNotIn('id', function($query) {
-            $query->select('semester_id')
-                  ->from('time_tables');
-        })->get();
+    $semestersNotInTimeTable = Semester::whereNotIn('id', function($query) {
+        $query->select('semester_id')
+              ->from('time_tables');
+    })->orderBy('id')->get();
 
-        return Inertia::render('TimeTable/Index', [
-            'semestersInTimeTable' => $semestersInTimeTable,
-            'semestersNotInTimeTable' => $semestersNotInTimeTable
-        ]);
-    }
+    return Inertia::render('TimeTable/Index', [
+        'semestersInTimeTable' => $semestersInTimeTable,
+        'semestersNotInTimeTable' => $semestersNotInTimeTable
+    ]);
+}
 
 
 
@@ -46,12 +46,12 @@ class TimeTableController extends Controller
     public function create(Request $request)
     {
         $level = $request->query('level');
-        $semester_id = $request->query('semester');
-        $courses = Course::where('level',$level)->where('semester',$semester_id)->get();
+        $semester = $request->query('semester');
+        $semester_id=$request->query('semester_id');
+        $courses = Course::where('level',$level)->where('semester',$semester)->get();
         $lecturers=User::where('role_id', 3)->get();
-        $semesters=Semester::all();
         $halls=LectureHall::all();
-        return Inertia::render('TimeTable/Create', ['courses' => $courses,'lecturers' =>$lecturers,'semesters' => $semesters,'halls'=>$halls]);
+        return Inertia::render('TimeTable/Create', ['courses' => $courses,'lecturers' =>$lecturers,'semester' => $semester_id,'halls'=>$halls,]);
     }
 
 
@@ -62,7 +62,7 @@ class TimeTableController extends Controller
 {
     // Get timetable data from the request
     $tableData = $request->input('timetable');
-
+    $semester = $request->input('semester_id');
     // Define the start and end time for the restricted period
     $restrictedStart = '12:00:00';
     $restrictedEnd = '13:00:00';
@@ -108,7 +108,7 @@ class TimeTableController extends Controller
                 'course' => $course['id'],
                 'hall_id' => $hall['id'],
                 'lecturer' => $lecturer['id'],
-                'semester_id' => 1,
+                'semester_id' => $semester,
                 'start_time' => $startTime,
                 'end_time' => $endTime,
                 'day_of_week' => $dayOfWeek,
@@ -124,7 +124,7 @@ class TimeTableController extends Controller
     }
 
     // Redirect to the showTimeTable route after storing the timetable entries
-    return $this->show(1);
+    return $this->show($semester);
 }
 
 private function findAvailableTimeSlot($duration, $existingEntries, $restrictedStart, $restrictedEnd, $daysOfWeek, $type)
@@ -207,7 +207,6 @@ private function findAvailableTimeSlot($duration, $existingEntries, $restrictedS
      */
     public function destroy(int $semester)
     {
-        error_log('destroying timetable for semester: ' . $semester);
         $timetables = TimeTable::where('semester_id', $semester)->get();
         foreach ($timetables as $timetable) {
             $timetable->delete();
