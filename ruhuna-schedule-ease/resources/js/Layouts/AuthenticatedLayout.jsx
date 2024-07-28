@@ -225,6 +225,7 @@ Filter according to role_Id
                                                 fill="currentColor"
                                                 viewBox="0 0 18 18"
                                             >
+                                                
                                                 <path
                                                     fill-rule="evenodd"
                                                     d="M12.512 8.72a2.46 2.46 0 0 1 3.479 0 2.461 2.461 0 0 1 0 3.479l-.004.005-1.094 1.08a.998.998 0 0 0-.194-.272l-3-3a1 1 0 0 0-.272-.193l1.085-1.1Zm-2.415 2.445L7.28 14.017a1 1 0 0 0-.289.702v2a1 1 0 0 0 1 1h2a1 1 0 0 0 .703-.288l2.851-2.816a.995.995 0 0 1-.26-.189l-3-3a.998.998 0 0 1-.19-.26Z"
@@ -262,11 +263,11 @@ Filter according to role_Id
                                                 User Management
                                             </span>
                                             <svg
-                                                className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                                class="w-3 h-3"
                                                 aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                fill="currentColor"
-                                                viewBox="0 0 18 18"
+                                                fill="none"
+                                                viewBox="0 0 10 6"
                                             >
                                                 <path
                                                     stroke="currentColor"
