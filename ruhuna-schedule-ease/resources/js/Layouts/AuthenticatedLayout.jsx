@@ -186,11 +186,7 @@ export default function Authenticated({ user, header, children, auth }) {
                                 </Link>
                             </li>
 
-                            {/* 
-
-Filter according to role_Id 
-
-*/}
+                          
 
                             {roleID == 1 && (
                                 <>
