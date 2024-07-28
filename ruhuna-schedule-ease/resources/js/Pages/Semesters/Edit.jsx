@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Inertia } from "@inertiajs/inertia";
+import React from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
@@ -12,10 +11,14 @@ const Edit = ({ auth, semester }) => {
         name: semester.name,
         start_date: semester.start_date,
         end_date: semester.end_date,
+        registration_start_date: semester.registration_start_date,
+        registration_end_date: semester.registration_end_date,
+        course_registration_open: semester.course_registration_open,
     });
 
     const handleChange = (e) => {
-        setData(e.target.id, e.target.value);
+        const { id, value, type, checked } = e.target;
+        setData(id, type === "checkbox" ? checked : value);
     };
 
     const handleSubmit = (e) => {
@@ -137,7 +140,7 @@ const Edit = ({ auth, semester }) => {
                                             htmlFor="name"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            Name
+                                            Remarks
                                         </label>
                                         <input
                                             type="text"
@@ -146,7 +149,6 @@ const Edit = ({ auth, semester }) => {
                                             value={data.name}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         />
                                         {errors.name && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -189,6 +191,71 @@ const Edit = ({ auth, semester }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         />
+                                    </div>
+
+                                    {data.course_registration_open && (
+                                        <>
+                                            <div className="col-span-6 sm:col-span-3">
+                                                <label
+                                                    htmlFor="registration_start_date"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                >
+                                                    Registration Start Date
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="registration_start_date"
+                                                    name="registration_start_date"
+                                                    value={
+                                                        data.registration_start_date
+                                                    }
+                                                    onChange={handleChange}
+                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="col-span-6 sm:col-span-3">
+                                                <label
+                                                    htmlFor="registration_end_date"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                >
+                                                    Registration End Date
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="registration_end_date"
+                                                    name="registration_end_date"
+                                                    value={
+                                                        data.registration_end_date
+                                                    }
+                                                    onChange={handleChange}
+                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                    required
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <div className="flex items-center">
+                                            <input
+                                                id="course_registration_open"
+                                                name="course_registration_open"
+                                                type="checkbox"
+                                                checked={
+                                                    data.course_registration_open
+                                                }
+                                                onChange={handleChange}
+                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                            />
+                                            <label
+                                                htmlFor="course_registration_open"
+                                                className="ml-2 block text-sm font-medium text-gray-700"
+                                            >
+                                                Open Course Registration
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
