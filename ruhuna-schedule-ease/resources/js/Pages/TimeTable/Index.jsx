@@ -41,7 +41,8 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
                 <Link
                   href={route('timetables.create', {
                     level: selectedSemesterNotIn.value.level,
-                    semester: selectedSemesterNotIn.value.semester
+                    semester: selectedSemesterNotIn.value.semester,
+                    semester_id:selectedSemesterNotIn.value.id,
                   })}
                   className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
                 >
