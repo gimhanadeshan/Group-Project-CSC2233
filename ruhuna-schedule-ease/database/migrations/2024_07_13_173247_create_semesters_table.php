@@ -17,9 +17,12 @@ return new class extends Migration
             $table->string('level');
             $table->string('semester');
             $table->string('reference_number')->unique();
-            $table->string('name');
+            $table->string('name')->nullable();;
             $table->date('start_date');
             $table->date('end_date');
+            $table->date('registration_start_date')->nullable();
+            $table->date('registration_end_date')->nullable();
+            $table->boolean('course_registration_open')->default(false);
             $table->timestamps();
         });
     }
