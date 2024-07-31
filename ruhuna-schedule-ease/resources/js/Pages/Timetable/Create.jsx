@@ -22,7 +22,12 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
   const { data, setData, post, processing } = useForm({
     timetable: [],
     semester_id: semester,
-    conditions:settings,
+    conditions: {
+        lunchTime: { start: '', end: '' },
+        lectureTime: { start: '', end: '' },
+        practicalTime: { start: '', end: '' },
+        freeTimeslots: [{ start: '', end: '', day: '' }],
+      },
   });
 
   const courseOptions = courses.map((course) => ({
@@ -99,6 +104,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
 
   const handleSaveSettings = (newSettings) => {
     setSettings(newSettings);
+    setData('conditions', newSettings); // Update the conditions field in the form data
     setShowPopup(false);
   };
 
@@ -296,7 +302,6 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
           </div>
         </form>
       </div>
-
     </Authenticated>
   );
 }
