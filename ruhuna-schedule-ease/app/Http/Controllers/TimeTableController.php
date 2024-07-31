@@ -54,7 +54,6 @@ class TimeTableController extends Controller
         if ($isAlreadyIn || !$semesterDetails ||
             $semesterDetails->level != $level ||
             $semesterDetails->semester != $semester) {
-            error_log('Semester is in the timetable');
             return redirect()->route('timetables.index');
         }
 
@@ -74,101 +73,126 @@ class TimeTableController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
+{
+    $tableData = $request->input('timetable');
+    $semester = $request->input('semester_id');
+    $condition = $request->input('conditions');
+    error_log(json_encode($tableData));
+
+    // Default conditions
+    $lunchTime = $condition['lunchTime'] ?? ['start' => '12:00', 'end' => '13:00'];
+    $lectureTime = $condition['lectureTime'] ?? ['start' => '08:00', 'end' => '14:00'];
+    $practicalTime = $condition['practicalTime'] ?? ['start' => '10:00', 'end' => '14:00'];
+    $freeTimeslots = $condition['freeTimeslots'] ?? [];
+
+    // Helper function to check time overlap
+    function isTimeOverlap($start1, $end1, $start2, $end2)
     {
-        $tableData = $request->input('timetable');
-        $semester = $request->input('semester_id');
+        return max($start1, $start2) < min($end1, $end2);
+    }
 
-        $restrictedStart = '12:00:00';
-        $restrictedEnd = '13:00:00';
-        $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    // Generate timetable slots
+    $weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    $currentDayIndex = 0;
+    $lastEndTime = null;
 
-        $existingEntries = [];
-        foreach ($daysOfWeek as $day) {
-            $existingEntries[$day] = TimeTable::where('day_of_week', $day)->get()->map(function ($entry) {
-                return [
-                    'start' => $entry->start_time,
-                    'end' => $entry->end_time,
-                    'type' => $entry->type,
-                ];
-            })->toArray();
+    foreach ($tableData as $entry) {
+        $type = $entry['type']['value'];
+        $hallId = $entry['hall']['value']['id'];
+        $courseId = $entry['course']['value']['id'];
+        $courseTheoryDuration=$entry['course']['value']['theory_hours'];
+        $coursePracticalDuration=$entry['course']['value']['practical_hours'];
+        $courseTutorialDuration=$entry['course']['value']['tutorial_hours'];
+        $lecturerId = $entry['lecturer']['value']['id'];
+
+        // Determine start and end times based on type
+        if ($type == 'Theory' || $type == 'Tutorial') {
+            $startTime = $lectureTime['start'];
+            $endTime = $lectureTime['end'];
+        } elseif ($type == 'Practical') {
+            $startTime = $practicalTime['start'];
+            $endTime = $practicalTime['end'];
+        } else {
+            return response()->json(['error' => 'Unknown type'], 400);
         }
 
-        foreach ($tableData as $entry) {
-            $course = $entry['course']['value'];
-            $lecturer = $entry['lecturer']['value'];
-            $hall = $entry['hall']['value'];
-            $type = $entry['type']['value'];
+        // Adjust times to fit within the available slots
+        if ($lastEndTime && $lastEndTime >= $startTime) {
+            $startTime = $lastEndTime;
+        }
+        $endTime = date('H:i', strtotime($startTime) + 60 * 60); // Assume each slot is 1 hour
 
-            $duration = match ($type) {
-                'Theory' => $course['theory_hours'] * 60,
-                'Practical' => $course['practical_hours'] * 60,
-                'Tutorial' => $course['tutorial_hours'] * 60,
-            };
+        // Check if the current day is full, move to the next day
+        if ($currentDayIndex >= count($weekDays)) {
+            return response()->json(['error' => 'Insufficient days to schedule all entries'], 400);
+        }
 
-            $timeSlot = $this->findAvailableTimeSlot($duration, $existingEntries, $restrictedStart, $restrictedEnd, $daysOfWeek, $type);
+        $dayOfWeek = $weekDays[$currentDayIndex];
+        $lastEndTime = $endTime;
 
-            if ($timeSlot) {
-                $startTime = $timeSlot['start'];
-                $endTime = $timeSlot['end'];
-                $dayOfWeek = $timeSlot['day_of_week'];
+        // Check lunch time condition
+        if (isTimeOverlap($startTime, $endTime, $lunchTime['start'], $lunchTime['end'])) {
+            $currentDayIndex++;
+            $lastEndTime = null;
+            continue; // Skip this slot and try the next day
+        }
 
-                TimeTable::create([
-                    'course' => $course['id'],
-                    'hall_id' => $hall['id'],
-                    'lecturer' => $lecturer['id'],
-                    'semester_id' => $semester,
-                    'start_time' => $startTime,
-                    'end_time' => $endTime,
-                    'day_of_week' => $dayOfWeek,
-                    'type' => $type,
-                ]);
+        // Check free timeslots condition
+        $skipSlot = false;
+        foreach ($freeTimeslots as $slot) {
+            if ($dayOfWeek == $slot['day'] && isTimeOverlap($startTime, $endTime, $slot['start'], $slot['end'])) {
+                $skipSlot = true;
+                break;
+            }
+        }
+        if ($skipSlot) {
+            $currentDayIndex++;
+            $lastEndTime = null;
+            continue; // Skip this slot and try the next day
+        }
 
-                $existingEntries[$dayOfWeek][] = ['start' => $startTime, 'end' => $endTime, 'type' => $type];
-            } else {
-                return response()->json(['error' => 'No available time slot for ' . $course['name']], 400);
+        // Check for overlapping lectures and continuous same lectures
+        $existingEntries = TimeTable::where('day_of_week', $dayOfWeek)
+            ->where('semester_id', $semester)
+            ->get();
+
+        foreach ($existingEntries as $existing) {
+            if (isTimeOverlap($startTime, $endTime, $existing->start_time, $existing->end_time)) {
+                return response()->json(['error' => 'Time slot overlaps with another lecture'], 400);
+            }
+
+            if ($existing->type == $type && $existing->course == $courseId &&
+                ($existing->start_time == $endTime || $existing->end_time == $startTime)) {
+                return response()->json(['error' => 'Same lecture cannot be continuous'], 400);
+            }
+
+            if ($existing->hall_id == $hallId && isTimeOverlap($startTime, $endTime, $existing->start_time, $existing->end_time)) {
+                return response()->json(['error' => 'Hall is already in use'], 400);
             }
         }
 
-        return $this->show($semester);
-    }
+        // Store timetable entry
+        TimeTable::create([
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'type' => $type,
+            'day_of_week' => $dayOfWeek,
+            'course' => $courseId,
+            'hall_id' => $hallId,
+            'lecturer' => $lecturerId,
+            'semester_id' => $semester,
+        ]);
 
-    private function findAvailableTimeSlot($duration, $existingEntries, $restrictedStart, $restrictedEnd, $daysOfWeek, $type)
-    {
-        $dayStart = '08:00:00';
-        $dayEnd = '16:00:00';
-        $interval = 30; // in minutes
-
-        foreach ($daysOfWeek as $day) {
-            $currentStart = $dayStart;
-
-            while (strtotime($currentStart) + $duration * 60 <= strtotime($dayEnd)) {
-                $currentEnd = date('H:i:s', strtotime($currentStart) + $duration * 60);
-
-                if ($currentStart < $restrictedEnd && $currentEnd > $restrictedStart) {
-                    $currentStart = date('H:i:s', strtotime($restrictedEnd) + $interval * 60);
-                    continue;
-                }
-
-                $overlap = false;
-                if (isset($existingEntries[$day])) {
-                    foreach ($existingEntries[$day] as $entry) {
-                        if ($currentStart < $entry['end'] && $currentEnd > $entry['start'] && $entry['type'] == $type) {
-                            $overlap = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!$overlap) {
-                    return ['start' => $currentStart, 'end' => $currentEnd, 'day_of_week' => $day];
-                }
-
-                $currentStart = date('H:i:s', strtotime($currentStart) + $interval * 60);
-            }
+        // Prepare for the next slot
+        if ($endTime >= $lectureTime['end']) {
+            $currentDayIndex++;
+            $lastEndTime = null;
         }
-
-        return null; // No suitable time slot found
     }
+
+    return $this->show($semester);
+}
+
 
     /**
      * Display the specified resource.
