@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import { useForm, Head } from '@inertiajs/react';
 
-export default function Create({ auth, courses, lecturers, halls }) {
+export default function Create({ auth, courses, lecturers, halls, semester }) {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLecturer, setSelectedLecturer] = useState(null);
   const [selectedHall, setSelectedHall] = useState(null);
@@ -13,6 +13,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
 
   const { data, setData, post, processing } = useForm({
     timetable: [],
+    semester_id: semester,
   });
 
   const courseOptions = courses.map((course) => ({
@@ -64,6 +65,12 @@ export default function Create({ auth, courses, lecturers, halls }) {
     }
   };
 
+  const handleRemoveFromTable = (index) => {
+    const newTableData = tableData.filter((_, i) => i !== index);
+    setTableData(newTableData);
+    setData('timetable', newTableData); // Update the form data
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (tableData.length === 0) {
@@ -80,14 +87,13 @@ export default function Create({ auth, courses, lecturers, halls }) {
   return (
     <Authenticated
       user={auth.user}
-      header={<h2 className="font-semibold text-xl text-white-200 leading-tight">Create</h2>}
     >
       <Head title="TimeTable" />
       <div className="container mt-4 bg-white-900 text-white-100 p-4 rounded-lg shadow-lg">
-        <h1 className="mb-4 text-2xl font-bold">TimeTable Create</h1>
+        <h1 className="mb-4 text-2xl font-bold">Create Time table for {semester}</h1>
         <form onSubmit={handleSubmit}>
-          <div className="row mb-3">
-            <div className="col-md-6 mb-3">
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            <div>
               <h2 className="form-label text-lg">Select a Course</h2>
               <Select
                 options={courseOptions}
@@ -120,7 +126,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
               />
             </div>
             {selectedCourse && typeOptions.length > 0 && (
-              <div className="col-md-6 mb-3">
+              <div>
                 <h2 className="form-label text-lg">Select a Type</h2>
                 <Select
                   options={typeOptions}
@@ -153,7 +159,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
                 />
               </div>
             )}
-            <div className="col-md-6 mb-3">
+            <div>
               <h2 className="form-label text-lg">Select a Lecturer</h2>
               <Select
                 options={lecturerOptions}
@@ -185,7 +191,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
                 }}
               />
             </div>
-            <div className="col-md-6 mb-3">
+            <div>
               <h2 className="form-label text-lg">Select a Hall</h2>
               <Select
                 options={hallOptions}
@@ -218,9 +224,9 @@ export default function Create({ auth, courses, lecturers, halls }) {
               />
             </div>
           </div>
-          {error && <div className="alert alert-danger bg-red-600 text-white p-2 rounded">{error}</div>}
+          {error && <div className="text-red-600 hover:text-red-700 focus:outline-none">{error}</div>}
           <div className="mb-4">
-            <button onClick={handleAddToTable} className="btn btn-primary bg-blue-600 text-white hover:bg-blue-700" disabled={processing}>
+            <button onClick={handleAddToTable} className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled={processing}>
               Add to Table
             </button>
           </div>
@@ -235,6 +241,7 @@ export default function Create({ auth, courses, lecturers, halls }) {
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Lecturer</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Hall</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white-900 divide-y divide-white-700">
@@ -244,15 +251,26 @@ export default function Create({ auth, courses, lecturers, halls }) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.lecturer.label}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.hall.value.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.type.label}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">
+                          <button
+                            type="button"
+                            className="text-red-600 hover:text-red-700 focus:outline-none"
+                            onClick={() => handleRemoveFromTable(index)}
+                          >
+                            Remove
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
-            <button type="submit" className="btn btn-success bg-green-600 text-white hover:bg-green-700 mt-3" disabled={processing}>
-              Continue to Proceed
-            </button>
+            <div className="flex justify-end w-full">
+              <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" disabled={processing}>
+                Continue to Proceed
+              </button>
+            </div>
           </div>
         </form>
       </div>

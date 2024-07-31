@@ -126,8 +126,8 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
         <AuthenticatedLayout user={auth.user}>
             <Head title="Create Users" />
 
-            <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold mb-6">Create Users</h1>
+            <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create Users</h1>
                 <Link
                     href={route("users.createFromImport")}
                     className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -151,9 +151,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
 
                 <form onSubmit={submit}>
                     <div className="border rounded p-4 mb-6">
-                        <h2 className="text-xl font-bold mb-4">
-                            Common Details
-                        </h2>
+                        <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Common Details</h2>
 
                         <div className="grid grid-cols-4 gap-4">
                             <div>
@@ -163,7 +161,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                     name="role_id"
                                     value={commonData.role_id}
                                     onChange={handleCommonInputChange}
-                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                    className="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                                     required
                                 >
                                     <option value="">Select Role</option>
@@ -180,10 +178,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                             </div>
 
                             <div>
-                                <InputLabel
-                                    htmlFor="password"
-                                    value="Temporary Password"
-                                />
+                                <InputLabel htmlFor="password" value="Temporary Password" />
                                 <TextInput
                                     type="password"
                                     id="password"
@@ -202,71 +197,47 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                             {roleRequiresAcademicInfo && (
                                 <>
                                     <div>
-                                        <InputLabel
-                                            htmlFor="academic_year"
-                                            value="Academic Year"
-                                        />
+                                        <InputLabel htmlFor="academic_year" value="Academic Year" />
                                         <select
                                             id="academic_year"
                                             name="academic_year"
                                             value={commonData.academic_year}
                                             onChange={handleCommonInputChange}
-                                            className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                            className="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                                             required
                                         >
-                                            <option value="">
-                                                Select Academic Year
-                                            </option>
+                                            <option value="">Select Academic Year</option>
                                             {yearOptions.map((option) => (
-                                                <option
-                                                    key={option.value}
-                                                    value={option.value}
-                                                >
+                                                <option key={option.value} value={option.value}>
                                                     {option.label}
                                                 </option>
                                             ))}
                                         </select>
                                         <InputError
-                                            message={
-                                                errors[
-                                                    "commonData.academic_year"
-                                                ]
-                                            }
+                                            message={errors["commonData.academic_year"]}
                                             className="mt-2"
                                         />
                                     </div>
 
                                     <div>
-                                        <InputLabel
-                                            htmlFor="degree_program_id"
-                                            value="Degree Program"
-                                        />
+                                        <InputLabel htmlFor="degree_program_id" value="Degree Program" />
                                         <select
                                             id="degree_program_id"
                                             name="degree_program_id"
                                             value={commonData.degree_program_id}
                                             onChange={handleCommonInputChange}
-                                            className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                            className="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                                             required
                                         >
-                                            <option value="">
-                                                Select Degree Program
-                                            </option>
+                                            <option value="">Select Degree Program</option>
                                             {degreePrograms.map((program) => (
-                                                <option
-                                                    key={program.id}
-                                                    value={program.id}
-                                                >
+                                                <option key={program.id} value={program.id}>
                                                     {program.name}
                                                 </option>
                                             ))}
                                         </select>
                                         <InputError
-                                            message={
-                                                errors[
-                                                    "commonData.degree_program_id"
-                                                ]
-                                            }
+                                            message={errors["commonData.degree_program_id"]}
                                             className="mt-2"
                                         />
                                     </div>
@@ -277,103 +248,66 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
 
                     <div className="space-y-4">
                         <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white border">
+                            <table className="min-w-full bg-white dark:bg-gray-800 border dark:border-gray-700">
                                 <thead>
                                     <tr>
-                                        <th className="px-4 py-2 border">
-                                            Name
-                                        </th>
-                                        <th className="px-4 py-2 border">
-                                            Email
-                                        </th>
-                                        <th className="px-4 py-2 border">
-                                            Registration No
-                                        </th>
-                                        <th className="px-4 py-2 border">
-                                            Actions
-                                        </th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Name</th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Email</th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Registration No</th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {users.map((user, index) => (
-                                        <tr key={index} className="border-t">
-                                            <td className="px-4 py-2 border">
+                                        <tr key={index} className="border-t dark:border-gray-700">
+                                            <td className="px-4 py-2 border dark:border-gray-700">
                                                 <TextInput
                                                     name="name"
                                                     value={user.name}
-                                                    onChange={(e) =>
-                                                        handleInputChange(
-                                                            index,
-                                                            e
-                                                        )
-                                                    }
+                                                    onChange={(e) => handleInputChange(index, e)}
                                                     className="mt-1 block w-full"
                                                     autoComplete="name"
                                                     required
                                                 />
                                                 <InputError
-                                                    message={
-                                                        errors[
-                                                            `users.${index}.name`
-                                                        ]
-                                                    }
+                                                    message={errors[`users.${index}.name`]}
                                                     className="mt-2"
                                                 />
                                             </td>
-                                            <td className="px-4 py-2 border">
+                                            <td className="px-4 py-2 border dark:border-gray-700">
                                                 <TextInput
                                                     type="email"
                                                     name="email"
                                                     value={user.email}
-                                                    onChange={(e) =>
-                                                        handleInputChange(
-                                                            index,
-                                                            e
-                                                        )
-                                                    }
+                                                    onChange={(e) => handleInputChange(index, e)}
                                                     className="mt-1 block w-full"
                                                     autoComplete="username"
                                                     required
                                                 />
                                                 <InputError
-                                                    message={
-                                                        errors[
-                                                            `users.${index}.email`
-                                                        ]
-                                                    }
+                                                    message={errors[`users.${index}.email`]}
                                                     className="mt-2"
                                                 />
                                             </td>
-                                            <td className="px-4 py-2 border">
+                                            <td className="px-4 py-2 border dark:border-gray-700">
                                                 <TextInput
                                                     name="registration_no"
                                                     value={user.registration_no}
-                                                    onChange={(e) =>
-                                                        handleInputChange(
-                                                            index,
-                                                            e
-                                                        )
-                                                    }
+                                                    onChange={(e) => handleInputChange(index, e)}
                                                     className="mt-1 block w-full"
                                                     autoComplete="registration_no"
                                                     required
                                                 />
                                                 <InputError
-                                                    message={
-                                                        errors[
-                                                            `users.${index}.registration_no`
-                                                        ]
-                                                    }
+                                                    message={errors[`users.${index}.registration_no`]}
                                                     className="mt-2"
                                                 />
                                             </td>
-                                            <td className="px-4 py-2 border">
+                                            <td className="px-4 py-2 border dark:border-gray-700">
                                                 <button
                                                     type="button"
-                                                    onClick={() =>
-                                                        removeUser(index)
-                                                    }
-                                                    className="text-red-600 hover:text-red-700 focus:outline-none"
+                                                    onClick={() => removeUser(index)}
+                                                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 focus:outline-none"
                                                 >
                                                     Remove
                                                 </button>
