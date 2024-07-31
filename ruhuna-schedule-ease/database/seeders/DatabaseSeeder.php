@@ -35,20 +35,22 @@ class DatabaseSeeder extends Seeder
             'role_id'=>1,
 
         ]);
-        User::factory()->create([
-
-            'name' => 'Lecturer',
-            'email' => 'lecturer@example.com',
-            'registration_no'=>'Lecturer',
-            'role_id'=>3,
-           
-        ]);
+        
         User::factory()->create([
 
             'name' => 'Student',
             'email' => 'student@example.com',
             'registration_no'=>'Student',
             'role_id'=>2,
+           
+        ]);
+
+        User::factory()->create([
+
+            'name' => 'Lecturer',
+            'email' => 'lecturer@example.com',
+            'registration_no'=>'Lecturer',
+            'role_id'=>3,
            
         ]);
 

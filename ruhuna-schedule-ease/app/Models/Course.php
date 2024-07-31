@@ -21,4 +21,9 @@ class Course extends Model
         'level',
         'semester',
     ];
+
+    public function registrations()
+    {
+        return $this->hasMany(CourseRegistration::class);
+    }
 }
