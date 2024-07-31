@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([LectureHallSeeder::class]);
         $this->call([CourseSeeder::class]);
         $this->call([SemesterSeeder::class]);
+        $this->call([EventsSeeder::class]);
 
         User::factory()->create([
 

@@ -37,6 +37,12 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
     Route::resource('courses', CourseController::class);
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::put('/events/{id}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
+
+
 
 });
 
