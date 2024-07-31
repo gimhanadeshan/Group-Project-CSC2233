@@ -10,27 +10,27 @@ class LectureHallController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('read_lecture_hall', $request->user());
+
         $lectureHalls = LectureHall::all();
         $permissions = $request->user()->permissions()->pluck('name');
-        if (!($request->user())->hasPermissionTo('read_lecture_hall')) {
-            abort(403, 'Unauthorized action.');
-        }
-        return Inertia::render('LectureHalls/Index', ['lectureHalls' => $lectureHalls ,'permissions' => $permissions,]);
+
+        return Inertia::render('LectureHalls/Index', [
+            'lectureHalls' => $lectureHalls,
+            'permissions' => $permissions,
+        ]);
     }
 
     public function create(Request $request)
-    {   
-        if (!($request->user())->hasPermissionTo('create_lecture_hall')) {
-            abort(403, 'Unauthorized action.');
-        }
+    {
+        $this->authorize('create_lecture_hall', $request->user());
+
         return Inertia::render('LectureHalls/Create');
     }
 
     public function store(Request $request)
     {
-        if (!($request->user())->hasPermissionTo('create_lecture_hall')) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('create_lecture_hall', $request->user());
 
         $request->validate([
             'name' => 'required',
@@ -43,18 +43,14 @@ class LectureHallController extends Controller
 
     public function edit(Request $request, LectureHall $lectureHall)
     {
-        if (!($request->user())->hasPermissionTo('edit_lecture_hall')) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('update_lecture_hall', $request->user());
 
         return Inertia::render('LectureHalls/Edit', ['lectureHall' => $lectureHall]);
     }
 
     public function update(Request $request, LectureHall $lectureHall)
     {
-        if (!($request->user())->hasPermissionTo('edit_lecture_hall')) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('update_lecture_hall', $request->user());
 
         $request->validate([
             'name' => 'required',
@@ -67,11 +63,16 @@ class LectureHallController extends Controller
 
     public function destroy(Request $request, LectureHall $lectureHall)
     {
-        if (!($request->user())->hasPermissionTo('delete_lecture_hall')) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('delete_lecture_hall', $request->user());
 
         $lectureHall->delete();
         return redirect()->route('lecture-halls.index');
+    }
+
+    private function authorize($permission, $user)
+    {
+        if (!$user->hasPermissionTo($permission)) {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }
