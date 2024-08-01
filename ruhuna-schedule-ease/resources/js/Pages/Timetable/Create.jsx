@@ -2,6 +2,7 @@ import Authenticated from '@/Layouts/AuthenticatedLayout';
 import React, { useState } from 'react';
 import Select from 'react-select';
 import { useForm, Head } from '@inertiajs/react';
+import Popup from '@/Components/Popup';
 
 export default function Create({ auth, courses, lecturers, halls, semester }) {
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -10,10 +11,23 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
   const [selectedType, setSelectedType] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [settings, setSettings] = useState({
+    lunchTime: { start: '', end: '' },
+    lectureTime: { start: '', end: '' },
+    practicalTime: { start: '', end: '' },
+    freeTimeslots: [{ start: '', end: '', day: '' }],
+  });
 
-  const { data, setData, post, processing } = useForm({
+  const { data, setData, post, processing,errors } = useForm({
     timetable: [],
     semester_id: semester,
+    conditions: {
+        lunchTime: { start: '', end: '' },
+        lectureTime: { start: '', end: '' },
+        practicalTime: { start: '', end: '' },
+        freeTimeslots: [{ start: '', end: '', day: '' }],
+      },
   });
 
   const courseOptions = courses.map((course) => ({
@@ -34,7 +48,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
     selectedCourse?.value.theory_hours ? { value: 'Theory', label: 'Theory' } : null,
     selectedCourse?.value.practical_hours ? { value: 'Practical', label: 'Practical' } : null,
     selectedCourse?.value.tutorial_hours ? { value: 'Tutorial', label: 'Tutorial' } : null,
-  ].filter(Boolean); // Remove null options
+  ].filter(Boolean);
 
   const handleAddToTable = (e) => {
     e.preventDefault();
@@ -55,7 +69,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
           { course: selectedCourse, lecturer: selectedLecturer, hall: selectedHall, type: selectedType },
         ];
         setTableData(newTableData);
-        setData('timetable', newTableData); // Update the form data
+        setData('timetable', newTableData);
         setSelectedCourse(null);
         setSelectedLecturer(null);
         setSelectedHall(null);
@@ -68,7 +82,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
   const handleRemoveFromTable = (index) => {
     const newTableData = tableData.filter((_, i) => i !== index);
     setTableData(newTableData);
-    setData('timetable', newTableData); // Update the form data
+    setData('timetable', newTableData);
   };
 
   const handleSubmit = (e) => {
@@ -84,17 +98,40 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
     }
   };
 
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+  };
+
+  const handleSaveSettings = (newSettings) => {
+    setSettings(newSettings);
+    setData('conditions', newSettings); // Update the conditions field in the form data
+    setShowPopup(false);
+  };
+  const renderErrors = () => {
+    if (!Object.keys(errors).length) return null;
+
+    return (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong className="font-bold">Whoops! Something went wrong.</strong>
+            <ul className="mt-3 list-disc list-inside text-sm">
+                {Object.values(errors).map((error, index) => (
+                    <li key={index}>{error}</li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
   return (
-    <Authenticated
-      user={auth.user}
-    >
+    <Authenticated user={auth.user}>
       <Head title="TimeTable" />
-      <div className="container mt-4 bg-white-900 text-white-100 p-4 rounded-lg shadow-lg">
-        <h1 className="mb-4 text-2xl font-bold">Create Time table for {semester}</h1>
+      <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+      {renderErrors()}
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create Time table for {semester}</h1>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-3">
             <div>
-              <h2 className="form-label text-lg">Select a Course</h2>
+              <h2 className="form-label text-lg dark:text-gray-100">Select a Course</h2>
               <Select
                 options={courseOptions}
                 value={selectedCourse}
@@ -127,7 +164,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
             </div>
             {selectedCourse && typeOptions.length > 0 && (
               <div>
-                <h2 className="form-label text-lg">Select a Type</h2>
+                <h2 className="form-label text-lg dark:text-gray-100">Select a Type</h2>
                 <Select
                   options={typeOptions}
                   value={selectedType}
@@ -160,7 +197,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
               </div>
             )}
             <div>
-              <h2 className="form-label text-lg">Select a Lecturer</h2>
+              <h2 className="form-label text-lg dark:text-gray-100">Select a Lecturer</h2>
               <Select
                 options={lecturerOptions}
                 value={selectedLecturer}
@@ -192,7 +229,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
               />
             </div>
             <div>
-              <h2 className="form-label text-lg">Select a Hall</h2>
+              <h2 className="form-label text-lg dark:text-gray-100">Select a Hall</h2>
               <Select
                 options={hallOptions}
                 value={selectedHall}
@@ -230,28 +267,34 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
               Add to Table
             </button>
           </div>
+          <div className="mb-4">
+            <button type="button" onClick={togglePopup} className="bg-yellow-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+              Advanced
+            </button>
+          </div>
           <div className="mt-4">
+          {showPopup && <Popup closePopup={togglePopup} saveSettings={handleSaveSettings} initialSettings={settings} />}
             {tableData.length > 0 && (
               <div>
-                <h2 className="mb-3 text-xl font-semibold">Selected Courses, Lecturers, Halls, and Types</h2>
+                <h2 className="mb-3 text-xl font-semibold dark:text-gray-100">Selected Courses, Lecturers, Halls, and Types</h2>
                 <table className="min-w-full divide-y divide-white-700">
                   <thead className="bg-white-800">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Course</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Lecturer</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Hall</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Type</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider">Action</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Course</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Lecturer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Hall</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Action</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white-900 divide-y divide-white-700">
                     {tableData.map((entry, index) => (
                       <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white-100">{entry.course.label}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.lecturer.label}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.hall.value.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">{entry.type.label}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white-100 dark:text-gray-100">{entry.course.label}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry.lecturer.label}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry.hall.value.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry.type.label}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">
                           <button
                             type="button"
                             className="text-red-600 hover:text-red-700 focus:outline-none"
