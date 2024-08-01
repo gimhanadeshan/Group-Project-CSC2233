@@ -70,12 +70,12 @@ export default function Index({ users, auth, roles, degreePrograms }) {
                 <h1 className="text-2xl font-bold mb-6">User Management</h1>
 
                 <div className="flex justify-between mb-4">
-                    <Link
+                    <a
                         href={route("users.create")}
                         className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                         Create New User
-                    </Link>
+                    </a>
 
                     <button
                         onClick={handleExport}
