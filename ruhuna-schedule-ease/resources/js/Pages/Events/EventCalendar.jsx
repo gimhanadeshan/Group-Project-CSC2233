@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 
 
@@ -19,22 +20,17 @@ moment.updateLocale('en', {
 const minTime = new Date(1970, 1, 1, 8, 0); // 8:00 AM
 const maxTime = new Date(1970, 1, 1, 19, 0); // 6:00 PM
 
-const TimeTable = ({ allevents})=> {
+const TimeTable = ({ allevents,auth})=> {
 
 
 
   const [events, setEvents] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [eventTitle, setEventTitle] = useState('');
-  const [selectEvent, setSelectEvent] = useState(null);
-//console.log(Allevents);
 
 
   useEffect(() => {
    
    if(allevents){
-    console.log('okokok')
+    console.log('Events Fetched!')
       const parsedEvents = allevents.map(event => ({
           ...event,
           start: new Date(event.start),
@@ -50,55 +46,12 @@ const TimeTable = ({ allevents})=> {
     }
   }, [allevents]);
 
-  const handleSelectSlot = (slotInfo) => {
-    setShowModal(true);
-    setSelectedDate(slotInfo.start);
-    setSelectEvent(null);
-  };
 
-  const handleSelectedEvent = (event) => {
-    setShowModal(true);
-    setSelectEvent(event);
-    setEventTitle(event.title);
-  };
 
-  const saveEvent = () => {
-    if (eventTitle && selectedDate) {
-      if (selectEvent) {
-        const updatedEvent = { ...selectEvent, title: eventTitle };
-        const updatedEvents = events.map((event) =>
-          event === selectEvent ? updatedEvent : event
-        );
-        setEvents(updatedEvents);
-      } else {
-        const newEvent = {
-          title: eventTitle,
-          start: selectedDate,
-          end: moment(selectedDate)
-            .add(2, "hours")
-            .toDate(),
-        };
-        setEvents([...events, newEvent]);
-      }
-      setShowModal(false);
-      setEventTitle("");
-      setSelectEvent(null);
-    }
-  };
-
-  const deleteEvent = () => {
-    if (selectEvent) {
-      const updatedEvents = events.filter((event) => event !== selectEvent);
-      setEvents(updatedEvents);
-      setShowModal(false);
-      setEventTitle('');
-      setSelectEvent(null);
-    }
-  };
   const CustomEvent = ({ event }) => {
     return (
       <span>
-        <strong>{event.subject_code}</strong>
+        <strong>{event.event_title}</strong>
         <br />
         <em>{event.location}</em>
       </span>
@@ -107,8 +60,10 @@ const TimeTable = ({ allevents})=> {
  
   return (
 
-    <>
-      
+    <AuthenticatedLayout
+      user={auth.user}
+    >
+     
       <div style={{ height: '800px' }}>
         <Calendar
           localizer={localizer}
@@ -125,11 +80,10 @@ const TimeTable = ({ allevents})=> {
           components={{
             event: CustomEvent
           }}
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectedEvent}
+      
         />
 
-        {showModal && (
+        {/* {showModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:max-w-lg">
               <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -143,11 +97,9 @@ const TimeTable = ({ allevents})=> {
                     <button
                       type="button"
                       className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-                      onClick={() => {
-                        setShowModal(false);
-                        setEventTitle("");
-                        setSelectEvent(null);
-                      }}
+                      //onClick=
+                        
+                      
                     >
                       <svg
                         className="w-5 h-5"
@@ -173,7 +125,7 @@ const TimeTable = ({ allevents})=> {
                     className="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     id="eventTitle"
                     value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
+                    //onChange={(e) => setEventTitle(e.target.value)}
                   />
                 </div>
               </div>
@@ -197,9 +149,11 @@ const TimeTable = ({ allevents})=> {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
-    </>
+
+    
+    </AuthenticatedLayout>
   );
 }
 

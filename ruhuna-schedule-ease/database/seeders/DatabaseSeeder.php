@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->count(30)->create();
 
-
+        
        
 
 

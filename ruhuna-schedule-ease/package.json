@@ -20,10 +20,17 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/react": "^6.1.15",
+        "@fullcalendar/timegrid": "^6.1.15",
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
         "react-beautiful-dnd": "^13.1.1",
+        "react-big-calendar": "^1.13.1",
         "react-csv": "^2.2.2",
+        "react-modal": "^3.16.1",
         "react-select": "^5.8.0"
     }
 }

@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Event;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class EventController extends Controller
+class EventRegistrationController extends Controller
 {
-    public function index()
-    {
+    public function index(){
+
         $allevents = Event::all();
-        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-        
+        return Inertia::render('Events/Index', ['allevents' => $allevents]);
     }
 
     public function store(Request $request)
@@ -32,7 +30,8 @@ class EventController extends Controller
 
         Event::create($data);
 
-        return redirect()->back()->with('success', 'Event created successfully');
+        //return redirect()->back()->with('success', 'Event created successfully');
+        return back();
     }
 
     public function update(Request $request, $id)
@@ -57,12 +56,11 @@ class EventController extends Controller
 
     public function destroy($id)
     {
-        try {
+       
             $event = Event::findOrFail($id);
             $event->delete();
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete event.'], 500);
-        }
+            //return redirect()->route('events-registration.index');
+            return back();
+       
     }
 }
