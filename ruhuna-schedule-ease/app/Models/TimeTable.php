@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TimeTable extends Model
 {
     use HasFactory;
-
+    //bbbbbbb
     // Specify the table if it's different from the default
     protected $table = 'time_tables';
 
