@@ -1,29 +1,15 @@
 import React from 'react';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
 const Index = ({ auth, permissions }) => {
-    const { delete: destroy } = useForm();
-
-    const handleDelete = (id) => {
-        if (confirm("Are you sure you want to delete this permission?")) {
-            destroy(route("permissions.destroy", id));
-        }
-    };
-
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Permissions" />
 
             <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Permissions</h1>
-                <Link
-                    href={route("permissions.create")}
-                    className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                    Create New Permission
-                </Link>
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
@@ -34,11 +20,14 @@ const Index = ({ auth, permissions }) => {
                                 >
                                     Name
                                 </th>
-                                <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Edit</span>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                    Module Name
                                 </th>
                                 <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Delete</span>
+                                    <span className="sr-only">Edit</span>
                                 </th>
                             </tr>
                         </thead>
@@ -47,6 +36,9 @@ const Index = ({ auth, permissions }) => {
                                 <tr key={permission.id}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {permission.name}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {permission.module_name}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link
@@ -58,16 +50,6 @@ const Index = ({ auth, permissions }) => {
                                         >
                                             Edit
                                         </Link>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(permission.id)
-                                            }
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            Delete
-                                        </button>
                                     </td>
                                 </tr>
                             ))}
