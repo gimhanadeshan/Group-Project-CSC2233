@@ -36,9 +36,9 @@ const CourseRegistrations = ({ auth, courses }) => {
                         {courses.map((course) => (
                             <tr key={course.id} className="hover:bg-gray-100">
                                 <td className="py-2 px-4 border-b text-center">{course.code}</td>
-                                <td className="py-2 px-4 border-b text-left">{course.name}</td>
-                                <td className={`py-2 px-4 border-b text-center ${addedCourses.includes(course.id) ? 'bg-red-700' : 'bg-green-700'}`}>
-                                    <button onClick={() => handleCourseToggle(course.id)}>
+                                <td className="py-2 px-4 border-b">{course.name}</td>
+                                <td className={`py-2 px-4 border-b text-center ${addedCourses.includes(course.id)}`}>
+                                    <button className={`text-base px-4 py-2 rounded-md ${addedCourses.includes(course.id) ? 'bg-red-500' : 'bg-green-500'} hover:bg-red-700 text-white w-24`} onClick={() => handleCourseToggle(course.id)}>
                                         {addedCourses.includes(course.id) ? "Remove" : "Add"}
                                     </button>
                                 </td>
@@ -51,8 +51,8 @@ const CourseRegistrations = ({ auth, courses }) => {
                     <table className="min-w-full bg-white mt-4">
                         <thead>
                             <tr>
-                                <th className="py-2 px-4 border-b">Code</th>
-                                <th className="py-2 px-4 border-b text-left">Name</th>
+                                <th className="py-2 px-3 border-b">Code</th>
+                                <th className="py-2 px-3 border-b text-left">Name</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,8 +60,8 @@ const CourseRegistrations = ({ auth, courses }) => {
                                 const course = courses.find((c) => c.id === courseId);
                                 return (
                                     <tr key={course.id} className="hover:bg-gray-100">
-                                        <td className="py-2 px-4 border-b text-center">{course.code}</td>
-                                        <td className="py-2 px-4 border-b text-left">{course.name}</td>
+                                        <td className="py-2 px-3 border-b text-center">{course.code}</td>
+                                        <td className="py-2 px-3 border-b text-left">{course.name}</td>
                                     </tr>
                                 );
                             })}
@@ -72,8 +72,8 @@ const CourseRegistrations = ({ auth, courses }) => {
                 )}
                 {addedCourses.length > 0 && (
                     <div className="text-center">
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-4" onClick={handleSubmit}> 
-                        Submit
+                        <button className="text-base px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-700 text-white font-bold mt-4" onClick={handleSubmit}> 
+                            Submit
                         </button>
                     </div>
                 )}
