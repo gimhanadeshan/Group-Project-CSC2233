@@ -2,7 +2,7 @@ import React from "react";
 import { Head, useForm, Link, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-export default function Edit({auth}) {
+export default function Edit({ auth }) {
     const { role, permissions, rolePermissions } = usePage().props;
     const { data, setData, put, processing, errors } = useForm({
         name: role.name,
@@ -20,6 +20,15 @@ export default function Edit({auth}) {
             : [...data.permissions, permissionId];
         setData("permissions", updatedPermissions);
     };
+
+    // Organize permissions by module
+    const organizedPermissions = permissions.reduce((acc, permission) => {
+        if (!acc[permission.module_name]) {
+            acc[permission.module_name] = [];
+        }
+        acc[permission.module_name].push(permission);
+        return acc;
+    }, {});
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -53,24 +62,38 @@ export default function Edit({auth}) {
                         <label className="block text-sm font-medium text-gray-700">
                             Permissions
                         </label>
-                        {permissions.map((permission) => (
-                            <div key={permission.id} className="mt-1">
-                                <label className="inline-flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        value={permission.id}
-                                        checked={data.permissions.includes(
-                                            permission.id
-                                        )}
-                                        onChange={() =>
-                                            handleCheckboxChange(permission.id)
-                                        }
-                                        className="rounded text-indigo-500 focus:ring-indigo-500"
-                                    />
-                                    <span className="ml-2 text-sm text-gray-700">
-                                        {permission.name}
-                                    </span>
-                                </label>
+                        {Object.keys(organizedPermissions).map((moduleName) => (
+                            <div key={moduleName} className="mt-4">
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                    {moduleName}
+                                </h3>
+                                {organizedPermissions[moduleName].map(
+                                    (permission) => (
+                                        <div
+                                            key={permission.id}
+                                            className="mt-1"
+                                        >
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    value={permission.id}
+                                                    checked={data.permissions.includes(
+                                                        permission.id
+                                                    )}
+                                                    onChange={() =>
+                                                        handleCheckboxChange(
+                                                            permission.id
+                                                        )
+                                                    }
+                                                    className="rounded text-indigo-500 focus:ring-indigo-500"
+                                                />
+                                                <span className="ml-2 text-sm text-gray-700">
+                                                    {permission.name}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    )
+                                )}
                             </div>
                         ))}
                     </div>

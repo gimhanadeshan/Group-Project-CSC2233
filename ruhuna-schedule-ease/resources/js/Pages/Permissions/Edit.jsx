@@ -6,7 +6,7 @@ import { Head } from "@inertiajs/react";
 const Edit = ({ auth }) => {
     const { permission } = usePage().props;
     const { data, setData, put, processing, errors } = useForm({
-        name: permission.name,
+        module_name: permission.module_name,
     });
 
     const handleSubmit = (e) => {
@@ -18,26 +18,30 @@ const Edit = ({ auth }) => {
         <AuthenticatedLayout user={auth.user}>
             <Head title={`Edit ${permission.name}`} />
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold mb-6">Edit Permission</h1>
+                <h1 className="text-2xl font-bold mb-6">
+                    Edit Permission: {permission.name}
+                </h1>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label
-                            htmlFor="name"
+                            htmlFor="module_name"
                             className="block text-sm font-medium text-gray-700"
                         >
-                            Name
+                            Module Name
                         </label>
                         <input
-                            id="name"
-                            value={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
+                            id="module_name"
+                            value={data.module_name}
+                            onChange={(e) =>
+                                setData("module_name", e.target.value)
+                            }
                             type="text"
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                             required
                         />
-                        {errors.name && (
+                        {errors.module_name && (
                             <div className="text-red-600 text-sm mt-2">
-                                {errors.name}
+                                {errors.module_name}
                             </div>
                         )}
                     </div>
