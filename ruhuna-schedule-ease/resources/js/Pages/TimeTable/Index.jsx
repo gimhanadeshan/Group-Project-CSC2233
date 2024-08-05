@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import { useForm, Head, Link } from '@inertiajs/react';
 
-export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTable }) {
+export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTable}) {
   const [selectedSemesterIN, setSelectedSemesterIn] = useState(null);
   const [selectedSemesterNotIn, setSelectedSemesterNotIn] = useState(null);
   const semesterInOptions = semestersInTimeTable.map((semester) => ({

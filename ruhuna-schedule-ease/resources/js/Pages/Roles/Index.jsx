@@ -38,13 +38,18 @@ export default function Index({ auth }) {
                                         {role.name}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {role.permissions.map(
-                                            (permission, index) => (
-                                                <div key={index}>
-                                                    {permission.name}
-                                                </div>
-                                            )
-                                        )}
+                                        <div className="flex flex-wrap gap-2">
+                                            {role.permissions.map(
+                                                (permission, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="bg-gray-200 text-gray-800 py-1 px-3 rounded-full text-xs"
+                                                    >
+                                                        {permission.name}
+                                                    </span>
+                                                )
+                                            )}
+                                        </div>
                                     </td>
 
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">

@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 import { Link, useForm, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-const Index = ({ auth, lectureHalls }) => {
+const Index = ({ auth, lectureHalls, permissions }) => {
     const { delete: destroy } = useForm();
 
     const handleDelete = (id) => {
@@ -11,18 +11,24 @@ const Index = ({ auth, lectureHalls }) => {
         }
     };
 
+    const canCreate = permissions.includes("create_lecture_hall");
+    const canEdit = permissions.includes("update_lecture_hall");
+    const canDelete = permissions.includes("delete_lecture_hall");
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Lecture Halls" />
 
             <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Lecture Halls</h1>
-                <Link
-                    href={route("lecture-halls.create")}
-                    className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                    Create New Lecture Hall
-                </Link>
+                {canCreate && (
+                    <Link
+                        href={route("lecture-halls.create")}
+                        className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        Create New Lecture Hall
+                    </Link>
+                )}
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
@@ -39,12 +45,14 @@ const Index = ({ auth, lectureHalls }) => {
                                 >
                                     Capacity
                                 </th>
-                                <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Edit</span>
-                                </th>
-                                <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Delete</span>
-                                </th>
+                                {(canEdit || canDelete) && (
+                                    <th
+                                        scope="col"
+                                        className="relative px-6 py-3"
+                                    >
+                                        <span className="sr-only">Actions</span>
+                                    </th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -56,22 +64,31 @@ const Index = ({ auth, lectureHalls }) => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {hall.capacity}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <Link
-                                            href={route("lecture-halls.edit", hall.id)}
-                                            className="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            Edit
-                                        </Link>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => handleDelete(hall.id)}
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
+                                    {(canEdit || canDelete) && (
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            {canEdit && (
+                                                <Link
+                                                    href={route(
+                                                        "lecture-halls.edit",
+                                                        hall.id
+                                                    )}
+                                                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                                                >
+                                                    Edit
+                                                </Link>
+                                            )}
+                                            {canDelete && (
+                                                <button
+                                                    onClick={() =>
+                                                        handleDelete(hall.id)
+                                                    }
+                                                    className="text-red-600 hover:text-red-900"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

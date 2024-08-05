@@ -2,7 +2,7 @@ import Authenticated from '@/Layouts/AuthenticatedLayout';
 import React from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function ShowTimeTable({ auth, timetables, semester }) {
+export default function ShowTimeTable({ auth, timetables, semester, lunchTime }) {
     const { data, setData, delete: deleteTimeTable } = useForm();
 
     const handleDelete = (id) => {
@@ -15,28 +15,30 @@ export default function ShowTimeTable({ auth, timetables, semester }) {
 
     const renderTableRows = (day) => {
         const lunchBreak = {
-            start_time: '12:00:00',
-            end_time: '13:00:00',
+            start_time: lunchTime.start,
+            end_time: lunchTime.end,
             course: { name: 'Lunch Break' },
-            hall: { name: '' },
-            lecturer: { name: '' },
+            type: '-',
+            hall: { name: '-' },
+            lecturer: { name: '-' },
         };
 
         const dayTimetables = timetables
             .filter((timetable) => timetable.day_of_week === day)
             .concat(lunchBreak)
-            .sort((a, b) => a.start_time.localeCompare(b.start_time));
+            .sort((a, b) => String(a.start_time).localeCompare(String(b.start_time)));
 
         return dayTimetables.map((timetable, index) => (
             <tr
                 key={index}
-                className={timetable.course.name === 'Lunch Break' ? 'bg-yellow-200' : ''}
+                className={timetable.course.name === 'Lunch Break' ? 'bg-yellow-200' : 'border-b dark:border-gray-600'}
             >
-                <td>{timetable.start_time}</td>
-                <td>{timetable.end_time}</td>
-                <td>{timetable.course.name}</td>
-                <td>{timetable.hall.name}</td>
-                <td>{timetable.lecturer.name}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timetable.start_time}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timetable.end_time}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timetable.course.name}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timetable.type}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timetable.hall.name}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timetable.lecturer.name}</td>
             </tr>
         ));
     };
@@ -65,15 +67,16 @@ export default function ShowTimeTable({ auth, timetables, semester }) {
                         <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                             {daysOfWeek.map((day) => (
                                 <div key={day} className="mb-4">
-                                    <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200">{day}</h3>
+                                    <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200 font-serif">{day}</h3>
                                     <table className="min-w-full bg-white dark:bg-gray-800">
                                         <thead>
-                                            <tr>
-                                                <th>Start Time</th>
-                                                <th>End Time</th>
-                                                <th>Course</th>
-                                                <th>Hall</th>
-                                                <th>Lecturer</th>
+                                            <tr className="border-b dark:border-gray-600">
+                                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800 dark:text-gray-200 font-serif">Start Time</th>
+                                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800 dark:text-gray-200 font-serif">End Time</th>
+                                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800 dark:text-gray-200 font-serif">Course</th>
+                                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800 dark:text-gray-200 font-serif">Type</th>
+                                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800 dark:text-gray-200 font-serif">Hall</th>
+                                                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-800 dark:text-gray-200 font-serif">Lecturer</th>
                                             </tr>
                                         </thead>
                                         <tbody>{renderTableRows(day)}</tbody>
