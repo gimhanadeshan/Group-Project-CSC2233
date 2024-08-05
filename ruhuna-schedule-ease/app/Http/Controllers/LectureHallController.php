@@ -18,6 +18,7 @@ class LectureHallController extends Controller
         return Inertia::render('LectureHalls/Index', [
             'lectureHalls' => $lectureHalls,
             'permissions' => $permissions,
+            
         ]);
     }
 
