@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['pending', 'confirmed'])->default('pending');
             $table->timestamps();
+            
         });
 
     }
