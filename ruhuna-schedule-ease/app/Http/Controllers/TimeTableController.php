@@ -81,18 +81,18 @@ class TimeTableController extends Controller
 
     // Newly added Conditions
     $lunchTime = [
-        'start' => $condition['lunchTime']['start'] ?? '12:00',
-        'end' => $condition['lunchTime']['end'] ?? '13:00'
+        'start' => $condition['lunchTime']['start'] ?? '12:00:00',
+        'end' => $condition['lunchTime']['end'] ?? '13:00:00'
     ];
 
     $lectureTime = [
-        'start' => $condition['lectureTime']['start'] ?? '08:00',
-        'end' => $condition['lectureTime']['end'] ?? '16:00'
+        'start' => $condition['lectureTime']['start'] ?? '08:00:00',
+        'end' => $condition['lectureTime']['end'] ?? '16:00:00'
     ];
 
     $practicalTime = [
-        'start' => $condition['practicalTime']['start'] ?? '08:00',
-        'end' => $condition['practicalTime']['end'] ?? '16:00'
+        'start' => $condition['practicalTime']['start'] ?? '08:00:00',
+        'end' => $condition['practicalTime']['end'] ?? '16:00:00'
     ];
 
     $freeTimeslots = $condition['freeTimeslots'] ?? [];
@@ -103,7 +103,7 @@ class TimeTableController extends Controller
 
     $existingEntries = [];
     foreach ($daysOfWeek as $day) {
-        $existingEntries[$day] = TimeTable::where('day_of_week', $day)->get()->map(function ($entry) {
+        $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
             return [
                 'start' => $entry->start_time,
                 'end' => $entry->end_time,
@@ -111,6 +111,22 @@ class TimeTableController extends Controller
             ];
         })->toArray();
     }
+
+    $levelsExistingEntries = [];
+    foreach ($daysOfWeek as $day) {
+        $levelsExistingEntries[$day] = TimeTable::where('day_of_week', $day)->where('availability',1)->get()->map(function ($entry) {
+            return [
+                'start' => $entry->start_time,
+                'end' => $entry->end_time,
+                'lecturer' => $entry->lecturer,
+                'hall' => $entry->hall_id,
+            ];
+        })->toArray();
+    }
+    error_log(json_encode($levelsExistingEntries));
+
+
+
 
     foreach ($tableData as $entry) {
         $course = $entry['course']['value'];
@@ -125,7 +141,7 @@ class TimeTableController extends Controller
             default => throw new Exception("Invalid type: $type")
         };
 
-        $timeSlot = $this->findAvailableTimeSlot($lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type,$freeTimeslots);
+        $timeSlot = $this->findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type,$freeTimeslots, $levelsExistingEntries);
 
         if ($timeSlot) {
             $startTime = $timeSlot['start'];
@@ -153,8 +169,8 @@ class TimeTableController extends Controller
 
     error_log($semester);
     Condition::create([
-        'lunchtime_start' => $lunchtimeStart.":00",
-        'lunchtime_end' => $lunchtimeEnd. ":00",
+        'lunchtime_start' => $lunchtimeStart,
+        'lunchtime_end' => $lunchtimeEnd,
         'semester_id' => $semester,
     ]);
 
@@ -162,7 +178,7 @@ class TimeTableController extends Controller
     return $this->show($semester);
 }
 
-private function findAvailableTimeSlot($lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type, $freeTimeslots)
+private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type, $freeTimeslots, $levelsExistingEntries)
 {
     $dayStart = $type === 'Practical' ? $practicalTime['start'] : $lectureTime['start'];
     $dayEnd = $type === 'Practical' ? $practicalTime['end'] : $lectureTime['end'];
@@ -202,12 +218,21 @@ private function findAvailableTimeSlot($lectureTime, $practicalTime, $duration, 
                     }
                 }
             }
+            if (isset($levelsExistingEntries[$day])) {
+                foreach ($levelsExistingEntries[$day] as $entry) {
+                    error_log($currentStart." ".$entry['end']." ".$currentEnd." ".$entry['start']." ".json_encode($lecturer));
+                    if ($currentStart < $entry['end'] && $currentEnd > $entry['start'] && ($entry['lecturer'] == $lecturer['id'] || $entry['hall'] == $hall['id'])) {
+                        $overlap = true;
+                        break;
+                    }
+                }
+            }
 
             if (!$overlap) {
                 return ['start' => $currentStart, 'end' => $currentEnd, 'day_of_week' => $day];
             }
 
-            $currentStart = date('H:i:s', strtotime($currentStart) + 60); // Increment by one minute to find the next slot
+            $currentStart = date('H:i:s', strtotime($currentStart) + 3600); // Increment by one minute to find the next slot
         }
     }
 
