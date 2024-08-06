@@ -28,6 +28,7 @@ class TimeTable extends Model
         'lecturer',
         'semester_id',
         'type',
+        'availability'
     ];
 
     // Define relationships
