@@ -31,7 +31,9 @@ const Index = ({ auth, courses }) => {
                 course.code.toLowerCase().includes(search.toLowerCase())) &&
             (level === "" || course.level === parseInt(level)) &&
             (semester === "" || course.semester === parseInt(semester)) &&
-            (coreOptional === "" || (coreOptional === "core" && course.is_core) || (coreOptional === "optional" && !course.is_core))
+            (coreOptional === "" ||
+                (coreOptional === "core" && course.is_core) ||
+                (coreOptional === "optional" && !course.is_core))
         );
     });
 
