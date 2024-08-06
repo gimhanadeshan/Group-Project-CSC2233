@@ -142,6 +142,7 @@ class TimeTableController extends Controller
                 'end_time' => $endTime,
                 'day_of_week' => $dayOfWeek,
                 'type' => $type,
+                'availability' => 1,
             ]);
 
             $existingEntries[$dayOfWeek][] = ['start' => $startTime, 'end' => $endTime, 'type' => $type];
