@@ -1,5 +1,6 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import React from 'react';
+import PopOver from '@/Components/PopOver';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function ShowTimeTable({ auth, timetables, semester, lunchTime }) {
@@ -22,7 +23,8 @@ export default function ShowTimeTable({ auth, timetables, semester, lunchTime })
         start_time: lunchTime.start,
         end_time: lunchTime.end,
         course: { name: 'Lunch Break' },
-        lecturer: { name: '' }
+        lecturer: { name: '' },
+        hall : {name: ''}
     };
 
     const getTimeSlotIndex = (time) => {
@@ -102,7 +104,7 @@ export default function ShowTimeTable({ auth, timetables, semester, lunchTime })
                                             <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timeSlot}</td>
                                             {daysOfWeek.map((day) => (
                                                 <td key={day} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">
-                                                    {createTimetableMatrix(day)[slotIndex] ? `${createTimetableMatrix(day)[slotIndex].course.name}-${createTimetableMatrix(day)[slotIndex].lecturer.name}-${createTimetableMatrix(day)[slotIndex].start_time}-${createTimetableMatrix(day)[slotIndex].end_time}` : ''}
+                                                    {createTimetableMatrix(day)[slotIndex] ? <PopOver timeslot={createTimetableMatrix(day)[slotIndex]}/>: <PopOver timeslot={null}/>}
                                                 </td>
                                             ))}
                                         </tr>
