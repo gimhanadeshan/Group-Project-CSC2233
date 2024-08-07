@@ -66,6 +66,7 @@ class TimeTableController extends Controller
             'courses' => $courses,
             'lecturers' => $lecturers,
             'semester' => $semester_id,
+            'semesterdetails' => $semesterDetails,
             'halls' => $halls,
         ]);
     }
@@ -251,7 +252,9 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
             ->where('semester_id', $semester)
             ->get();
-        return Inertia::render('TimeTable/ShowTimeTable', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime]);
+        $semesterinfo =Semester::where('id', $semester)->first();
+        error_log(json_encode($semesterinfo));
+        return Inertia::render('TimeTable/ShowTimeTable', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo]);
     }
 
     /**
