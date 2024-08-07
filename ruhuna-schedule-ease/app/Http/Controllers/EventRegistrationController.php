@@ -24,13 +24,9 @@ class EventRegistrationController extends Controller
             'end' => 'required|date',
         ]);
 
-        $timezone = 'Asia/Kolkata';
-        $data['start'] = Carbon::parse($data['start'], $timezone)->setTimezone($timezone)->toDateTimeString();
-        $data['end'] = Carbon::parse($data['end'], $timezone)->setTimezone($timezone)->toDateTimeString();
-
+       
         Event::create($data);
 
-        //return redirect()->back()->with('success', 'Event created successfully');
         return back();
     }
 
@@ -45,10 +41,7 @@ class EventRegistrationController extends Controller
             'end' => 'required|date',
         ]);
 
-        $timezone = 'Asia/Kolkata';
-        $data['start'] = Carbon::parse($data['start'], $timezone)->setTimezone($timezone)->toDateTimeString();
-        $data['end'] = Carbon::parse($data['end'], $timezone)->setTimezone($timezone)->toDateTimeString();
-
+       
         $event->update($data);
 
         return redirect()->back()->with('success', 'Event updated successfully');

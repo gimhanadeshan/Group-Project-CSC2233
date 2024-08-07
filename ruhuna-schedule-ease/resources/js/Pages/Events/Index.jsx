@@ -30,8 +30,8 @@ const Index = () => {
         setData({
             event_title: event.event_title,
             location: event.location,
-            start: new Date(event.start).toISOString().slice(0, 16),
-            end: new Date(event.end).toISOString().slice(0, 16),
+            start: moment(event.start).format('YYYY-MM-DDTHH:mm'),
+            end: moment(event.end).format('YYYY-MM-DDTHH:mm'),
         });
     };
 
@@ -52,8 +52,10 @@ const Index = () => {
                 onSuccess: () => {
                     // Update the events state on success
                     setEvents([...events, data]);
+                    reset();
                 },
             });
+
         } else {
             put(route("events.update", selectedEvent.id), {
                 onSuccess: () => {
@@ -68,10 +70,7 @@ const Index = () => {
     };
     const handleDelete = () => {
         if (confirm("Are you sure you want to delete this event?")) {
-            // destroy(route("events.destroy", selectedEvent.id));
-            // const updatedEvents = events.filter(event => event.id !== selectedEvent.id);
-            // setEvents(updatedEvents);
-            // setSelectedEvent(null);
+            
             reset();
         }
     };
@@ -181,7 +180,7 @@ const Index = () => {
                                             type="datetime-local"
                                             name="start"
                                             //value={data.start}
-                                            value={moment(data.start).format('YYYY-MM-DDTHH:mm') }
+                                            value={moment(data.start).format('YYYY-MM-DDTHH:mm')}
 
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -195,7 +194,8 @@ const Index = () => {
                                         <input
                                             type="datetime-local"
                                             name="end"
-                                            value={data.end}
+                                            //value={data.end}
+                                            value={moment(data.end).format('YYYY-MM-DDTHH:mm')}
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
