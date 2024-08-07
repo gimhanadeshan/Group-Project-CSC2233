@@ -208,11 +208,6 @@ export default function Authenticated({ user, header, children }) {
                                 </Link>
                             </li>
 
-                          
-
-                            
-                               
-
                             <>
                                 <li>
                                     <Link
@@ -446,10 +441,6 @@ export default function Authenticated({ user, header, children }) {
                                         </Link>
                                     </li>
                                 </>
-                            
-
-                                        
-                            
 
                         </ul>
                     </div>

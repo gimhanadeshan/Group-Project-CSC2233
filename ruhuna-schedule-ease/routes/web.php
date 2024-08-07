@@ -45,7 +45,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/events-registration/{id}', [EventRegistrationController::class, 'destroy'])->name('events.destroy');
     Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
-
     Route::get('events', [EventController::class, 'index'])->name('events');
    
    
