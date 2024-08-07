@@ -8,19 +8,29 @@ use Inertia\Inertia;
 
 class LectureHallController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('read_lecture_hall', $request->user());
+
         $lectureHalls = LectureHall::all();
-        return Inertia::render('LectureHalls/Index', ['lectureHalls' => $lectureHalls]);
+        $permissions = $request->user()->permissions()->pluck('name');
+
+        return Inertia::render('LectureHalls/Index', [
+            'lectureHalls' => $lectureHalls,   
+        ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $this->authorize('create_lecture_hall', $request->user());
+
         return Inertia::render('LectureHalls/Create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create_lecture_hall', $request->user());
+
         $request->validate([
             'name' => 'required',
             'capacity' => 'required|integer',
@@ -30,13 +40,17 @@ class LectureHallController extends Controller
         return redirect()->route('lecture-halls.index');
     }
 
-    public function edit(LectureHall $lectureHall)
+    public function edit(Request $request, LectureHall $lectureHall)
     {
+        $this->authorize('update_lecture_hall', $request->user());
+
         return Inertia::render('LectureHalls/Edit', ['lectureHall' => $lectureHall]);
     }
 
     public function update(Request $request, LectureHall $lectureHall)
     {
+        $this->authorize('update_lecture_hall', $request->user());
+
         $request->validate([
             'name' => 'required',
             'capacity' => 'required|integer',
@@ -46,10 +60,18 @@ class LectureHallController extends Controller
         return redirect()->route('lecture-halls.index');
     }
 
-    public function destroy(LectureHall $lectureHall)
+    public function destroy(Request $request, LectureHall $lectureHall)
     {
+        $this->authorize('delete_lecture_hall', $request->user());
+
         $lectureHall->delete();
         return redirect()->route('lecture-halls.index');
     }
-}
 
+    private function authorize($permission, $user)
+    {
+        if (!$user->hasPermissionTo($permission)) {
+            abort(403, 'Unauthorized action.');
+        }
+    }
+}

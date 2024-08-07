@@ -6,6 +6,11 @@ import { Head } from "@inertiajs/react";
 const Index = ({ auth, semesters }) => {
     const { errors } = usePage().props;
 
+    const canCreate = auth.permissions.includes("create_semester");
+    const canEdit = auth.permissions.includes("update_semester");
+    const canDelete = auth.permissions.includes("delete_semester");
+    const canRead = auth.permissions.includes("read_semester");
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Semesters" />
@@ -16,12 +21,14 @@ const Index = ({ auth, semesters }) => {
                             <h1 className="text-lg font-bold leading-6 text-gray-900">
                                 Semesters
                             </h1>
-                            <Link
-                                href={route("semesters.create")}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Add Semester
-                            </Link>
+                            {canCreate && (
+                                <Link
+                                    href={route("semesters.create")}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Add Semester
+                                </Link>
+                            )}
                         </div>
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
@@ -39,9 +46,11 @@ const Index = ({ auth, semesters }) => {
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Remarks
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
+                                        {canEdit || canRead || canDelete ? (
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        ) : null}
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -59,37 +68,45 @@ const Index = ({ auth, semesters }) => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {semester.name}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <Link
-                                                    href={route(
-                                                        "semesters.edit",
-                                                        semester.id
+                                            {canEdit || canRead || canDelete ? (
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    {canEdit && (
+                                                        <Link
+                                                            href={route(
+                                                                "semesters.edit",
+                                                                semester.id
+                                                            )}
+                                                            className="text-indigo-600 hover:text-indigo-900 mr-4"
+                                                        >
+                                                            Edit
+                                                        </Link>
                                                     )}
-                                                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <Link
-                                                    href={route(
-                                                        "semesters.show",
-                                                        semester.id
+                                                    {canRead && (
+                                                        <Link
+                                                            href={route(
+                                                                "semesters.show",
+                                                                semester.id
+                                                            )}
+                                                            className="text-green-600 hover:text-green-900 mr-4"
+                                                        >
+                                                            View
+                                                        </Link>
                                                     )}
-                                                    className="text-green-600 hover:text-green-900 mr-4"
-                                                >
-                                                    View
-                                                </Link>
-                                                <Link
-                                                    href={route(
-                                                        "semesters.destroy",
-                                                        semester.id
+                                                    {canDelete && (
+                                                        <Link
+                                                            href={route(
+                                                                "semesters.destroy",
+                                                                semester.id
+                                                            )}
+                                                            method="delete"
+                                                            as="button"
+                                                            className="text-red-600 hover:text-red-900"
+                                                        >
+                                                            Delete
+                                                        </Link>
                                                     )}
-                                                    method="delete"
-                                                    as="button"
-                                                    className="text-red-600 hover:text-red-900"
-                                                >
-                                                    Delete
-                                                </Link>
-                                            </td>
+                                                </td>
+                                            ) : null}
                                         </tr>
                                     ))}
                                 </tbody>

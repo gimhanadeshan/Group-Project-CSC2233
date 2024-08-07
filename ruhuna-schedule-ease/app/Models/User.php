@@ -60,5 +60,17 @@ class User extends Authenticatable
     {
         return $this->belongsTo(DegreeProgram::class,'degree_program_id','id');
     }
+
+    public function permissions()
+    {
+        return $this->role->permissions();
+    }
+
+    public function hasPermissionTo($permission)
+    {
+        return $this->permissions()->where('name', $permission)->exists();
+    }
+
+    
 }
 

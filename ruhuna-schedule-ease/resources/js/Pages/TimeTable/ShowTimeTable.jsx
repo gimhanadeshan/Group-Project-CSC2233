@@ -1,42 +1,68 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import React from 'react';
+import PopOver from '@/Components/PopOver';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function ShowTimeTable({ auth, timetables, semester }) {
-    const { data, setData, delete: deleteTimeTable } = useForm();
+export default function ShowTimeTable({ auth, timetables, semester, lunchTime }) {
+    const { delete: deleteTimeTable } = useForm();
 
-    const handleDelete = (id) => {
+    const handleDelete = () => {
         if (confirm("Are you sure you want to delete this TimeTable?")) {
             deleteTimeTable(route("timetables.destroy", semester));
         }
     };
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const timeSlots = [
+        "08.00-09.00", "09.00-10.00", "10.00-11.00", "11.00-12.00",
+        "12.00-13.00", "13.00-14.00", "14.00-15.00", "15.00-16.00",
+        "16.00-17.00", "17.00-18.00"
+    ];
 
-    const renderTableRows = (day) => {
-        const lunchBreak = {
-            start_time: '12:00:00',
-            end_time: '13:00:00',
-            course: { name: 'Lunch Break' },
-            hall: { name: '' },
-            lecturer: { name: '' },
-        };
+    const lunchBreak = {
+        start_time: lunchTime.start,
+        end_time: lunchTime.end,
+        course: { name: 'Lunch Break' },
+        lecturer: { name: '' },
+        hall : {name: ''}
+    };
 
-        const dayTimetables = timetables
+    const getTimeSlotIndex = (time) => {
+        const [hours, minutes] = String(time).split(':').map(Number);
+        return hours - 8; // Assuming time slots start from 08:00
+    };
+
+    const createTimetableMatrix = (day) => {
+        const matrix = new Array(timeSlots.length).fill(null);
+
+        timetables
             .filter((timetable) => timetable.day_of_week === day)
             .concat(lunchBreak)
-            .sort((a, b) => a.start_time.localeCompare(b.start_time));
+            .forEach((timetable) => {
+                const startIndex = getTimeSlotIndex(timetable.start_time);
+                const endIndex = getTimeSlotIndex(timetable.end_time);
+                for (let i = startIndex; i < endIndex; i++) {
+                    matrix[i] = timetable;
+                    if(i!== startIndex && matrix[i-1] == matrix[i]){
+                        matrix[i-1] = null;
+                        break;
+                    }
+                }
+            });
 
-        return dayTimetables.map((timetable, index) => (
+        return matrix;
+    };
+
+    const renderTableRows = (day) => {
+        const matrix = createTimetableMatrix(day);
+        return matrix.map((timetable, index) => (
             <tr
                 key={index}
-                className={timetable.course.name === 'Lunch Break' ? 'bg-yellow-200' : ''}
+                className={timetable && timetable.course.name === 'Lunch Break' ? 'bg-yellow-100' : ''}
             >
-                <td>{timetable.start_time}</td>
-                <td>{timetable.end_time}</td>
-                <td>{timetable.course.name}</td>
-                <td>{timetable.hall.name}</td>
-                <td>{timetable.lecturer.name}</td>
+                <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">
+                    {timetable ? `${timetable.course.name}-${timetable.lecturer.name}-${timetable.start_time}-${timetable.end_time}` : ''}
+                </td>
             </tr>
         ));
     };
@@ -63,23 +89,28 @@ export default function ShowTimeTable({ auth, timetables, semester }) {
                     </div>
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                            {daysOfWeek.map((day) => (
-                                <div key={day} className="mb-4">
-                                    <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200">{day}</h3>
-                                    <table className="min-w-full bg-white dark:bg-gray-800">
-                                        <thead>
-                                            <tr>
-                                                <th>Start Time</th>
-                                                <th>End Time</th>
-                                                <th>Course</th>
-                                                <th>Hall</th>
-                                                <th>Lecturer</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>{renderTableRows(day)}</tbody>
-                                    </table>
-                                </div>
-                            ))}
+                            <table className="min-w-full bg-white dark:bg-gray-800">
+                                <thead>
+                                    <tr className="border-b dark:border-gray-600">
+                                        <th>Time</th>
+                                        {daysOfWeek.map((day) => (
+                                            <th key={day}>{day}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {timeSlots.map((timeSlot, slotIndex) => (
+                                        <tr key={timeSlot}>
+                                            <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">{timeSlot}</td>
+                                            {daysOfWeek.map((day) => (
+                                                <td key={day} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 font-serif">
+                                                    {createTimetableMatrix(day)[slotIndex] ? <PopOver timeslot={createTimetableMatrix(day)[slotIndex]}/>: <PopOver timeslot={null}/>}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
