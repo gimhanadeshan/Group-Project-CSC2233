@@ -3,7 +3,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-
+import './bigCalendar.css';
 
 
 const localizer = momentLocalizer(moment);
@@ -20,7 +20,7 @@ moment.updateLocale('en', {
 const minTime = new Date(1970, 1, 1, 8, 0); // 8:00 AM
 const maxTime = new Date(1970, 1, 1, 19, 0); // 6:00 PM
 
-const TimeTable = ({ allevents,auth})=> {
+const EventCalendar = ({ allevents,auth})=> {
 
 
 
@@ -157,4 +157,4 @@ const TimeTable = ({ allevents,auth})=> {
   );
 }
 
-export default TimeTable;
+export default EventCalendar;

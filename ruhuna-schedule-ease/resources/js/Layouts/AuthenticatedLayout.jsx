@@ -210,7 +210,7 @@ export default function Authenticated({ user, header, children }) {
 
                           
 
-                            {roleID == 1 && (
+                            
                                
 
                             <>
@@ -446,10 +446,10 @@ export default function Authenticated({ user, header, children }) {
                                         </Link>
                                     </li>
                                 </>
-                            )}
+                            
 
                                         
-                            </>
+                            
 
                         </ul>
                     </div>
