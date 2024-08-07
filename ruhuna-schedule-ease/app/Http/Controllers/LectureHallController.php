@@ -16,8 +16,7 @@ class LectureHallController extends Controller
         $permissions = $request->user()->permissions()->pluck('name');
 
         return Inertia::render('LectureHalls/Index', [
-            'lectureHalls' => $lectureHalls,
-            'permissions' => $permissions,
+            'lectureHalls' => $lectureHalls,   
         ]);
     }
 

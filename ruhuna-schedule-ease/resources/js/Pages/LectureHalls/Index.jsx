@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useForm, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-const Index = ({ auth, lectureHalls, permissions }) => {
+const Index = ({ auth, lectureHalls }) => {
     const { delete: destroy } = useForm();
 
     const handleDelete = (id) => {
@@ -11,9 +11,9 @@ const Index = ({ auth, lectureHalls, permissions }) => {
         }
     };
 
-    const canCreate = permissions.includes("create_lecture_hall");
-    const canEdit = permissions.includes("update_lecture_hall");
-    const canDelete = permissions.includes("delete_lecture_hall");
+    const canCreate = auth.permissions.includes("create_lecture_hall");
+    const canEdit = auth.permissions.includes("update_lecture_hall");
+    const canDelete = auth.permissions.includes("delete_lecture_hall");
 
     return (
         <AuthenticatedLayout user={auth.user}>
