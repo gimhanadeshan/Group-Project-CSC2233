@@ -188,7 +188,6 @@ export default function Authenticated({ user, header, children }) {
                                 </Link>
                             </li>
 
-
                             <li>
                                 <Link
                                     href={route("events")}
@@ -208,11 +207,6 @@ export default function Authenticated({ user, header, children }) {
                                 </Link>
                             </li>
 
-                          
-
-                            {roleID == 1 && (
-                               
-
                             <>
                                 <li>
                                     <Link
@@ -225,7 +219,6 @@ export default function Authenticated({ user, header, children }) {
                                             xmlns="http://www.w3.org/2000/svg"
                                             fill="currentColor"
                                             viewBox="0 0 18 18"
-
                                         >
                                             <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8.000 1.857 8.000h4.286A1.857 1.857 0 0 0 8.000 6.143v-4.286A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10.000 1.857v4.286C10.000 7.169 10.831 8.000 11.857 8.000h4.286A1.857 1.857 0 0 0 18.000 6.143v-4.286A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0.000 11.857v4.286C0.000 17.169.831 18.000 1.857 18.000h4.286A1.857 1.857 0 0 0 8.000 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10.000 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18.000 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
                                         </svg>
@@ -415,42 +408,38 @@ export default function Authenticated({ user, header, children }) {
                                             />
                                         </svg>
 
-
-                                            <span className="ms-3">
-                                                Course Registrations
-                                            </span>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href={route("events-registration.index")}
-                                            className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                        <span className="ms-3">
+                                            Course Registrations
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href={route(
+                                            "events-registration.index"
+                                        )}
+                                        className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                    >
+                                        <svg
+                                            className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="currentColor"
+                                            viewBox="0 0 18 18"
                                         >
-                                            <svg
-                                                className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="currentColor"
-                                                viewBox="0 0 18 18"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M6 2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 1 0 0-2h-2v-2h2a1 1 0 0 0 1-1V4a2 2 0 0 0-2-2h-8v16h5v2H7a1 1 0 1 1 0-2h1V2H6Z"
-                                                    clip-rule="evenodd"
-                                                />
-                                            </svg>
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M6 2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 1 0 0-2h-2v-2h2a1 1 0 0 0 1-1V4a2 2 0 0 0-2-2h-8v16h5v2H7a1 1 0 1 1 0-2h1V2H6Z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
 
-                                            <span className="ms-3">
-                                                Events_CRUD
-                                            </span>
-                                        </Link>
-                                    </li>
-                                </>
-                            )}
-
-                                        
+                                        <span className="ms-3">
+                                            Events_CRUD
+                                        </span>
+                                    </Link>
+                                </li>
                             </>
-
                         </ul>
                     </div>
                 </aside>
