@@ -3,7 +3,7 @@ import React from 'react';
 import PopOver from '@/Components/PopOver';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function ShowTimeTable({ auth, timetables, semester, lunchTime }) {
+export default function ShowTimeTable({ auth, timetables, semester, lunchTime,semesterinfo}) {
     const { delete: deleteTimeTable } = useForm();
 
     const handleDelete = () => {
@@ -70,6 +70,9 @@ export default function ShowTimeTable({ auth, timetables, semester, lunchTime })
     return (
         <Authenticated user={auth.user}>
             <Head title="TimeTable" />
+            <h1 className="text-2xl font-bold mb-4 text-center">
+                    Timetable of Level {semesterinfo.level} - Semester {semesterinfo.semester} - {semesterinfo.academic_year}
+                </h1>
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
