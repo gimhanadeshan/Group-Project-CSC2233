@@ -16,6 +16,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
+use App\Http\Controllers\EventRegistrationController;
 
 
 
@@ -39,6 +40,15 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('courses', CourseController::class);
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::resource('course-registrations', CourseRegistrationController::class);
+
+    Route::resource('events-registration', EventRegistrationController::class);
+    Route::delete('/events-registration/{id}', [EventRegistrationController::class, 'destroy'])->name('events.destroy');
+    Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
+    Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
+    Route::get('events', [EventController::class, 'index'])->name('events');
+   
+   
+    
 
 });
 

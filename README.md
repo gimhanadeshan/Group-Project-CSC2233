@@ -55,6 +55,7 @@ RUHUNA ScheduleEase is an academic management system designed for the University
     npm install react-big-calendar
     composer require maatwebsite/excel
     npm install react-select
+    npm install @mui/material
     ```
 
 5. Create a `.env` file:

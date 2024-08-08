@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([LectureHallSeeder::class]);
         $this->call([CourseSeeder::class]);
         $this->call([SemesterSeeder::class]);
+        $this->call([EventsSeeder::class]);
 
 
 
@@ -56,10 +57,12 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(30)->create();
 
 
+
         $this->call([
             PermissionSeeder::class,
             PermissionRoleSeeder::class,
         ]);
+
 
     }
 
