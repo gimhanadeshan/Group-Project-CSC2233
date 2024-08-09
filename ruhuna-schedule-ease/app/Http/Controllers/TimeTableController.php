@@ -337,7 +337,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             'semester_id' => $semester,
             'availability' => 1,
         ]);
-
+        return back()->with('success', 'Timetable deleted successfully.');
     }
     public function destroySingle(int $id)
     {
