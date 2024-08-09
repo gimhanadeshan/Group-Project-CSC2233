@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { useForm, Head } from '@inertiajs/react';
 import Popup from '@/Components/Popup';
 
-export default function Create({ auth, courses, lecturers, halls, semester,semesterdetails }) {
+export default function Create({ auth, courses, lecturers, halls, semester,semesterdetails, courses, lecturers, halls }) {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLecturer, setSelectedLecturer] = useState(null);
   const [selectedHall, setSelectedHall] = useState(null);
