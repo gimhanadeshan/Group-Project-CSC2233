@@ -35,8 +35,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
+    Route::get('timetables/modify/{id}', [TimeTableController::class, 'destroySingle'])->name('timetables.destroySingle');
+    Route::post('timetables/modify/add', [TimeTableController::class, 'storeSingle'])->name('timetables.storeSingle');
+    Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::resource('timetables', TimeTableController::class);
-    Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
     Route::resource('courses', CourseController::class);
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::resource('course-registrations', CourseRegistrationController::class);
@@ -46,9 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
     Route::get('events', [EventController::class, 'index'])->name('events');
-   
-   
-    
+
+
+
 
 });
 
@@ -65,7 +67,7 @@ Route::get('/', function () {
 });
 
 
-   
+
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
