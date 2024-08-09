@@ -123,7 +123,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
 };
 
   return (
-    <Authenticated user={auth.user}>
+    <Authenticated user={auth.user} permissions={auth.permissions}>
       <Head title="TimeTable" />
       <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
       {renderErrors()}

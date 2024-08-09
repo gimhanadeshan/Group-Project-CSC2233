@@ -38,7 +38,7 @@ export default function Edit({ user, auth, roles, degreePrograms }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title={`Edit ${user.name}`} />
 
             <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -116,74 +116,83 @@ export default function Edit({ user, auth, roles, degreePrograms }) {
                     </div>
 
                     {data.role_id === "2" && (
-                    <>
-                        {yearOptions.length > 0 && (
-                            <div className="mt-4">
-                                <InputLabel
-                                    htmlFor="academic_year"
-                                    value="Academic Year"
-                                />
-                                <select
-                                    id="academic_year"
-                                    name="academic_year"
-                                    value={data.academic_year}
-                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                                    onChange={(e) =>
-                                        setData("academic_year", e.target.value)
-                                    }
-                                    required
-                                >
-                                    <option value="">
-                                        Select Academic Year
-                                    </option>
-                                    {yearOptions.map((year) => (
-                                        <option
-                                            key={year.value}
-                                            value={year.value}
-                                        >
-                                            {year.label}
+                        <>
+                            {yearOptions.length > 0 && (
+                                <div className="mt-4">
+                                    <InputLabel
+                                        htmlFor="academic_year"
+                                        value="Academic Year"
+                                    />
+                                    <select
+                                        id="academic_year"
+                                        name="academic_year"
+                                        value={data.academic_year}
+                                        className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                        onChange={(e) =>
+                                            setData(
+                                                "academic_year",
+                                                e.target.value
+                                            )
+                                        }
+                                        required
+                                    >
+                                        <option value="">
+                                            Select Academic Year
                                         </option>
-                                    ))}
-                                </select>
-                                <InputError message={errors.academic_year} className="mt-2" />
-                            </div>
-                        )}
+                                        {yearOptions.map((year) => (
+                                            <option
+                                                key={year.value}
+                                                value={year.value}
+                                            >
+                                                {year.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError
+                                        message={errors.academic_year}
+                                        className="mt-2"
+                                    />
+                                </div>
+                            )}
 
-                        {degreePrograms.length > 0 && (
-                            <div className="mt-4">
-                                <InputLabel
-                                    htmlFor="degree_program_id"
-                                    value="Degree Program"
-                                />
-                                <select
-                                    id="degree_program_id"
-                                    name="degree_program_id"
-                                    value={data.degree_program_id}
-                                    className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                                    onChange={(e) =>
-                                        setData(
-                                            "degree_program_id",
-                                            e.target.value
-                                        )
-                                    }
-                                    required
-                                >
-                                    <option value="">
-                                        Select Degree Program
-                                    </option>
-                                    {degreePrograms.map((program) => (
-                                        <option
-                                            key={program.id}
-                                            value={program.id}
-                                        >
-                                            {program.name}
+                            {degreePrograms.length > 0 && (
+                                <div className="mt-4">
+                                    <InputLabel
+                                        htmlFor="degree_program_id"
+                                        value="Degree Program"
+                                    />
+                                    <select
+                                        id="degree_program_id"
+                                        name="degree_program_id"
+                                        value={data.degree_program_id}
+                                        className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                        onChange={(e) =>
+                                            setData(
+                                                "degree_program_id",
+                                                e.target.value
+                                            )
+                                        }
+                                        required
+                                    >
+                                        <option value="">
+                                            Select Degree Program
                                         </option>
-                                    ))}
-                                </select>
-                                <InputError message={errors.degree_program_id} className="mt-2" />
-                            </div>
-                        )}
-                    </>
+                                        {degreePrograms.map((program) => (
+                                            <option
+                                                key={program.id}
+                                                value={program.id}
+                                            >
+                                                {program.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError
+                                        message={errors.degree_program_id}
+                                        className="mt-2"
+                                    />
+                                </div>
+                            )}
+                        </>
                     )}
 
                     <div className="flex items-center justify-end mt-6">

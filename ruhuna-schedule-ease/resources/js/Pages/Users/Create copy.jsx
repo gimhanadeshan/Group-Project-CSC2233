@@ -29,7 +29,7 @@ export default function Create({ auth, roles }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Create User" />
 
             <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -46,10 +46,15 @@ export default function Create({ auth, roles }) {
                                 className="mt-1 block w-full"
                                 autoComplete="name"
                                 autoFocus
-                                onChange={(e) => setData("name", e.target.value)}
+                                onChange={(e) =>
+                                    setData("name", e.target.value)
+                                }
                                 required
                             />
-                            <InputError message={errors.name} className="mt-2" />
+                            <InputError
+                                message={errors.name}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div>
@@ -61,10 +66,15 @@ export default function Create({ auth, roles }) {
                                 value={data.email}
                                 className="mt-1 block w-full"
                                 autoComplete="username"
-                                onChange={(e) => setData("email", e.target.value)}
+                                onChange={(e) =>
+                                    setData("email", e.target.value)
+                                }
                                 required
                             />
-                            <InputError message={errors.email} className="mt-2" />
+                            <InputError
+                                message={errors.email}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div>
@@ -76,10 +86,15 @@ export default function Create({ auth, roles }) {
                                 value={data.password}
                                 className="mt-1 block w-full"
                                 autoComplete="new-password"
-                                onChange={(e) => setData("password", e.target.value)}
+                                onChange={(e) =>
+                                    setData("password", e.target.value)
+                                }
                                 required
                             />
-                            <InputError message={errors.password} className="mt-2" />
+                            <InputError
+                                message={errors.password}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div>
@@ -95,7 +110,10 @@ export default function Create({ auth, roles }) {
                                 className="mt-1 block w-full"
                                 autoComplete="new-password"
                                 onChange={(e) =>
-                                    setData("password_confirmation", e.target.value)
+                                    setData(
+                                        "password_confirmation",
+                                        e.target.value
+                                    )
                                 }
                                 required
                             />
@@ -106,17 +124,25 @@ export default function Create({ auth, roles }) {
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="registration_no" value="Registration No" />
+                            <InputLabel
+                                htmlFor="registration_no"
+                                value="Registration No"
+                            />
                             <TextInput
                                 id="registration_no"
                                 name="registration_no"
                                 value={data.registration_no}
                                 className="mt-1 block w-full"
                                 autoComplete="registration_no"
-                                onChange={(e) => setData("registration_no", e.target.value)}
+                                onChange={(e) =>
+                                    setData("registration_no", e.target.value)
+                                }
                                 required
                             />
-                            <InputError message={errors.registration_no} className="mt-2" />
+                            <InputError
+                                message={errors.registration_no}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div>
@@ -126,7 +152,9 @@ export default function Create({ auth, roles }) {
                                 name="role_id"
                                 value={data.role_id}
                                 className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                                onChange={(e) => setData("role_id", e.target.value)}
+                                onChange={(e) =>
+                                    setData("role_id", e.target.value)
+                                }
                                 required
                             >
                                 <option value="">Select Role</option>
@@ -136,25 +164,39 @@ export default function Create({ auth, roles }) {
                                     </option>
                                 ))}
                             </select>
-                            <InputError message={errors.role_id} className="mt-2" />
+                            <InputError
+                                message={errors.role_id}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="academic_year" value="Academic Year" />
+                            <InputLabel
+                                htmlFor="academic_year"
+                                value="Academic Year"
+                            />
                             <TextInput
                                 id="academic_year"
                                 name="academic_year"
                                 value={data.academic_year}
                                 className="mt-1 block w-full"
                                 autoComplete="academic_year"
-                                onChange={(e) => setData("academic_year", e.target.value)}
+                                onChange={(e) =>
+                                    setData("academic_year", e.target.value)
+                                }
                                 required
                             />
-                            <InputError message={errors.academic_year} className="mt-2" />
+                            <InputError
+                                message={errors.academic_year}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div className="flex items-center justify-end mt-6">
-                            <PrimaryButton className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled={processing}>
+                            <PrimaryButton
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                disabled={processing}
+                            >
                                 {processing ? "Creating..." : "Create User"}
                             </PrimaryButton>
                         </div>

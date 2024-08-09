@@ -68,10 +68,5 @@ class LectureHallController extends Controller
         return redirect()->route('lecture-halls.index');
     }
 
-    private function authorize($permission, $user)
-    {
-        if (!$user->hasPermissionTo($permission)) {
-            abort(403, 'Unauthorized action.');
-        }
-    }
+    
 }

@@ -4,16 +4,13 @@ import Dropdown from "@/Components/Dropdown";
 import { Link } from "@inertiajs/react";
 import Sidebar from "@/Components/Sidebar";
 
-export default function Authenticated({ user, header, children }) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+export default function Authenticated({ user, header, children, permissions }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-    const [sidebarDropdownOpen, setSidebarDropdownOpen] = useState(false);
 
-    useEffect(() => {
-        console.log("User data:", user);
-    }, [user]);
+    // useEffect(() => {
+    //     console.log("User data:", user);
+    // }, [user]);
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
@@ -21,9 +18,6 @@ export default function Authenticated({ user, header, children }) {
 
     const toggleUserDropdown = () => {
         setUserDropdownOpen(!userDropdownOpen);
-    };
-    const toggleSidebarDropdownOpen = () => {
-        setSidebarDropdownOpen(!sidebarDropdownOpen);
     };
 
     return (
@@ -168,7 +162,7 @@ export default function Authenticated({ user, header, children }) {
                     } bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
                     aria-label="Sidebar"
                 >
-                    <Sidebar/>
+                    <Sidebar permissions={permissions} />
                 </aside>
 
                 <div className="p-4 sm:ml-64 mt-16">

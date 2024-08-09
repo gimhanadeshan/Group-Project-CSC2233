@@ -36,11 +36,24 @@ export default function Index({ users, auth, roles, degreePrograms }) {
     const filteredUsers = users.filter((user) => {
         const matchesSearch =
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.registration_no.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesRole = selectedRole ? user.role.name === selectedRole : true;
-        const matchesAcademicYear = selectedAcademicYear ? user.academic_year === selectedAcademicYear : true;
-        const matchesDegreeProgram = selectedDegreeProgram ? user.degree_program_id === parseInt(selectedDegreeProgram) : true;
-        return matchesSearch && matchesRole && matchesAcademicYear && matchesDegreeProgram;
+            user.registration_no
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+        const matchesRole = selectedRole
+            ? user.role.name === selectedRole
+            : true;
+        const matchesAcademicYear = selectedAcademicYear
+            ? user.academic_year === selectedAcademicYear
+            : true;
+        const matchesDegreeProgram = selectedDegreeProgram
+            ? user.degree_program_id === parseInt(selectedDegreeProgram)
+            : true;
+        return (
+            matchesSearch &&
+            matchesRole &&
+            matchesAcademicYear &&
+            matchesDegreeProgram
+        );
     });
 
     const handleExport = () => {
@@ -63,26 +76,30 @@ export default function Index({ users, auth, roles, degreePrograms }) {
     }, []);
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="User Management" />
 
             <div>
                 <h1 className="text-2xl font-bold mb-6">User Management</h1>
 
                 <div className="flex justify-between mb-4">
-                    <a
-                        href={route("users.create")}
-                        className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        Create New User
-                    </a>
+                    {auth.permissions.includes("create_user") && (
+                        <a
+                            href={route("users.create")}
+                            className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            Create New User
+                        </a>
+                    )}
 
-                    <button
-                        onClick={handleExport}
-                        className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                        Export Filtered Data
-                    </button>
+                    {auth.permissions.includes("export_user") && (
+                        <button
+                            onClick={handleExport}
+                            className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            Export Filtered Data
+                        </button>
+                    )}
                 </div>
 
                 <div className="flex mb-4 space-x-4">
@@ -192,22 +209,33 @@ export default function Index({ users, auth, roles, degreePrograms }) {
                                         {user.academic_year}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <Link
-                                            href={route("users.edit", user.id)}
-                                            className="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            Edit
-                                        </Link>
+                                        {auth.permissions.includes(
+                                            "update_user"
+                                        ) && (
+                                            <Link
+                                                href={route(
+                                                    "users.edit",
+                                                    user.id
+                                                )}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                Edit
+                                            </Link>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(user.id)
-                                            }
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            Delete
-                                        </button>
+                                        {auth.permissions.includes(
+                                            "delete_user"
+                                        ) && (
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(user.id)
+                                                }
+                                                className="text-red-600 hover:text-red-900"
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

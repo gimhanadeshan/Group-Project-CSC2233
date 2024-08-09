@@ -15,7 +15,7 @@ const Edit = ({ auth, degreeProgram }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Edit Degree Program" />
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Edit Degree Program</h1>
@@ -50,7 +50,9 @@ const Edit = ({ auth, degreeProgram }) => {
                         <input
                             id="description"
                             value={data.description}
-                            onChange={(e) => setData("description", e.target.value)}
+                            onChange={(e) =>
+                                setData("description", e.target.value)
+                            }
                             type="text"
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
