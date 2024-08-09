@@ -20,7 +20,7 @@ const Index = () => {
     const [selectedEvents, setSelectedEvents] = useState([]); // State for selected events
     const [selectAll, setSelectAll] = useState(false); // State for "Select All" checkbox
 
-    const { data, setData, post, put, destroy, reset, errors } = useForm({
+    const { data, setData, post, put,delete: destroy, reset, errors } = useForm({
         event_title: "",
         location: "",
         start: "",
@@ -76,8 +76,10 @@ const Index = () => {
                 onSuccess: () => {
                     setEvents(events.filter(event => event.id !== selectedEvent.id));
                     setSelectedEvent(null);
+                    
                 }
             });
+            reset();
         }
     };
 

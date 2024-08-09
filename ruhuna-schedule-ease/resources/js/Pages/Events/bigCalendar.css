@@ -93,7 +93,8 @@
   }
   
   .rbc-event-label {
-    font-weight: bold;
+    /* font-weight: bold; */
+    display: none;
   }
   
   .rbc-event-content {

@@ -12,7 +12,7 @@ class EventController extends Controller
     public function index()
     {
         $allevents = Event::all();
-        return Inertia::render('Events/EventCalendar1', ['allevents' => $allevents]);
+        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
     }
 
     public function store(Request $request)
