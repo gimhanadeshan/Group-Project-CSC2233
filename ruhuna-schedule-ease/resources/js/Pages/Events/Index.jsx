@@ -3,11 +3,10 @@ import { useForm, usePage, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Inertia } from "@inertiajs/inertia";
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
 const localizer = momentLocalizer(moment);
 const Index = () => {
-   
     const { auth, allevents } = usePage().props;
     const [searchTitle, setSearchTitle] = useState("");
     const [searchLocation, setSearchLocation] = useState("");
@@ -21,7 +20,7 @@ const Index = () => {
         event_title: "",
         location: "",
         start: "",
-        end: ""
+        end: "",
     });
 
     const handleEventClick = (event) => {
@@ -30,8 +29,8 @@ const Index = () => {
         setData({
             event_title: event.event_title,
             location: event.location,
-            start: moment(event.start).format('YYYY-MM-DDTHH:mm'),
-            end: moment(event.end).format('YYYY-MM-DDTHH:mm'),
+            start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
+            end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
         });
     };
 
@@ -55,12 +54,11 @@ const Index = () => {
                     reset();
                 },
             });
-
         } else {
             put(route("events.update", selectedEvent.id), {
                 onSuccess: () => {
                     // Update the events state on success
-                    const updatedEvents = events.map(event =>
+                    const updatedEvents = events.map((event) =>
                         event.id === selectedEvent.id ? data : event
                     );
                     setEvents(updatedEvents);
@@ -70,23 +68,26 @@ const Index = () => {
     };
     const handleDelete = () => {
         if (confirm("Are you sure you want to delete this event?")) {
-            
             reset();
         }
     };
 
-
-    const filteredEvents = allevents.filter(event => {
+    const filteredEvents = allevents.filter((event) => {
         return (
-            event.event_title.toLowerCase().includes(searchTitle.toLowerCase()) &&
-            event.location.toLowerCase().includes(searchLocation.toLowerCase()) &&
-            (startFilter === "" || new Date(event.start) >= new Date(startFilter)) &&
+            event.event_title
+                .toLowerCase()
+                .includes(searchTitle.toLowerCase()) &&
+            event.location
+                .toLowerCase()
+                .includes(searchLocation.toLowerCase()) &&
+            (startFilter === "" ||
+                new Date(event.start) >= new Date(startFilter)) &&
             (endFilter === "" || new Date(event.end) <= new Date(endFilter))
         );
     });
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Events" />
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -147,7 +148,10 @@ const Index = () => {
                             {(selectedEvent || isCreating) && (
                                 <form onSubmit={handleSubmit}>
                                     <div>
-                                        <label htmlFor="event_title" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="event_title"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Event Title
                                         </label>
                                         <input
@@ -157,10 +161,17 @@ const Index = () => {
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.event_title && <div className="text-red-500 text-xs">{errors.event_title}</div>}
+                                        {errors.event_title && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.event_title}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="location"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Location
                                         </label>
                                         <input
@@ -170,43 +181,66 @@ const Index = () => {
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.location && <div className="text-red-500 text-xs">{errors.location}</div>}
+                                        {errors.location && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.location}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="start" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="start"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Start
                                         </label>
                                         <input
                                             type="datetime-local"
                                             name="start"
                                             //value={data.start}
-                                            value={moment(data.start).format('YYYY-MM-DDTHH:mm')}
-
+                                            value={moment(data.start).format(
+                                                "YYYY-MM-DDTHH:mm"
+                                            )}
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.start && <div className="text-red-500 text-xs">{errors.start}</div>}
+                                        {errors.start && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.start}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="end" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="end"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             End
                                         </label>
                                         <input
                                             type="datetime-local"
                                             name="end"
                                             //value={data.end}
-                                            value={moment(data.end).format('YYYY-MM-DDTHH:mm')}
+                                            value={moment(data.end).format(
+                                                "YYYY-MM-DDTHH:mm"
+                                            )}
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.end && <div className="text-red-500 text-xs">{errors.end}</div>}
+                                        {errors.end && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.end}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4 flex space-x-4">
                                         <button
                                             type="submit"
                                             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         >
-                                            {isCreating ? "Create Event" : "Update Event"}
+                                            {isCreating
+                                                ? "Create Event"
+                                                : "Update Event"}
                                         </button>
                                         {!isCreating && (
                                             // <button
@@ -217,23 +251,21 @@ const Index = () => {
                                             //     Delete Event
                                             // </button>
                                             <Link
-                                            href={route(
-                                                "events.destroy",
-                                                selectedEvent.id
-                                            )}
-                                            method="delete"
-                                            as="button"
-                                            className="ml-4 text-red-600 hover:text-red-900"
-                                        >
-                                            <button
-
-                                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                                onClick={handleDelete}
+                                                href={route(
+                                                    "events.destroy",
+                                                    selectedEvent.id
+                                                )}
+                                                method="delete"
+                                                as="button"
+                                                className="ml-4 text-red-600 hover:text-red-900"
                                             >
-                                                Delete
-                                            </button>
-                                            
-                                        </Link>
+                                                <button
+                                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                                    onClick={handleDelete}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </Link>
                                         )}
                                     </div>
                                 </form>

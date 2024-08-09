@@ -1,89 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import './bigCalendar.css';
-
+import React, { useState, useEffect } from "react";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import "./bigCalendar.css";
 
 const localizer = momentLocalizer(moment);
 
 // Configure moment to start the week on Monday
-moment.updateLocale('en', {
-  week: {
-    dow: 1, // Monday is the first day of the week
-    doy: 1, // First week of the year must contain January 1 (7 + 1 - 7)
-  },
+moment.updateLocale("en", {
+    week: {
+        dow: 1, // Monday is the first day of the week
+        doy: 1, // First week of the year must contain January 1 (7 + 1 - 7)
+    },
 });
 
 // Define min and max times
 const minTime = new Date(1970, 1, 1, 8, 0); // 8:00 AM
 const maxTime = new Date(1970, 1, 1, 19, 0); // 6:00 PM
 
-const EventCalendar = ({ allevents,auth})=> {
+const EventCalendar = ({ allevents, auth }) => {
+    const [events, setEvents] = useState([]);
 
+    useEffect(() => {
+        if (allevents) {
+            console.log("Events Fetched!");
+            const parsedEvents = allevents.map((event) => ({
+                ...event,
+                start: new Date(event.start),
+                end: new Date(event.end),
+            }));
 
+            setEvents(parsedEvents);
+        } else {
+            console.log("No Allevents");
+        }
+    }, [allevents]);
 
-  const [events, setEvents] = useState([]);
+    const CustomEvent = ({ event }) => {
+        return (
+            <span>
+                <strong>{event.event_title}</strong>
+                <br />
+                <em>{event.location}</em>
+            </span>
+        );
+    };
 
-
-  useEffect(() => {
-   
-   if(allevents){
-    console.log('Events Fetched!')
-      const parsedEvents = allevents.map(event => ({
-          ...event,
-          start: new Date(event.start),
-          end: new Date(event.end),
-        }));
-
-    
-        setEvents(parsedEvents);
-
-    }     
-    else{
-      console.log('No Allevents')
-    }
-  }, [allevents]);
-
-
-
-  const CustomEvent = ({ event }) => {
     return (
-      <span>
-        <strong>{event.event_title}</strong>
-        <br />
-        <em>{event.location}</em>
-      </span>
-    );
-  };
- 
-  return (
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
+            <div style={{ height: "800px" }}>
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    defaultView={"week"}
+                    views={["month", "week", "day", "agenda"]}
+                    formats={{
+                        weekdayFormat: (date, culture, localizer) =>
+                            localizer.format(date, "dddd", culture),
+                    }}
+                    max={maxTime}
+                    min={minTime}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ margin: "50px" }}
+                    selectable={true}
+                    components={{
+                        event: CustomEvent,
+                    }}
+                />
 
-    <AuthenticatedLayout
-      user={auth.user}
-    >
-     
-      <div style={{ height: '800px' }}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          defaultView={'week'}
-          views={["month","week","day","agenda"]}
-          formats={{ weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture) }}
-          max={maxTime}
-          min={minTime}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ margin: '50px' }}
-          selectable={true}
-          components={{
-            event: CustomEvent
-          }}
-      
-        />
-
-        {/* {showModal && (
+                {/* {showModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:max-w-lg">
               <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -150,11 +137,9 @@ const EventCalendar = ({ allevents,auth})=> {
             </div>
           </div>
         )} */}
-      </div>
-
-    
-    </AuthenticatedLayout>
-  );
-}
+            </div>
+        </AuthenticatedLayout>
+    );
+};
 
 export default EventCalendar;

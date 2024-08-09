@@ -15,7 +15,7 @@ const Create = ({ auth }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Create Lecture Hall" />
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Create Lecture Hall</h1>
@@ -50,7 +50,9 @@ const Create = ({ auth }) => {
                         <input
                             id="capacity"
                             value={data.capacity}
-                            onChange={(e) => setData("capacity", e.target.value)}
+                            onChange={(e) =>
+                                setData("capacity", e.target.value)
+                            }
                             type="number"
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
