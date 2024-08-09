@@ -88,7 +88,7 @@ class EventController extends Controller
     {
         $start = Carbon::parse($data['start']);
         $end = Carbon::parse($data['end']);
-        $endDate = Carbon::now()->addYear(); // Set the end of recurrence (1 year from now)
+        $endDate = Carbon::now()->addMonth(6); // Set the end of recurrence (1 year from now)
 
         while ($start->lessThanOrEqualTo($endDate)) {
             Event::create([
