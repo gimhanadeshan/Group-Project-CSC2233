@@ -6,15 +6,13 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
     public function index()
     {
         $allevents = Event::all();
-        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-        
+        return Inertia::render('Events/EventCalendar1', ['allevents' => $allevents]);
     }
 
     public function store(Request $request)
@@ -24,9 +22,21 @@ class EventController extends Controller
             'location' => 'required',
             'start' => 'required|date',
             'end' => 'required|date',
+            'daily' => 'sometimes|boolean',
+            'weekly' => 'sometimes|boolean',
+            'monthly' => 'sometimes|boolean',
         ]);
 
-        Event::create($data);
+        // Determine the number of events to create based on recurrence
+        if ($request->daily) {
+            $this->createRecurringEvents($data, 'day');
+        } elseif ($request->weekly) {
+            $this->createRecurringEvents($data, 'week');
+        } elseif ($request->monthly) {
+            $this->createRecurringEvents($data, 'month');
+        } else {
+            Event::create($data);
+        }
 
         return redirect()->back()->with('success', 'Event created successfully');
     }
@@ -40,10 +50,24 @@ class EventController extends Controller
             'location' => 'required',
             'start' => 'required|date',
             'end' => 'required|date',
+            'daily' => 'sometimes|boolean',
+            'weekly' => 'sometimes|boolean',
+            'monthly' => 'sometimes|boolean',
         ]);
 
-        
-        $event->update($data);
+        // Delete existing event if recurrence options are updated
+        $event->delete();
+
+        // Handle recurrence update
+        if ($request->daily) {
+            $this->createRecurringEvents($data, 'day');
+        } elseif ($request->weekly) {
+            $this->createRecurringEvents($data, 'week');
+        } elseif ($request->monthly) {
+            $this->createRecurringEvents($data, 'month');
+        } else {
+            Event::create($data);
+        }
 
         return redirect()->back()->with('success', 'Event updated successfully');
     }
@@ -53,9 +77,30 @@ class EventController extends Controller
         try {
             $event = Event::findOrFail($id);
             $event->delete();
-            return response()->json(['success' => true]);
+
+            return redirect()->back()->with('success', 'Event deleted successfully');
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to delete event.'], 500);
+        }
+    }
+
+    private function createRecurringEvents(array $data, string $frequency)
+    {
+        $start = Carbon::parse($data['start']);
+        $end = Carbon::parse($data['end']);
+        $endDate = Carbon::now()->addYear(); // Set the end of recurrence (1 year from now)
+
+        while ($start->lessThanOrEqualTo($endDate)) {
+            Event::create([
+                'event_title' => $data['event_title'],
+                'location' => $data['location'],
+                'start' => $start->toDateTimeString(),
+                'end' => $end->toDateTimeString(),
+            ]);
+
+            // Adjust dates based on frequency
+            $start->add($frequency, 1);
+            $end->add($frequency, 1);
         }
     }
 }
