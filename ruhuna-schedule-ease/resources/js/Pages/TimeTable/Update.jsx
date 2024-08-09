@@ -51,6 +51,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
         value: course,
         label: `${course.code} - ${course.name}`,
       }));
+      console.log(courseOptions);
       const lecturerOptions = lecturers.map((lecturer) => ({
         value: lecturer,
         label: lecturer.name,
@@ -82,15 +83,24 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
             if (duplicateEntry) {
               setError('This course, lecturer, and type combination has already been added.');
             } else {
-              const newItem = { course: selectedCourse, lecturer: selectedLecturer, hall: selectedHall, type: selectedType , day: selectedDay, start_time: selectedStart, end_time: selectedEnd };
-              setData('timetable', newItem);
-              setSelectedCourse(null);
-              setSelectedLecturer(null);
-              setSelectedHall(null);
-              setSelectedType(null);
-              setError('');
+                console.log(selectedCourse);
+                if(selectedCourse !=null){
+                    const newItem = { course: selectedCourse, lecturer: selectedLecturer, hall: selectedHall, type: selectedType , day: selectedDay, start_time: selectedStart, end_time: selectedEnd };
+                setData('timetable', newItem);
+                post(route("timetables.storeSingle"));
+                setSelectedCourse(null);
+                setSelectedLecturer(null);
+                setSelectedHall(null);
+                setSelectedType(null);
+                setSelectedDay("");
+                setSelectedStart('')
+                setSelectedEnd('')
+                setError('');
 
-              post(route("timetables.storeSingle"));
+
+                }
+
+                setError('something went wrong');
             }
           }
       };
@@ -122,20 +132,17 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
             Modify Timetable of Level {semesterinfo.level} - Semester {semesterinfo.semester} - {semesterinfo.academic_year}
         </h1>
         {renderErrors()}
-        <div className="mb-4">
             <button type="button" onClick={toggleTimeTable} className="bg-yellow-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
               Show Current TimeTable
             </button>
-          </div>
-          <div className="mb-4">
             <button type="button" onClick={toggleTools} className="bg-yellow-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
               Show Tools
             </button>
-          </div>
+
         {showTimeTable && (
             <ShowTimeTable lunchTime={lunchTime} semester={semester} semesterinfo={semesterinfo}  timetables={timetables}/>)
         }
-        <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <div className="max-w-5xl my-5 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             { timetables.length > 0 && (
               <div>
                 <h2 className="mb-3 text-xl font-semibold dark:text-gray-100">Currently in TimeTable</h2>
@@ -147,6 +154,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Hall</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Type</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Time Range</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Day</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white-200 uppercase tracking-wider dark:text-gray-100">Action</th>
                     </tr>
                   </thead>
@@ -158,6 +166,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry['hall']['name']}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry['type']}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry['start_time']} - {entry['end_time']}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">{entry['day_of_week']}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white-100 dark:text-gray-100">
                           <button
                             onClick={() => handleDelete(index)}
@@ -174,6 +183,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
             )}
         </div>
         {showTools && (<form onSubmit={handleSubmit}>
+            <div className="max-w-5xl my-5 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
           <div className="grid grid-cols-2 gap-4 mb-3">
             <div>
               <h2 className="form-label text-lg dark:text-gray-100">Select a Course</h2>
@@ -323,8 +333,9 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                   className="border rounded p-2 w-1/3"
                 />
                 <select
-                  onChange={(e) => setSelectedDay(e.target.value)}
+                  onChange={(e) =>{setSelectedDay(e.target.value);}  }
                   className="border rounded p-2 w-1/3"
+                  value={selectedDay}
                 >
                   <option value="">Select Day</option>
                   {weekdays.map((day, idx) => (
@@ -338,7 +349,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                 Add to Table
               </button>
             </div>
-
+        </div>
         </form>)}
 
     </Authenticated>
