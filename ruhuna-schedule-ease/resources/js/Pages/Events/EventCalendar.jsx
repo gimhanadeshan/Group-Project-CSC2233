@@ -28,21 +28,21 @@ const EventCalendar = ({ allevents,auth})=> {
 
 
   useEffect(() => {
-   
+
    if(allevents){
-    console.log('Events Fetched!')
+    //console.log('Events Fetched!')
       const parsedEvents = allevents.map(event => ({
           ...event,
           start: new Date(event.start),
           end: new Date(event.end),
         }));
 
-    
+
         setEvents(parsedEvents);
 
-    }     
+    }
     else{
-      console.log('No Allevents')
+     // console.log('No Allevents')
     }
   }, [allevents]);
 
@@ -57,13 +57,13 @@ const EventCalendar = ({ allevents,auth})=> {
       </span>
     );
   };
- 
+
   return (
 
     <AuthenticatedLayout
       user={auth.user}
     >
-     
+
       <div style={{ height: '800px' }}>
         <Calendar
           localizer={localizer}
@@ -80,7 +80,7 @@ const EventCalendar = ({ allevents,auth})=> {
           components={{
             event: CustomEvent
           }}
-      
+
         />
 
         {/* {showModal && (
@@ -98,8 +98,8 @@ const EventCalendar = ({ allevents,auth})=> {
                       type="button"
                       className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                       //onClick=
-                        
-                      
+
+
                     >
                       <svg
                         className="w-5 h-5"
@@ -152,7 +152,7 @@ const EventCalendar = ({ allevents,auth})=> {
         )} */}
       </div>
 
-    
+
     </AuthenticatedLayout>
   );
 }
