@@ -12,7 +12,7 @@ export default function Authenticated({ user, header, children }) {
     const [sidebarDropdownOpen, setSidebarDropdownOpen] = useState(false);
 
     useEffect(() => {
-        console.log("User data:", user);
+        //console.log("User data:", user);
     }, [user]);
 
     const toggleSidebar = () => {
