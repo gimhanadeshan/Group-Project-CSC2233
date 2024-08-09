@@ -1,20 +1,20 @@
-import React from 'react';
-import { useForm, Link } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import React from "react";
+import { useForm, Link } from "@inertiajs/react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head } from "@inertiajs/react";
 
 const Create = ({ auth }) => {
     const { data, setData, post, processing, errors } = useForm({
-        name: '',
+        name: "",
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('permissions.store'));
+        post(route("permissions.store"));
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Create Permission" />
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Create Permission</h1>
@@ -29,7 +29,7 @@ const Create = ({ auth }) => {
                         <input
                             id="name"
                             value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData("name", e.target.value)}
                             type="text"
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
                             required
@@ -49,7 +49,7 @@ const Create = ({ auth }) => {
                     </button>
                 </form>
                 <Link
-                    href={route('permissions.index')}
+                    href={route("permissions.index")}
                     className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                     Back to Permissions

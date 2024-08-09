@@ -24,7 +24,7 @@ const Index = () => {
         event_title: "",
         location: "",
         start: "",
-        end: ""
+        end: "",
     });
 
     const handleEventClick = (event) => {
@@ -33,8 +33,8 @@ const Index = () => {
         setData({
             event_title: event.event_title,
             location: event.location,
-            start: moment(event.start).format('YYYY-MM-DDTHH:mm'),
-            end: moment(event.end).format('YYYY-MM-DDTHH:mm'),
+            start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
+            end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
         });
     };
 
@@ -119,15 +119,20 @@ const Index = () => {
 
     const filteredEvents = allevents.filter(event => {
         return (
-            event.event_title.toLowerCase().includes(searchTitle.toLowerCase()) &&
-            event.location.toLowerCase().includes(searchLocation.toLowerCase()) &&
-            (startFilter === "" || new Date(event.start) >= new Date(startFilter)) &&
+            event.event_title
+                .toLowerCase()
+                .includes(searchTitle.toLowerCase()) &&
+            event.location
+                .toLowerCase()
+                .includes(searchLocation.toLowerCase()) &&
+            (startFilter === "" ||
+                new Date(event.start) >= new Date(startFilter)) &&
             (endFilter === "" || new Date(event.end) <= new Date(endFilter))
         );
     });
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Events" />
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -209,7 +214,10 @@ const Index = () => {
                             {(selectedEvent || isCreating) && (
                                 <form onSubmit={handleSubmit}>
                                     <div>
-                                        <label htmlFor="event_title" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="event_title"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Event Title
                                         </label>
                                         <input
@@ -219,10 +227,17 @@ const Index = () => {
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.event_title && <div className="text-red-500 text-xs">{errors.event_title}</div>}
+                                        {errors.event_title && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.event_title}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="location"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Location
                                         </label>
                                         <input
@@ -232,10 +247,17 @@ const Index = () => {
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.location && <div className="text-red-500 text-xs">{errors.location}</div>}
+                                        {errors.location && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.location}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="start" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="start"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Start
                                         </label>
                                         <input
@@ -245,10 +267,17 @@ const Index = () => {
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.start && <div className="text-red-500 text-xs">{errors.start}</div>}
+                                        {errors.start && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.start}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="end" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="end"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             End
                                         </label>
                                         <input
@@ -258,14 +287,20 @@ const Index = () => {
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
-                                        {errors.end && <div className="text-red-500 text-xs">{errors.end}</div>}
+                                        {errors.end && (
+                                            <div className="text-red-500 text-xs">
+                                                {errors.end}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="mt-4 flex space-x-4">
                                         <button
                                             type="submit"
                                             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         >
-                                            {isCreating ? "Create Event" : "Update Event"}
+                                            {isCreating
+                                                ? "Create Event"
+                                                : "Update Event"}
                                         </button>
                                         {!isCreating && (
                                             <Link

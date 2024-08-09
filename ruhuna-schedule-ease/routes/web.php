@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('timetables', TimeTableController::class);
     Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
     Route::resource('courses', CourseController::class);
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+   // Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::resource('course-registrations', CourseRegistrationController::class);
 
     Route::resource('events-registration', EventRegistrationController::class);
@@ -71,9 +71,9 @@ Route::get('/', function () {
 
 
    
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {

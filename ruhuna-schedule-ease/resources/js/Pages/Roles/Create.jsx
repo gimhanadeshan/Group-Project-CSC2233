@@ -31,7 +31,7 @@ export default function Create({ auth }) {
     }, {});
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <Head title="Create Role" />
                 <h1 className="text-2xl font-bold mb-6">Create Role</h1>

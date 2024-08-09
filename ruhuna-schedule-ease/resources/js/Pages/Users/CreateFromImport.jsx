@@ -81,7 +81,7 @@ export default function CreateFromImport({ auth, roles, degreePrograms }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Import Users" />
 
             <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">

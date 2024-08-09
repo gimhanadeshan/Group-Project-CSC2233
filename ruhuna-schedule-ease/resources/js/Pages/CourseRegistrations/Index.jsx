@@ -20,7 +20,7 @@ const CourseRegistrations = ({ auth, courses }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Course Registrations" />
             <div className="container mx-auto p-4">
                 <h1 className="text-2xl font-bold mb-4 text-center">

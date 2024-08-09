@@ -12,7 +12,7 @@ const Index = ({ auth, semesters }) => {
     const canRead = auth.permissions.includes("read_semester");
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Semesters" />
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white shadow-sm sm:rounded-lg">

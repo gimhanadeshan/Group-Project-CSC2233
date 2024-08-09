@@ -9,14 +9,18 @@ use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('read_event', $request->user());
+
         $allevents = Event::all();
         return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create_event', $request->user());
+
         $data = $request->validate([
             'event_title' => 'required',
             'location' => 'required',
@@ -43,6 +47,8 @@ class EventController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('update_event', $request->user());
+
         $event = Event::findOrFail($id);
 
         $data = $request->validate([
@@ -72,8 +78,10 @@ class EventController extends Controller
         return redirect()->back()->with('success', 'Event updated successfully');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $this->authorize('delete_event', $request->user());
+
         try {
             $event = Event::findOrFail($id);
             $event->delete();

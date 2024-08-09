@@ -15,7 +15,7 @@ const Edit = ({ auth, lectureHall }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Edit Lecture Hall" />
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Edit Lecture Hall</h1>
