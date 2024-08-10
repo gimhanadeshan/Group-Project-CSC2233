@@ -5,32 +5,36 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import ShowTimeTable from '@/Components/ShowTimeTable';
 
 export default function Update({ auth, timetables, semester, lunchTime,semesterinfo, courses, lecturers, halls}) {
-    const [selectedCourse, setSelectedCourse] = useState(null);
-    const [selectedLecturer, setSelectedLecturer] = useState(null);
-    const [selectedHall, setSelectedHall] = useState(null);
-    const [selectedType, setSelectedType] = useState(null);
-    const [selectedDay, setSelectedDay] = useState(null);
-    const [selectedStart, setSelectedStart] = useState("");
-    const [selectedEnd, setSelectedEnd] = useState("");
+    const [startTime, setStartTime] = useState(lunchTime.start);
+    const [endTime, setEndTime] = useState(lunchTime.end);
     const [error, setError] = useState('');
     const [showTimeTable, setShowTimeTable] = useState(false);
     const [showTools, setShowTools] = useState(false);
+    const [timetableName, setTimetableName] = useState("Show TimeTable");
+    const [toolName, setToolName] = useState("Show Tools");
     const { get: deleteItem } = useForm();
     const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     const { data, setData, post, processing,errors } = useForm({
-        timetable:
-            {
-                course: null,
-                lecturer: null,
-                hall: null,
-                type: null,
-                day: null,
-                start_time: null,
-                end_time: null,
-            }
-        ,
-        semester_id: semester,
-      });
+                course: [],
+                lecturer: [],
+                hall: [],
+                type: "",
+                day: "",
+                start_time: "",
+                end_time: "",
+                semester_id: semester,
+    });
+    const handleStartTimeChange = (e) => {
+        setStartTime(e.target.value);
+    };
+
+    const handleEndTimeChange = (e) => {
+        setEndTime(e.target.value);
+    };
+    const updateInterval = () => {
+        console.log(startTime, endTime);
+        route("timetables.updateInterval", {interval_start: startTime, interval_end: endTime ,semester_id: semester});
+    };
       const handleDelete = (index) => {
         const id=timetables[index].slot_id;
 
@@ -38,13 +42,21 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
             deleteItem(route("timetables.destroySingle", id));
         }
     };
-
-
     const toggleTimeTable = () => {
         setShowTimeTable(!showTimeTable);
+        if(showTimeTable){
+            setTimetableName("Show TimeTable");
+        }else{
+            setTimetableName("Hide TimeTable");
+        }
       };
       const toggleTools = () => {
         setShowTools(!showTools);
+        if(showTools){
+            setToolName("Show Tools");
+        }else{
+            setToolName("Hide Tools");
+        }
       };
 
       const courseOptions = courses.map((course) => ({
@@ -63,44 +75,46 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
       }));
 
       const typeOptions = [
-        selectedCourse?.value.theory_hours ? { value: 'Theory', label: 'Theory' } : null,
-        selectedCourse?.value.practical_hours ? { value: 'Practical', label: 'Practical' } : null,
-        selectedCourse?.value.tutorial_hours ? { value: 'Tutorial', label: 'Tutorial' } : null,
+        data.course?.theory_hours ? { value: 'Theory', label: 'Theory' } : null,
+        data.course?.practical_hours ? { value: 'Practical', label: 'Practical' } : null,
+        data.course?.tutorial_hours ? { value: 'Tutorial', label: 'Tutorial' } : null,
       ].filter(Boolean);
 
 
       const handleSubmit = (e) => {
+        console.log(data);
         e.preventDefault();
-        if (selectedCourse && selectedLecturer && selectedHall && selectedType) {
+        if (data.course && data.lecturer && data.hall && data.type && data.end_time && data.start_time && data.day) {
             const duplicateEntry = timetables.find(
               (entry) =>
-                entry.course.id === selectedCourse.value.id &&
-                entry.lecturer.id === selectedLecturer.value.id &&
-                entry.hall.id === selectedHall.value.id &&
-                entry.type === selectedType.value
+                entry.course.id === data.course.id &&
+                entry.lecturer.id === data.lecturer.id &&
+                entry.hall.id === data.hall.id &&
+                entry.type === data.typevalue &&
+                entry.day_of_week === data.day &&
+                entry.start_time === data.start_time &&
+                entry.end_time === `${data.end_time}:00`
             );
 
             if (duplicateEntry) {
               setError('This course, lecturer, and type combination has already been added.');
             } else {
-                console.log(selectedCourse);
-                if(selectedCourse !=null){
-                    const newItem = { course: selectedCourse, lecturer: selectedLecturer, hall: selectedHall, type: selectedType , day: selectedDay, start_time: selectedStart, end_time: selectedEnd };
-                setData('timetable', newItem);
-                post(route("timetables.storeSingle"));
-                setSelectedCourse(null);
-                setSelectedLecturer(null);
-                setSelectedHall(null);
-                setSelectedType(null);
-                setSelectedDay("");
-                setSelectedStart('')
-                setSelectedEnd('')
-                setError('');
+                post(route("timetables.storeSingle"), {
+                    onSuccess: () => {
+                        // Reset form data after successful submission
+                        setData({
+                            course: [],
+                            lecturer: [],
+                            hall: [],
+                            type: "",
+                            day: "",
+                            start_time: "",
+                            end_time: "",
+                            semester_id: semester,
+                        });
+                    }
+                });
 
-
-                }
-
-                setError('something went wrong');
             }
           }
       };
@@ -132,12 +146,23 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
             Modify Timetable of Level {semesterinfo.level} - Semester {semesterinfo.semester} - {semesterinfo.academic_year}
         </h1>
         {renderErrors()}
-            <button type="button" onClick={toggleTimeTable} className="bg-yellow-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-              Show Current TimeTable
-            </button>
-            <button type="button" onClick={toggleTools} className="bg-yellow-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-              Show Tools
-            </button>
+        <div className="flex justify-between mb-4">
+  <button
+    type="button"
+    onClick={toggleTimeTable}
+    className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    {timetableName}
+  </button>
+  <button
+    type="button"
+    onClick={toggleTools}
+    className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+  >
+    {toolName}
+  </button>
+</div>
+
 
         {showTimeTable && (
             <ShowTimeTable lunchTime={lunchTime} semester={semester} semesterinfo={semesterinfo}  timetables={timetables}/>)
@@ -182,175 +207,240 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
               </div>
             )}
         </div>
-        {showTools && (<form onSubmit={handleSubmit}>
-            <div className="max-w-5xl my-5 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <div className="grid grid-cols-2 gap-4 mb-3">
-            <div>
-              <h2 className="form-label text-lg dark:text-gray-100">Select a Course</h2>
-              <Select
-                options={courseOptions}
-                value={selectedCourse}
-                onChange={setSelectedCourse}
-                placeholder="Select a course..."
-                isClearable
-                className="basic-single"
-                classNamePrefix="select"
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    borderColor: 'white',
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    boxShadow: 'none',
-                    '&:hover': {
-                      borderColor: 'blue',
-                    },
-                  }),
-                  singleValue: (provided) => ({
-                    ...provided,
-                    color: 'white',
-                  }),
-                  placeholder: (provided) => ({
-                    ...provided,
-                    color: 'white',
-                  }),
-                }}
-              />
+        {showTools && (
+    <div className="max-w-5xl my-5 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+    {/* Main Form Section */}
+    <div className="mb-8">
+        <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <h2 className="form-label text-lg dark:text-gray-100 mb-2">Select a Course</h2>
+                    <Select
+                        id="course"
+                        options={courseOptions}
+                        value={data.course.value}
+                        onChange={(e) => { setData('course', e.value); console.log(data.course); }}
+                        placeholder="Select a course..."
+                        isClearable
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{
+                            control: (provided) => ({
+                                ...provided,
+                                borderColor: 'white',
+                                backgroundColor: 'gray',
+                                color: 'white',
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    borderColor: 'blue',
+                                },
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                            placeholder: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                        }}
+                    />
+                </div>
+                {data.course.id && typeOptions.length > 0 && (
+                    <div>
+                        <h2 className="form-label text-lg dark:text-gray-100 mb-2">Select a Type</h2>
+                        <Select
+                            options={typeOptions}
+                            value={data.type.value}
+                            onChange={(e) => { setData('type', e.value); }}
+                            placeholder="Select a type..."
+                            isClearable
+                            className="basic-single"
+                            classNamePrefix="select"
+                            styles={{
+                                control: (provided) => ({
+                                    ...provided,
+                                    borderColor: 'white',
+                                    backgroundColor: 'gray',
+                                    color: 'white',
+                                    boxShadow: 'none',
+                                    '&:hover': {
+                                        borderColor: 'blue',
+                                    },
+                                }),
+                                singleValue: (provided) => ({
+                                    ...provided,
+                                    color: 'white',
+                                }),
+                                placeholder: (provided) => ({
+                                    ...provided,
+                                    color: 'white',
+                                }),
+                            }}
+                        />
+                    </div>
+                )}
+                <div>
+                    <h2 className="form-label text-lg dark:text-gray-100 mb-2">Select a Lecturer</h2>
+                    <Select
+                        options={lecturerOptions}
+                        value={data.lecturer.value}
+                        onChange={(e) => { setData('lecturer', e.value); }}
+                        placeholder="Select a lecturer..."
+                        isClearable
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{
+                            control: (provided) => ({
+                                ...provided,
+                                borderColor: 'white',
+                                backgroundColor: 'gray',
+                                color: 'white',
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    borderColor: 'blue',
+                                },
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                            placeholder: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                        }}
+                    />
+                </div>
+                <div>
+                    <h2 className="form-label text-lg dark:text-gray-100 mb-2">Select a Hall</h2>
+                    <Select
+                        options={hallOptions}
+                        value={data.hall.value}
+                        onChange={(e) => { setData('hall', e.value); }}
+                        placeholder="Select a Hall..."
+                        isClearable
+                        className="basic-single"
+                        classNamePrefix="select"
+                        styles={{
+                            control: (provided) => ({
+                                ...provided,
+                                borderColor: 'white',
+                                backgroundColor: 'gray',
+                                color: 'white',
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    borderColor: 'blue',
+                                },
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                            placeholder: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                        }}
+                    />
+                </div>
             </div>
-            {selectedCourse && typeOptions.length > 0 && (
-              <div>
-                <h2 className="form-label text-lg dark:text-gray-100">Select a Type</h2>
-                <Select
-                  options={typeOptions}
-                  value={selectedType}
-                  onChange={setSelectedType}
-                  placeholder="Select a type..."
-                  isClearable
-                  className="basic-single"
-                  classNamePrefix="select"
-                  styles={{
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: 'white',
-                      backgroundColor: 'gray',
-                      color: 'white',
-                      boxShadow: 'none',
-                      '&:hover': {
-                        borderColor: 'blue',
-                      },
-                    }),
-                    singleValue: (provided) => ({
-                      ...provided,
-                      color: 'white',
-                    }),
-                    placeholder: (provided) => ({
-                      ...provided,
-                      color: 'white',
-                    }),
-                  }}
-                />
-              </div>
-            )}
-            <div>
-              <h2 className="form-label text-lg dark:text-gray-100">Select a Lecturer</h2>
-              <Select
-                options={lecturerOptions}
-                value={selectedLecturer}
-                onChange={setSelectedLecturer}
-                placeholder="Select a lecturer..."
-                isClearable
-                className="basic-single"
-                classNamePrefix="select"
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    borderColor: 'white',
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    boxShadow: 'none',
-                    '&:hover': {
-                      borderColor: 'blue',
-                    },
-                  }),
-                  singleValue: (provided) => ({
-                    ...provided,
-                    color: 'white',
-                  }),
-                  placeholder: (provided) => ({
-                    ...provided,
-                    color: 'white',
-                  }),
-                }}
-              />
+                    <h2 className="text-lg text-red-600 dark:text-red-400 mb-2">
+                        Practical Hours: {data.course.practical_hours}
+                    </h2>
+                    <h2 className="text-lg text-red-600 dark:text-red-400 mb-2">
+                        Theory Hours: {data.course.theory_hours}
+                    </h2>
+                    <h2 className="text-lg text-red-600 dark:text-red-400 mb-2">
+                        Tutorial Hours: {data.course.tutorial_hours}
+                    </h2>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                    <h2 className="form-label text-lg dark:text-gray-100 mb-2">Start Time</h2>
+                    <input
+                        type="time"
+                        value={data.start_time}
+                        onChange={(e) => { setData('start_time', e.target.value); }}
+                        placeholder="Start Time"
+                        className="border rounded p-2 w-full"
+                    />
+                </div>
+                <div>
+                    <h2 className="form-label text-lg dark:text-gray-100 mb-2">End Time</h2>
+                    <input
+                        type="time"
+                        value={data.end_time}
+                        onChange={(e) => { setData('end_time', e.target.value); }}
+                        placeholder="End Time"
+                        className="border rounded p-2 w-full"
+                    />
+                </div>
+                <div>
+                    <h2 className="form-label text-lg dark:text-gray-100 mb-2">Select Day</h2>
+                    <select
+                        onChange={(e) => { setData('day', e.target.value); }}
+                        className="border rounded p-2 w-full"
+                        value={data.day}
+                    >
+                        <option value="">Select Day</option>
+                        {weekdays.map((day, idx) => (
+                            <option key={idx} value={day}>{day}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
-            <div>
-              <h2 className="form-label text-lg dark:text-gray-100">Select a Hall</h2>
-              <Select
-                options={hallOptions}
-                value={selectedHall}
-                onChange={setSelectedHall}
-                placeholder="Select a Hall..."
-                isClearable
-                className="basic-single"
-                classNamePrefix="select"
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    borderColor: 'white',
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    boxShadow: 'none',
-                    '&:hover': {
-                      borderColor: 'blue',
-                    },
-                  }),
-                  singleValue: (provided) => ({
-                    ...provided,
-                    color: 'white',
-                  }),
-                  placeholder: (provided) => ({
-                    ...provided,
-                    color: 'white',
-                  }),
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex space-x-4 mb-2">
-                <input
-                type="time"
-                value={selectedStart}
-                onChange={(e) => setSelectedStart(e.target.value)}
-                placeholder="Start Time"
-                className="border rounded p-2 w-1/3"
-                />
-
-                <input
-                  type="time"
-                  value={selectedEnd}
-                  onChange={(e) => setSelectedEnd(e.target.value)}
-                  placeholder="End Time"
-                  className="border rounded p-2 w-1/3"
-                />
-                <select
-                  onChange={(e) =>{setSelectedDay(e.target.value);}  }
-                  className="border rounded p-2 w-1/3"
-                  value={selectedDay}
+            {error && <div className="text-red-600 mb-4">{error}</div>}
+            <div className="flex justify-end">
+                <button
+                    type="submit"
+                    className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    disabled={processing}
                 >
-                  <option value="">Select Day</option>
-                  {weekdays.map((day, idx) => (
-                    <option key={idx} value={day}>{day}</option>
-                  ))}
-                </select>
-              </div>
-          {error && <div className="text-red-600 hover:text-red-700 focus:outline-none">{error}</div>}
-            <div className="flex justify-end w-full">
-              <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" disabled={processing}>
-                Add to Table
-              </button>
+                    Add to Table
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {/* Lunchtime Interval Section */}
+    <div className="mt-8">
+        <div className="grid grid-cols-3 gap-4 mb-6">
+            <div>
+                <h2 className="form-label text-lg dark:text-gray-100 mb-2">Start Interval</h2>
+                <input
+                    type="time"
+                    value={startTime}
+                    onChange={handleStartTimeChange}
+                    placeholder="Start Time"
+                    className="border rounded p-2 w-full"
+                />
+            </div>
+            <div>
+                <h2 className="form-label text-lg dark:text-gray-100 mb-2">End Interval</h2>
+                <input
+                    type="time"
+                    value={endTime}
+                    onChange={handleEndTimeChange}
+                    placeholder="End Time"
+                    className="border rounded p-2 w-full"
+                />
+            </div>
+            <div className="flex items-end">
+                <Link
+                    href={route('timetables.updateInterval', { lunchtime_start: startTime, lunchtime_end: endTime, semester_id: semester })}
+                    className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded w-full text-center"
+                    disabled={processing}
+                >
+                    Update Interval
+                </Link>
             </div>
         </div>
-        </form>)}
+    </div>
+</div>
+
+)}
+
+
 
     </Authenticated>
 
