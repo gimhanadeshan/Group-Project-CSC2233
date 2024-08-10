@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::any('/timetables/sh', [TimetableController::class, 'showTimeTable'])->name('timetables.showTimeTable');
     Route::resource('courses', CourseController::class);
    // Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+
     Route::resource('course-registrations', CourseRegistrationController::class);
 
     Route::resource('events-registration', EventRegistrationController::class);
