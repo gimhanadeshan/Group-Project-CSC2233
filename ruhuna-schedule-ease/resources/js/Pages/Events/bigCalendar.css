@@ -95,6 +95,7 @@
   .rbc-event-label {
     /* font-weight: bold; */
     display: none;
+    
   }
   
   .rbc-event-content {
@@ -154,6 +155,7 @@
     font-weight: bold;
     color: #007bff;
   }
+
   
   /* Mobile Responsiveness */
   @media (max-width: 768px) {
@@ -176,6 +178,9 @@
     .rbc-event {
       font-size: 12px;
       padding: 3px;
+    }
+    .rbc-agenda-time-cell,.rbc-agenda-date-cell{
+      text-wrap: wrap;
     }
   }
   

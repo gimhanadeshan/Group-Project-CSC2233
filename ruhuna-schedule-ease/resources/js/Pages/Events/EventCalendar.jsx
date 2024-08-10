@@ -19,7 +19,7 @@ moment.updateLocale('en', {
 const minTime = new Date(1970, 1, 1, 8, 0);
 const maxTime = new Date(1970, 1, 1, 19, 0);
 
-const EventCalendar = ({ allevents, auth }) => {
+const EventCalendar = ({ allevents, auth,permissions }) => {
   const [events, setEvents] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
@@ -128,10 +128,10 @@ const EventCalendar = ({ allevents, auth }) => {
   const CustomEvent = ({ event }) => {
     return (
       <span>
-         <hr/><br />
+       
         <strong>{event.event_title}</strong>
-        <br />
-        <br />
+        
+        
         <hr/>
         <br />
         <em>{event.location}</em>
@@ -140,7 +140,7 @@ const EventCalendar = ({ allevents, auth }) => {
   };
 
   return (
-    <AuthenticatedLayout user={auth.user}>
+    <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
       <div style={{ height: '800px' }}>
         <Calendar
           localizer={localizer}
