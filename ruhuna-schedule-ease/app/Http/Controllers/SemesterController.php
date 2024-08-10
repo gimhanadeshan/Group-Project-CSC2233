@@ -37,7 +37,7 @@ class SemesterController extends Controller
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            'course_registration_open' => 'required|boolean',
+            
         ]);
 
         $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
@@ -53,7 +53,7 @@ class SemesterController extends Controller
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                'course_registration_open' => $request->course_registration_open,
+                
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
@@ -83,7 +83,7 @@ class SemesterController extends Controller
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            'course_registration_open' => 'required|boolean',
+            
         ]);
 
         $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
@@ -99,7 +99,7 @@ class SemesterController extends Controller
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                'course_registration_open' => $request->course_registration_open,
+                
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
