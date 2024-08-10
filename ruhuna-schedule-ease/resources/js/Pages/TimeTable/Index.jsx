@@ -47,16 +47,25 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
             </div>
             <div className="flex justify-center">
               {selectedSemesterNotIn && (
-                <Link
-                  href={route('timetables.create', {
-                    level: selectedSemesterNotIn.value.level,
-                    semester: selectedSemesterNotIn.value.semester,
-                    semester_id: selectedSemesterNotIn.value.id,
-                  })}
-                  className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  Create
-                </Link>
+               <div className="flex flex-col md:flex-row gap-4">
+               <Link
+                 href={route('timetables.create', {
+                   level: selectedSemesterNotIn.value.level,
+                   semester: selectedSemesterNotIn.value.semester,
+                   semester_id: selectedSemesterNotIn.value.id,
+                 })}
+                 className="bg-indigo-600 text-white py-2 px-4 rounded-md mb-4 md:mb-0 md:mr-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+               >
+                 Create Automatically
+               </Link>
+               <Link
+                 href={route('timetables.modify', { timetable: selectedSemesterNotIn.value.id })}
+                 className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+               >
+                 Create Manually
+               </Link>
+             </div>
+
               )}
             </div>
           </div>
