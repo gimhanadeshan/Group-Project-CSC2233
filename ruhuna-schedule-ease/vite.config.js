@@ -11,4 +11,11 @@ export default defineConfig({
         }),
         react(),
     ],
+    build: {
+        manifest: true,
+        outDir: 'public/build',
+    },
+    optimizeDeps: {
+        include: ['react-lifecycles-compat']
+    }
 });
