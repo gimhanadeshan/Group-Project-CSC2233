@@ -13,10 +13,13 @@ class Event extends Model
         'event_title', 
         'location',
         'start',
-        'end'
+        'end',
+        'recurrence', // Add this if you want to store the recurrence pattern
     ];
 
-
-
-    
+    // Optional: Add a method to check if the event is recurring
+    public function isRecurring()
+    {
+        return $this->recurrence !== null;
+    }
 }
