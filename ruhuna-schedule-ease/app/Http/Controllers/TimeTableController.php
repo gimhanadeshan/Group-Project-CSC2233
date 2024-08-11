@@ -12,6 +12,7 @@ use App\Models\LectureHall;
 use App\Http\Requests\StoreTimeTableRequest;
 use App\Http\Requests\UpdateTimeTableRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -148,7 +149,8 @@ class TimeTableController extends Controller
 
 
 
-
+    try {
+        DB::beginTransaction();
 
     foreach ($tableData as $entry) {
         $course = $entry['course']['value'];
@@ -195,9 +197,17 @@ class TimeTableController extends Controller
         'lunchtime_end' => $lunchtimeEnd,
         'semester_id' => $semester,
     ]);
-
-
+    DB::commit();
     return $this->show($semester);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return back()->withErrors(['msg' => $e.getMessage()])->withInput();
+    }
+
+
+
 }
 
 private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type, $freeTimeslots, $levelsExistingEntries)
@@ -326,7 +336,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $startTime = $request->input('start_time').'00';
         $endTime = $request->input('end_time').'00';
         $type = $request->input('type');
-
+        try{
         TimeTable::create([
             'course' => $course,
             'hall_id' => $hall,
@@ -340,7 +350,10 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             'availability' => 1,
         ]);
         return $this->modify($semester);
+    }catch (QueryException $e) {
+        return back()->withErrors(['msg' => 'An error occurred while adding the timetable.']);
     }
+}
     public function destroySingle(int $id)
     {
         $timetable = TimeTable::find($id);
@@ -353,7 +366,8 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     public function updateInterval(Request $request){
         error_log('here');
             $semester_id=$request->input('semester_id');
-            if(Condition::where('semester_id',$semester_id)->exists()){
+           try{
+             if(Condition::where('semester_id',$semester_id)->exists()){
                 $condition = Condition::where('semester_id', $semester_id)->first();
                 $condition->lunchtime_start = $request->input('lunchtime_start').':00';
                 $condition->lunchtime_end = $request->input('lunchtime_end').':00';
@@ -365,5 +379,8 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
                     'semester_id' => $semester_id,
                 ]);
             }
+        }catch (QueryException $e) {
+            return back()->withErrors(['msg' => 'An error occurred while updating the interval.']);
+        }
     }
 }
