@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { useForm, Head } from '@inertiajs/react';
 import Popup from '@/Components/Popup';
 
-export default function Create({ auth, courses, lecturers, halls, semester }) {
+export default function Create({ auth, courses, lecturers, halls, semester,semesterdetails }) {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLecturer, setSelectedLecturer] = useState(null);
   const [selectedHall, setSelectedHall] = useState(null);
@@ -127,7 +127,7 @@ export default function Create({ auth, courses, lecturers, halls, semester }) {
       <Head title="TimeTable" />
       <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
       {renderErrors()}
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create Time table for {semester}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create Time table for Level {semesterdetails.level} - Semester {semesterdetails.semester} - {semesterdetails.academic_year}</h1>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-3">
             <div>

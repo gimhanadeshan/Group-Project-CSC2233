@@ -6,7 +6,6 @@ import CardBox from './CardBox';
 
 export default function PopOver({timeslot}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-    console.log(timeslot);
   const handlePopoverOpen = (event) => {
     if (timeslot) {
       setAnchorEl(event.currentTarget);
