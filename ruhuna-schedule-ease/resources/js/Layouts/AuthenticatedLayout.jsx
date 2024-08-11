@@ -8,9 +8,11 @@ export default function Authenticated({ user, header, children, permissions }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-    // useEffect(() => {
-    //     console.log("User data:", user);
-    // }, [user]);
+
+    useEffect(() => {
+        //console.log("User data:", user);
+    }, [user]);
+
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
