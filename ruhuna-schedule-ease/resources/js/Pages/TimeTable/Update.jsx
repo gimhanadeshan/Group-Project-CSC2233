@@ -141,7 +141,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
 
 
   return (
-    <Authenticated user={auth.user}>
+    <Authenticated user={auth.user} permissions={auth.permissions}>
         <Head title="TimeTable Modify" />
         <h1 className="text-2xl font-bold mb-4 text-center">
             Modify Timetable of Level {semesterinfo.level} - Semester {semesterinfo.semester} - {semesterinfo.academic_year}
