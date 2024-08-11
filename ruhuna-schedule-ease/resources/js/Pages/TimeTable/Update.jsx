@@ -9,7 +9,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
     const [endTime, setEndTime] = useState(lunchTime.end);
     const [error, setError] = useState('');
     const [showTimeTable, setShowTimeTable] = useState(false);
-    const [showTools, setShowTools] = useState(false);
+    const [showTools, setShowTools] = useState(true);
     const [timetableName, setTimetableName] = useState("Show TimeTable");
     const [toolName, setToolName] = useState("Show Tools");
     const { get: deleteItem } = useForm();
@@ -102,6 +102,7 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                 post(route("timetables.storeSingle"), {
                     onSuccess: () => {
                         // Reset form data after successful submission
+                        window.location.reload();
                         setData({
                             course: [],
                             lecturer: [],
