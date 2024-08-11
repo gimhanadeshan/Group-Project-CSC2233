@@ -210,6 +210,8 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
         {showTools && (
     <div className="max-w-5xl my-5 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
     {/* Main Form Section */}
+    <fieldset className="border border-gray-300 dark:border-gray-700 rounded-lg p-4">
+        <legend className="text-lg font-medium dark:text-gray-100 px-2">Setup a Slot</legend>
     <div className="mb-8">
         <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -345,14 +347,18 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                     />
                 </div>
             </div>
-                    <h2 className="text-lg text-red-600 dark:text-red-400 mb-2">
+                    <h2 className="text-lg text-green-600 dark:text-green-400 mb-2">
                         Practical Hours: {data.course.practical_hours}
                     </h2>
-                    <h2 className="text-lg text-red-600 dark:text-red-400 mb-2">
+                    <h2 className="text-lg text-green-600 dark:text-green-400 mb-2">
                         Theory Hours: {data.course.theory_hours}
                     </h2>
-                    <h2 className="text-lg text-red-600 dark:text-red-400 mb-2">
+                    <h2 className="text-lg text-green-600 dark:text-green-400 mb-2">
                         Tutorial Hours: {data.course.tutorial_hours}
+                    </h2>
+                    <h2 className='text-lg text-red-600 dark:text-red-400 mb-2'>
+                        You are using manual input for the time range so make sure to input the correct time with above information
+                        otherwise some inputs may not appear in the timetable.
                     </h2>
             <div className="grid grid-cols-3 gap-4 mb-6">
                 <div>
@@ -401,9 +407,11 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
             </div>
         </form>
     </div>
-
+    </fieldset>
     {/* Lunchtime Interval Section */}
     <div className="mt-8">
+    <fieldset className="border border-gray-300 dark:border-gray-700 rounded-lg p-4">
+        <legend className="text-lg font-medium dark:text-gray-100 px-2">Setup Lunch Time</legend>
         <div className="grid grid-cols-3 gap-4 mb-6">
             <div>
                 <h2 className="form-label text-lg dark:text-gray-100 mb-2">Start Interval</h2>
@@ -435,7 +443,9 @@ export default function Update({ auth, timetables, semester, lunchTime,semesteri
                 </Link>
             </div>
         </div>
-    </div>
+    </fieldset>
+</div>
+
 </div>
 
 )}
