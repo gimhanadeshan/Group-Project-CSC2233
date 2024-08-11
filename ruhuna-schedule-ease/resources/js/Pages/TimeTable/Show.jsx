@@ -12,7 +12,7 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
     };
 
     return (
-    <Authenticated user={auth.user}>
+    <Authenticated user={auth.user} permissions={auth.permissions}>
             <Head title="TimeTable" />
             <h1 className="text-2xl font-bold mb-4 text-center">
                     Timetable of Level {semesterinfo.level} - Semester {semesterinfo.semester} - {semesterinfo.academic_year}
