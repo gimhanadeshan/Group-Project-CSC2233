@@ -349,7 +349,8 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             'semester_id' => $semester,
             'availability' => 1,
         ]);
-        return $this->modify($semester);
+        //return $this->modify($semester);
+        return back()->with('success', 'Timetable added successfully.');
     }catch (QueryException $e) {
         return back()->withErrors(['msg' => 'An error occurred while adding the timetable.']);
     }
