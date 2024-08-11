@@ -79,6 +79,21 @@ const EventCalendar = ({ allevents, auth,permissions }) => {
         setModalIsOpen(false);
     };
 
+    useEffect(() => {
+        if (allevents) {
+            //console.log('Events Fetched!')
+            const parsedEvents = allevents.map((event) => ({
+                ...event,
+                start: new Date(event.start),
+                end: new Date(event.end),
+            }));
+
+            setEvents(parsedEvents);
+        } else {
+            // console.log('No Allevents')
+        }
+    }, [allevents]);
+
     const handleSelectSlot = ({ start, end }) => {
         setData({
             event_title: "",

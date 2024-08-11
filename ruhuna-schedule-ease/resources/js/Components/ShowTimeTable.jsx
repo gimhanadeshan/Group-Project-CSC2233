@@ -1,3 +1,4 @@
+
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import React from "react";
 import PopOver from "@/Components/PopOver";
@@ -11,11 +12,7 @@ export default function ShowTimeTable({
 }) {
     const { delete: deleteTimeTable } = useForm();
 
-    const handleDelete = () => {
-        if (confirm("Are you sure you want to delete this TimeTable?")) {
-            deleteTimeTable(route("timetables.destroy", semester));
-        }
-    };
+
 
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const timeSlots = [
@@ -86,6 +83,8 @@ export default function ShowTimeTable({
     };
 
     return (
+
+
         <Authenticated user={auth.user} permissions={auth.permissions}>
             <Head title="TimeTable" />
 
@@ -106,6 +105,7 @@ export default function ShowTimeTable({
                             Drop TimeTable
                         </button>
                     </div>
+
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                             <table className="min-w-full bg-white dark:bg-gray-800">
@@ -151,8 +151,5 @@ export default function ShowTimeTable({
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-        </Authenticated>
     );
 }

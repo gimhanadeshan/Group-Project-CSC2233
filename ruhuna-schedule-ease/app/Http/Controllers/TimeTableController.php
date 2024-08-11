@@ -12,6 +12,7 @@ use App\Models\LectureHall;
 use App\Http\Requests\StoreTimeTableRequest;
 use App\Http\Requests\UpdateTimeTableRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,28 @@ class TimeTableController extends Controller
         ]);
     }
 
-    
+
+    public function modify($semester)
+    {
+        $semesterDetails = Semester::find($semester);
+        $level=$semesterDetails->level;
+        $semesterNumber=$semesterDetails->semester;
+
+        $courses = Course::where('level', $level)->where('semester', $semesterNumber)->get();
+        $lecturers = User::where('role_id', 3)->get();
+        $halls = LectureHall::all();
+
+        $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
+        error_log($lunchTime['start']);
+        $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
+        error_log($lunchTime['end']);
+        $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
+            ->where('semester_id', $semester)
+            ->get();
+        $semesterinfo =Semester::where('id', $semester)->first();
+        return Inertia::render('TimeTable/Update', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo,'courses' => $courses,'halls' => $halls,'lecturers' => $lecturers]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -68,6 +90,7 @@ class TimeTableController extends Controller
             'courses' => $courses,
             'lecturers' => $lecturers,
             'semester' => $semester_id,
+            'semesterdetails' => $semesterDetails,
             'halls' => $halls,
         ]);
     }
@@ -125,10 +148,11 @@ class TimeTableController extends Controller
             ];
         })->toArray();
     }
-    error_log(json_encode($levelsExistingEntries));
 
 
 
+    try {
+        DB::beginTransaction();
 
     foreach ($tableData as $entry) {
         $course = $entry['course']['value'];
@@ -169,15 +193,23 @@ class TimeTableController extends Controller
         }
     }
 
-    error_log($semester);
+
     Condition::create([
         'lunchtime_start' => $lunchtimeStart,
         'lunchtime_end' => $lunchtimeEnd,
         'semester_id' => $semester,
     ]);
-
-
+    DB::commit();
     return $this->show($semester);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return back()->withErrors(['msg' => $e.getMessage()])->withInput();
+    }
+
+
+
 }
 
 private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type, $freeTimeslots, $levelsExistingEntries)
@@ -222,7 +254,6 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             }
             if (isset($levelsExistingEntries[$day])) {
                 foreach ($levelsExistingEntries[$day] as $entry) {
-                    error_log($currentStart." ".$entry['end']." ".$currentEnd." ".$entry['start']." ".json_encode($lecturer));
                     if ($currentStart < $entry['end'] && $currentEnd > $entry['start'] && ($entry['lecturer'] == $lecturer['id'] || $entry['hall'] == $hall['id'])) {
                         $overlap = true;
                         break;
@@ -246,14 +277,17 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     /**
      * Display the specified resource.
      */
-    public function show(int $semester)
+    public function show($semester)
     {
+
+
         $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
         $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
         $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
             ->where('semester_id', $semester)
             ->get();
-        return Inertia::render('TimeTable/ShowTimeTable', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime]);
+        $semesterinfo =Semester::where('id', $semester)->first();
+        return Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo]);
     }
 
     /**
@@ -292,5 +326,64 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             }
         }
         return redirect()->route('timetables.index')->with('success', 'Timetable deleted successfully.');
+    }
+    public function storeSingle(Request $request)
+    {
+
+        $course = $request->input('course')['id'];
+        $lecturer = $request->input('lecturer')['id'];
+        $hall = $request->input('hall')['id'];
+        $semester = $request->input('semester_id');
+        $day = $request->input('day');
+        $startTime = $request->input('start_time').'00';
+        $endTime = $request->input('end_time').'00';
+        $type = $request->input('type');
+        try{
+        TimeTable::create([
+            'course' => $course,
+            'hall_id' => $hall,
+            'lecturer' => $lecturer,
+            'semester_id' => $semester,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'day_of_week' => $day,
+            'type' => $type,
+            'semester_id' => $semester,
+            'availability' => 1,
+        ]);
+        //return $this->modify($semester);
+        return back()->with('success', 'Timetable added successfully.');
+    }catch (QueryException $e) {
+        return back()->withErrors(['msg' => 'An error occurred while adding the timetable.']);
+    }
+}
+    public function destroySingle(int $id)
+    {
+        $timetable = TimeTable::find($id);
+        try{$timetable->delete();}
+        catch (QueryException $e) {
+            return back()->withErrors(['msg' => 'An error occurred while deleting the timetable.']);
+        }
+        return back()->with('success', 'Timetable deleted successfully.');
+    }
+    public function updateInterval(Request $request){
+        error_log('here');
+            $semester_id=$request->input('semester_id');
+           try{
+             if(Condition::where('semester_id',$semester_id)->exists()){
+                $condition = Condition::where('semester_id', $semester_id)->first();
+                $condition->lunchtime_start = $request->input('lunchtime_start').':00';
+                $condition->lunchtime_end = $request->input('lunchtime_end').':00';
+                $condition->save();
+            }else{
+                Condition::create([
+                    'lunchtime_start' => $request->input('lunchtime_start').':00',
+                    'lunchtime_end' => $request->input('lunchtime_end').':00',
+                    'semester_id' => $semester_id,
+                ]);
+            }
+        }catch (QueryException $e) {
+            return back()->withErrors(['msg' => 'An error occurred while updating the interval.']);
+        }
     }
 }

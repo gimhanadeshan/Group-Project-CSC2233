@@ -14,8 +14,8 @@ export default function UpdateProfilePhotoForm({ user, className }) {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        
-        console.log(file);
+
+        //console.log(file);
 
         setData('profile_img', file);
 
@@ -23,7 +23,7 @@ export default function UpdateProfilePhotoForm({ user, className }) {
         reader.onloadend = () => {
             setPreview(reader.result);
         };
-        console.log(event.target.files[0].name);
+        //console.log(event.target.files[0].name);
 
         if (file) {
             reader.readAsDataURL(file);
@@ -49,7 +49,7 @@ export default function UpdateProfilePhotoForm({ user, className }) {
         setPreview('/profile_photos/default-profile-image.png');
         destroy(route('profile.photo.delete'));
         setData('profile_img', null);
-        
+
     };
 
     return (
@@ -62,8 +62,8 @@ export default function UpdateProfilePhotoForm({ user, className }) {
                     className="w-24 h-24 rounded-full"
                     src={preview}
                     alt="userPhoto"
-                    
-                    
+
+
                 />
                 </label>
             </div>
@@ -79,10 +79,10 @@ export default function UpdateProfilePhotoForm({ user, className }) {
                         //className=" mt-1 block w-full bg-red-400"
                         className="hidden"
                     />
-                    
+
                     {errors.profile_img && <div className="text-red-600 text-sm mt-2">{errors.profile_img}</div> }
 
-                    
+
 
                 </div>
 
@@ -92,17 +92,17 @@ export default function UpdateProfilePhotoForm({ user, className }) {
                         className="btn btn-primary "
                         disabled={processing}
                     >
-                        
+
                     </button> */}
 
-                    
+
                     <PrimaryButton disabled={processing}>{processing ? 'Updating...' : 'Update Photo'}</PrimaryButton>
 
-                   
+
 
                     <DangerButton onClick={handleDelete} disabled={processing} >Delete Photo</DangerButton>
 
-                    
+
 
                 </div>
             </form>
