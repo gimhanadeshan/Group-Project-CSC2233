@@ -35,7 +35,7 @@ const Create = ({ auth }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Create Course" />
             <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">

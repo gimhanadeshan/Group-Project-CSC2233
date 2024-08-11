@@ -31,7 +31,7 @@ export default function Edit({ auth }) {
     }, {});
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <Head title={`Edit ${role.name}`} />
                 <h1 className="text-2xl font-bold mb-6">Edit Role</h1>

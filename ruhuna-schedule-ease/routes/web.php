@@ -41,16 +41,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::resource('timetables', TimeTableController::class);
     Route::resource('courses', CourseController::class);
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+   // Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+
     Route::resource('course-registrations', CourseRegistrationController::class);
 
     Route::resource('events-registration', EventRegistrationController::class);
     Route::delete('/events-registration/{id}', [EventRegistrationController::class, 'destroy'])->name('events.destroy');
     Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
+
     Route::get('events', [EventController::class, 'index'])->name('events');
 
+    Route::put('/events', [EventController::class, 'store'])->name('event.store');
+    Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
+    Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
+   
 
 
 });
@@ -68,10 +74,11 @@ Route::get('/', function () {
 });
 
 
+   
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {

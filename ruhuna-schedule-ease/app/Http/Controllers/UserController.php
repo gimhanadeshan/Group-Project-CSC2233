@@ -18,8 +18,9 @@ use App\Models\DegreeProgram;
 class UserController extends Controller
 {
   
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('read_user', $request->user());
         $roles = Role::all();
         $degreePrograms = DegreeProgram::all();
         $users = User::with('role')->get(); // Load users with their roles
@@ -27,8 +28,11 @@ class UserController extends Controller
         return Inertia::render('Users/Index', ['users' => $users, 'roles' => $roles,'degreePrograms' => $degreePrograms]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
+
+        $this->authorize('create_user', $request->user());
+
         $roles = Role::all();
         $degreePrograms = DegreeProgram::all();
 
@@ -38,8 +42,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function createFromImport()
+    public function createFromImport(Request $request)
     {
+        $this->authorize('import_user', $request->user());
         $roles = Role::all();
         $degreePrograms = DegreeProgram::all();
 
@@ -51,6 +56,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create_user', $request->user());
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -73,8 +79,9 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
-    public function edit(User $user)
+    public function edit(User $user,Request $request)
     {
+        $this->authorize('update_user', $request->user());
         $roles = Role::all();
         $degreePrograms = DegreeProgram::all();
         return Inertia::render('Users/Edit', ['user' => $user , 'roles' => $roles,'degreePrograms' => $degreePrograms]);
@@ -82,6 +89,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $this->authorize('create_user', $request->user());
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -101,14 +109,16 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user,Request $request)
     {
+        $this->authorize('delete_user', $request->user());
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 
     public function export(Request $request)
 {
+    $this->authorize('export_user', $request->user());
     $query = User::query();
 
     if ($request->has('searchQuery')) {
@@ -148,6 +158,7 @@ class UserController extends Controller
 
 public function storeMany(Request $request)
 {
+    $this->authorize('create_user', $request->user());
     // Validate the incoming request data
     $validator = Validator::make($request->all(), [
         'commonData.role_id' => 'required|exists:roles,id',
@@ -215,6 +226,7 @@ public function storeMany(Request $request)
 
 public function import(Request $request)
 {
+    $this->authorize('import_user', $request->user());
     $request->validate([
         'file' => 'required|mimes:xlsx,xls|max:2048',
         'academic_year' => 'nullable|string',

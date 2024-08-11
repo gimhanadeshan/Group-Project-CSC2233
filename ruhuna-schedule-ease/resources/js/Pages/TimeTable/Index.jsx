@@ -16,7 +16,7 @@ export default function Index({ auth, semestersInTimeTable, semestersNotInTimeTa
   }));
 
   return (
-    <Authenticated user={auth.user}>
+    <Authenticated user={auth.user} permissions={auth.permissions}>
       <Head title="TimeTable" />
       <div className="container mx-auto px-4 py-6">
         <div className="flex justify-between gap-6">

@@ -16,7 +16,7 @@ const Index = ({ auth, lectureHalls }) => {
     const canDelete = auth.permissions.includes("delete_lecture_hall");
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Lecture Halls" />
 
             <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">

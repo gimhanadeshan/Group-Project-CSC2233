@@ -1,7 +1,6 @@
 import React from "react";
-import { Link, useForm, usePage } from "@inertiajs/react";
+import { Link, useForm, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
 
 const Index = ({ auth, degreePrograms }) => {
     const { delete: destroy } = useForm();
@@ -12,18 +11,24 @@ const Index = ({ auth, degreePrograms }) => {
         }
     };
 
+    const canCreate = auth.permissions.includes("create_degree_program");
+    const canEdit = auth.permissions.includes("update_degree_program");
+    const canDelete = auth.permissions.includes("delete_degree_program");
+
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Degree Programs" />
 
             <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Degree Programs</h1>
-                <Link
-                    href={route("degree-programs.create")}
-                    className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                    Create New Degree Program
-                </Link>
+                {canCreate && (
+                    <Link
+                        href={route("degree-programs.create")}
+                        className="bg-indigo-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        Create New Degree Program
+                    </Link>
+                )}
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
@@ -40,12 +45,14 @@ const Index = ({ auth, degreePrograms }) => {
                                 >
                                     Description
                                 </th>
-                                <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Edit</span>
-                                </th>
-                                <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Delete</span>
-                                </th>
+                                {(canEdit || canDelete) && (
+                                    <th
+                                        scope="col"
+                                        className="relative px-6 py-3"
+                                    >
+                                        <span className="sr-only">Actions</span>
+                                    </th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -57,27 +64,33 @@ const Index = ({ auth, degreePrograms }) => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {degreeProgram.description}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <Link
-                                            href={route(
-                                                "degree-programs.edit",
-                                                degreeProgram.id
+                                    {(canEdit || canDelete) && (
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            {canEdit && (
+                                                <Link
+                                                    href={route(
+                                                        "degree-programs.edit",
+                                                        degreeProgram.id
+                                                    )}
+                                                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                                                >
+                                                    Edit
+                                                </Link>
                                             )}
-                                            className="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            Edit
-                                        </Link>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(degreeProgram.id)
-                                            }
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
+                                            {canDelete && (
+                                                <button
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            degreeProgram.id
+                                                        )
+                                                    }
+                                                    className="text-red-600 hover:text-red-900"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

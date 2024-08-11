@@ -5,7 +5,7 @@ import { Head } from "@inertiajs/react";
 
 const Show = ({ auth, semester }) => {
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Semester Details" />
             <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -81,7 +81,7 @@ const Show = ({ auth, semester }) => {
                                         {semester.registration_end_date}
                                     </dd>
                                 </div>
-                                <div className="sm:col-span-1">
+                                {/* <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
                                         Course Registration Open
                                     </dt>
@@ -90,7 +90,7 @@ const Show = ({ auth, semester }) => {
                                             ? "Yes"
                                             : "No"}
                                     </dd>
-                                </div>
+                                </div> */}
                             </div>
                         </dl>
                         <div className="px-4 py-3 text-left sm:px-6">

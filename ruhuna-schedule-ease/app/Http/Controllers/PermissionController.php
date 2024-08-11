@@ -7,19 +7,22 @@ use Illuminate\Http\Request;
 
 class PermissionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('read_permission', $request->user());
         $permissions = Permission::all();
         return inertia('Permissions/Index', ['permissions' => $permissions]);
     }
 
-    public function edit(Permission $permission)
+    public function edit(Permission $permission,Request $request)
     {
+        $this->authorize('update_permission_module_name', $request->user());
         return inertia('Permissions/Edit', ['permission' => $permission]);
     }
 
     public function update(Request $request, Permission $permission)
     {
+        $this->authorize('update_permission_module_name', $request->user());
         $request->validate([
             'module_name' => 'required',
         ]);

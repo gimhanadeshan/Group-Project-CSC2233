@@ -23,5 +23,12 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
+    public function authorize($permission, $user)
+    {
+        if (!$user->hasPermissionTo($permission)) {
+            abort(403, 'Unauthorized action.');
+        }
+    }
+    
     
 }

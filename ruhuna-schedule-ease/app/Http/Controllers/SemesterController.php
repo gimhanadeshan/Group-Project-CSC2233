@@ -9,19 +9,25 @@ use Inertia\Inertia;
 
 class SemesterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('read_semester', $request->user());
+
         $semesters = Semester::all();
         return Inertia::render('Semesters/Index', compact('semesters'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $this->authorize('create_semester', $request->user());
+
         return Inertia::render('Semesters/Create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create_semester', $request->user());
+
         $request->validate([
             'academic_year' => 'required|string',
             'level' => 'required|string',
@@ -31,7 +37,7 @@ class SemesterController extends Controller
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            'course_registration_open' => 'required|boolean',
+            
         ]);
 
         $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
@@ -47,7 +53,7 @@ class SemesterController extends Controller
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                'course_registration_open' => $request->course_registration_open,
+                
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
@@ -57,13 +63,17 @@ class SemesterController extends Controller
         }
     }
 
-    public function edit(Semester $semester)
+    public function edit(Request $request, Semester $semester)
     {
+        $this->authorize('update_semester', $request->user());
+
         return Inertia::render('Semesters/Edit', compact('semester'));
     }
 
     public function update(Request $request, Semester $semester)
     {
+        $this->authorize('update_semester', $request->user());
+
         $request->validate([
             'academic_year' => 'required|string',
             'level' => 'required|string',
@@ -73,7 +83,7 @@ class SemesterController extends Controller
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            'course_registration_open' => 'required|boolean',
+            
         ]);
 
         $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
@@ -89,7 +99,7 @@ class SemesterController extends Controller
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                'course_registration_open' => $request->course_registration_open,
+                
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
@@ -99,16 +109,19 @@ class SemesterController extends Controller
         }
     }
 
-    public function show(Semester $semester)
+    public function show(Request $request, Semester $semester)
     {
+        $this->authorize('read_semester', $request->user());
+
         return Inertia::render('Semesters/Show', [
             'semester' => $semester
-            
         ]);
     }
 
-    public function destroy(Semester $semester)
+    public function destroy(Request $request, Semester $semester)
     {
+        $this->authorize('delete_semester', $request->user());
+
         try {
             $semester->delete();
             return redirect()->route('semesters.index')->with('success', 'Semester deleted successfully.');
@@ -134,4 +147,6 @@ class SemesterController extends Controller
 
         return $errorMessage;
     }
+
+   
 }

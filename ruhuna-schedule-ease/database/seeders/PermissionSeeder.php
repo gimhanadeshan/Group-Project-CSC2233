@@ -37,7 +37,20 @@ class PermissionSeeder extends Seeder
             ['id' => 22, 'name' => 'read_event', 'module_name' => 'Event Management'],
             ['id' => 23, 'name' => 'update_event', 'module_name' => 'Event Management'],
             ['id' => 24, 'name' => 'delete_event', 'module_name' => 'Event Management'],
-            // Add more permissions as needed
+            ['id' => 25, 'name' => 'create_degree_program', 'module_name' => 'User Management'],
+            ['id' => 26, 'name' => 'read_degree_program', 'module_name' => 'User Management'],
+            ['id' => 27, 'name' => 'update_degree_program', 'module_name' => 'User Management'],
+            ['id' => 28, 'name' => 'delete_degree_program', 'module_name' => 'User Management'],
+            ['id' => 29, 'name' => 'create_role', 'module_name' => 'User Management'],
+            ['id' => 30, 'name' => 'read_role', 'module_name' => 'User Management'],
+            ['id' => 31, 'name' => 'update_role', 'module_name' => 'User Management'],
+            ['id' => 32, 'name' => 'delete_role', 'module_name' => 'User Management'],
+            ['id' => 33, 'name' => 'update_module_name', 'module_name' => 'User Management'],
+            ['id' => 34, 'name' => 'read_permission', 'module_name' => 'User Management'],
+            ['id' => 35, 'name' => 'export_users', 'module_name' => 'User Management'],
+            ['id' => 36, 'name' => 'import_users', 'module_name' => 'User Management'],
+           
+            
         ];
 
         DB::table('permissions')->insert($permissions);

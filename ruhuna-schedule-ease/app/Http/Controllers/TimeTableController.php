@@ -37,6 +37,7 @@ class TimeTableController extends Controller
         ]);
     }
 
+
     public function modify($semester)
     {
         $semesterDetails = Semester::find($semester);
@@ -57,6 +58,7 @@ class TimeTableController extends Controller
         $semesterinfo =Semester::where('id', $semester)->first();
         return Inertia::render('TimeTable/Update', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo,'courses' => $courses,'halls' => $halls,'lecturers' => $lecturers]);
     }
+
 
     /**
      * Show the form for creating a new resource.

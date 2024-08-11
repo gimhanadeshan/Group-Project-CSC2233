@@ -13,7 +13,6 @@ const Edit = ({ auth, semester }) => {
         end_date: semester.end_date,
         registration_start_date: semester.registration_start_date,
         registration_end_date: semester.registration_end_date,
-        course_registration_open: semester.course_registration_open,
     });
 
     const handleChange = (e) => {
@@ -45,7 +44,7 @@ const Edit = ({ auth, semester }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Edit Semester" />
             <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -71,7 +70,6 @@ const Edit = ({ auth, semester }) => {
                                             value={data.academic_year}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         >
                                             <option value="">
                                                 Select Academic Year
@@ -98,7 +96,6 @@ const Edit = ({ auth, semester }) => {
                                             value={data.level}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         >
                                             <option value="">
                                                 Select Level
@@ -128,7 +125,6 @@ const Edit = ({ auth, semester }) => {
                                             value={data.semester}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         >
                                             <option value="">
                                                 Select Semester
@@ -179,7 +175,6 @@ const Edit = ({ auth, semester }) => {
                                             value={data.start_date}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         />
                                         {renderErrors("start_date")}
                                     </div>
@@ -198,12 +193,11 @@ const Edit = ({ auth, semester }) => {
                                             value={data.end_date}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
                                         />
                                         {renderErrors("end_date")}
                                     </div>
 
-                                    <div className="col-span-6 sm:col-span-3">
+                                    {/* <div className="col-span-6 sm:col-span-3">
                                         <div className="flex items-center">
                                             <input
                                                 id="course_registration_open"
@@ -222,57 +216,53 @@ const Edit = ({ auth, semester }) => {
                                                 Open Course Registration
                                             </label>
                                         </div>
-                                    </div>
+                                    </div> */}
 
-                                    {data.course_registration_open && (
-                                        <>
-                                            <div className="col-span-6 sm:col-span-3">
-                                                <label
-                                                    htmlFor="registration_start_date"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                >
-                                                    Registration Start Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="registration_start_date"
-                                                    name="registration_start_date"
-                                                    value={
-                                                        data.registration_start_date
-                                                    }
-                                                    onChange={handleChange}
-                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    required
-                                                />
-                                                {renderErrors(
-                                                    "registration_start_date"
-                                                )}
-                                            </div>
+                                    <>
+                                        <div className="col-span-6 sm:col-span-3">
+                                            <label
+                                                htmlFor="registration_start_date"
+                                                className="block text-sm font-medium text-gray-700"
+                                            >
+                                                Registration Start Date
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="registration_start_date"
+                                                name="registration_start_date"
+                                                value={
+                                                    data.registration_start_date
+                                                }
+                                                onChange={handleChange}
+                                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            />
+                                            {renderErrors(
+                                                "registration_start_date"
+                                            )}
+                                        </div>
 
-                                            <div className="col-span-6 sm:col-span-3">
-                                                <label
-                                                    htmlFor="registration_end_date"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                >
-                                                    Registration End Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="registration_end_date"
-                                                    name="registration_end_date"
-                                                    value={
-                                                        data.registration_end_date
-                                                    }
-                                                    onChange={handleChange}
-                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    required
-                                                />
-                                                {renderErrors(
-                                                    "registration_end_date"
-                                                )}
-                                            </div>
-                                        </>
-                                    )}
+                                        <div className="col-span-6 sm:col-span-3">
+                                            <label
+                                                htmlFor="registration_end_date"
+                                                className="block text-sm font-medium text-gray-700"
+                                            >
+                                                Registration End Date
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="registration_end_date"
+                                                name="registration_end_date"
+                                                value={
+                                                    data.registration_end_date
+                                                }
+                                                onChange={handleChange}
+                                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            />
+                                            {renderErrors(
+                                                "registration_end_date"
+                                            )}
+                                        </div>
+                                    </>
                                 </div>
                             </div>
                             <div className="px-4 py-3 text-right sm:px-6">
