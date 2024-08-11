@@ -22,7 +22,6 @@ return new class extends Migration
             $table->date('end_date');
             $table->date('registration_start_date')->nullable();
             $table->date('registration_end_date')->nullable();
-            $table->boolean('course_registration_open')->default(false);
             $table->timestamps();
         });
     }

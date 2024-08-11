@@ -14,7 +14,7 @@ const Create = ({ auth }) => {
         end_date: "",
         registration_start_date: "",
         registration_end_date: "",
-        course_registration_open: false,
+        
     });
 
     const handleChange = (e) => {
@@ -238,29 +238,8 @@ const Create = ({ auth }) => {
                                             </div>
                                         )}
                                     </div>
-
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                id="course_registration_open"
-                                                name="course_registration_open"
-                                                type="checkbox"
-                                                checked={
-                                                    data.course_registration_open
-                                                }
-                                                onChange={handleChange}
-                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <label
-                                                htmlFor="course_registration_open"
-                                                className="ml-2 block text-sm font-medium text-gray-700"
-                                            >
-                                                Open Course Registration
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {data.course_registration_open && (
+                               
+                                   
                                         <>
                                             <div className="col-span-6 sm:col-span-3">
                                                 <label
@@ -316,7 +295,7 @@ const Create = ({ auth }) => {
                                                 )}
                                             </div>
                                         </>
-                                    )}
+                                  
                                 </div>
                             </div>
                             <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
