@@ -8,7 +8,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 
 const localizer = momentLocalizer(moment);
 
-const Index = ({ auth, permissions,allevents }) => {
+const Index = ({ auth, permissions,allevents,semesters }) => {
     const [searchTitle, setSearchTitle] = useState("");
     const [searchLocation, setSearchLocation] = useState("");
     const [startFilter, setStartFilter] = useState("");
@@ -16,6 +16,7 @@ const Index = ({ auth, permissions,allevents }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
     const [events, setEvents] = useState(allevents); // State for the list of events
+    //const [semster,setSemester]=useState(semesters);
     const [selectedEvents, setSelectedEvents] = useState([]); // State for selected events
     const [selectAll, setSelectAll] = useState(false); // State for "Select All" checkbox
 
@@ -139,10 +140,7 @@ const Index = ({ auth, permissions,allevents }) => {
         );
     });
 
-
-    const createTimeTable=()=>{
-        
-    }
+const [semID,setSem]=useState(0);  
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
@@ -159,14 +157,22 @@ const Index = ({ auth, permissions,allevents }) => {
                         >
                             Create New Event
                         </button>
+                        <br></br>
+                        <select name='semID' onChange={(e) => setSem(e.target.value)}>
+                             <option value=''>SELECT SEMESTER</option>
+                             {semesters.map((semester)=>(
 
+                                <option key={semester.id} value={semester.id}>Level {semester.level} - Semester {semester.semester} - {semester.academic_year} </option>
+                             ))}
+                            </select>
+
+                        <Link href={route("generateEvents",semID)}>
                         <button
-                            onClick={handleCreateNewEvent}
                             className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                            Create New Event
+                            Generate TimeTable
                         </button>
-
+                        </Link>
                     </div>
                     <div className="px-4 py-5 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <input

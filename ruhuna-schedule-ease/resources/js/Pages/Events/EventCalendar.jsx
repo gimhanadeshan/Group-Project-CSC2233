@@ -153,6 +153,11 @@ const EventCalendar = ({ allevents, auth,permissions }) => {
         });
     };
 
+   
+        const eventPropGetter = (event) => {
+            const backgroundColor = event.semester_id ? '#007bff' : '#ff0000'; // Default color vs. red for NULL semester_id
+            return { style: { backgroundColor } };
+        };
 
   const CustomEvent = ({ event }) => {
     return (
@@ -190,6 +195,7 @@ const EventCalendar = ({ allevents, auth,permissions }) => {
           components={{
             event: CustomEvent,
           }}
+          eventPropGetter={eventPropGetter}
         />
       </div>
 

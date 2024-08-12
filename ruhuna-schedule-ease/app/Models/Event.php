@@ -14,12 +14,20 @@ class Event extends Model
         'location',
         'start',
         'end',
-        'recurrence', // Add this if you want to store the recurrence pattern
+        'recurrence', // For storing recurrence patterns
+        'user_id', // For storing the ID of the user who created the event
+        'semester_id',
     ];
 
     // Optional: Add a method to check if the event is recurring
     public function isRecurring()
     {
         return $this->recurrence !== null;
+    }
+
+    // Relationship with User model
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
