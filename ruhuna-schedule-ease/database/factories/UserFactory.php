@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'registration_no' => $this->faker->unique()->word(), // Adjust as necessary
             'password' => static::$password ??= Hash::make('password'),
             'role_id' => $this->faker->randomElement([1, 2, 3]), // Sets role_id to 1, 2, or 3
+            'academic_year'=>$this->faker->randomElement([2021, 2022, 2023,2024]),
         ];
     }
 

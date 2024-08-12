@@ -49,6 +49,8 @@ class PermissionSeeder extends Seeder
             ['id' => 34, 'name' => 'read_permission', 'module_name' => 'User Management'],
             ['id' => 35, 'name' => 'export_users', 'module_name' => 'User Management'],
             ['id' => 36, 'name' => 'import_users', 'module_name' => 'User Management'],
+            ['id' => 37, 'name' => 'read_course_registration', 'module_name' => 'Course Registration'],
+            ['id' => 38, 'name' => 'read_course_confirmation', 'module_name' => 'Course Registration'],
            
             
         ];

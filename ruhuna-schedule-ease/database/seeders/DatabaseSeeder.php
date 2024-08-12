@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'student@example.com',
             'registration_no'=>'Student',
             'role_id'=>2,
+            'academic_year'=>2021,
+           
            
         ]);
 
