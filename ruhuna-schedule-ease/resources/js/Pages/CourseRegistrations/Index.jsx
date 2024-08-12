@@ -16,6 +16,7 @@ const CourseRegistrations = ({
     const [localSemesterCourses, setLocalSemesterCourses] =
         useState(semesterCourses);
     const [confirmRemove, setConfirmRemove] = useState(null); // Store course to be removed
+    const [successMessage, setSuccessMessage] = useState("");
 
     const handleCourseToggle = (courseId) => {
         if (confirmedCourses.includes(courseId)) return;
@@ -26,8 +27,6 @@ const CourseRegistrations = ({
                 : [...prevSelectedCourses, courseId]
         );
     };
-
-   
 
     const handleSubmit = () => {
         Inertia.post(
@@ -55,6 +54,9 @@ const CourseRegistrations = ({
 
                         return updatedSemesterCourses;
                     });
+
+                    // Refresh the page after successful registration
+                    window.location.reload();
                 },
                 onError: (errors) => {
                     console.error(errors);
@@ -73,6 +75,9 @@ const CourseRegistrations = ({
                         )
                     );
                     setConfirmRemove(null); // Clear confirmation state
+
+                    // Refresh the page after successful removal
+                    window.location.reload();
                 },
                 onError: (errors) => {
                     console.error(errors);
