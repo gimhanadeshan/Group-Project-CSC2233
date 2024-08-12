@@ -16,7 +16,6 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
     const [events, setEvents] = useState(allevents); // State for the list of events
-    //const [semster,setSemester]=useState(semesters);
     const [selectedEvents, setSelectedEvents] = useState([]); // State for selected events
     const [selectAll, setSelectAll] = useState(false); // State for "Select All" checkbox
 
