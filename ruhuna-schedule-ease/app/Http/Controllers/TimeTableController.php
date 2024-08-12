@@ -200,7 +200,7 @@ class TimeTableController extends Controller
         'semester_id' => $semester,
     ]);
     DB::commit();
-    return $this->show($semester) && Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo]);;
+    return $this->show($semester);
 
     } catch (\Exception $e) {
         DB::rollBack();
@@ -335,8 +335,8 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $hall = $request->input('hall')['id'];
         $semester = $request->input('semester_id');
         $day = $request->input('day');
-        $startTime = $request->input('start_time').':00';
-        $endTime = $request->input('end_time').':00';
+        $startTime = $request->input('start_time').'00';
+        $endTime = $request->input('end_time').'00';
         $type = $request->input('type');
         try{
         TimeTable::create([
