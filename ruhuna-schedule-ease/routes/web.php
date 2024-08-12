@@ -55,11 +55,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events', [EventController::class, 'store'])->name('event.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
-   
+
     Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
 
 
-   
+
 
 
 });
@@ -76,8 +76,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/info', function () {
+    return Inertia::render('Info');
+})->name('info');
 
-   
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
