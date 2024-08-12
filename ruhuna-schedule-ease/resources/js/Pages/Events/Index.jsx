@@ -8,8 +8,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 
 const localizer = momentLocalizer(moment);
 
-const Index = () => {
-    const { auth, allevents } = usePage().props;
+const Index = ({ auth, permissions,allevents }) => {
     const [searchTitle, setSearchTitle] = useState("");
     const [searchLocation, setSearchLocation] = useState("");
     const [startFilter, setStartFilter] = useState("");
@@ -140,6 +139,11 @@ const Index = () => {
         );
     });
 
+
+    const createTimeTable=()=>{
+        
+    }
+
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Events" />
@@ -155,6 +159,14 @@ const Index = () => {
                         >
                             Create New Event
                         </button>
+
+                        <button
+                            onClick={handleCreateNewEvent}
+                            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Create New Event
+                        </button>
+
                     </div>
                     <div className="px-4 py-5 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <input

@@ -14,7 +14,7 @@ export default function Sidebar({ permissions }) {
     const canReadDegreeProgram = permissions.includes("read_degree_program");
     const canReadPermission = permissions.includes("read_permission");
     const canReadUser = permissions.includes("read_user");
-
+    
     return (
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
             <ul className="space-y-2 font-medium">

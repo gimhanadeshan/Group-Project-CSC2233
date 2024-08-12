@@ -3,17 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\TimeTable;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $this->authorize('read_event', $request->user());
         $allevents = Event::all();
         return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
     }
+
+    public function generateEventsFromTimetable($semesterId)
+{
+    $semester = Semester::findOrFail($semesterId);
+    $timeTables = TimeTable::where('semester_id', $semesterId)->get();
+
+    foreach ($timeTables as $slot) {
+        // Get the day of the week for the timetable slot
+        $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
+        $startTime = Carbon::parse($slot->start_time);
+        $endTime = Carbon::parse($slot->end_time);
+
+        while ($dayOfWeek->lessThanOrEqualTo(Carbon::parse($semester->end_date))) {
+
+            $startDateTime = $dayOfWeek->copy()->setTimeFrom($startTime)->toDateTimeString();
+            $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
+
+            // Check if an event already exists for this time slot and day
+            $existingEvent = Event::where('event_title', $slot->course . ' (' . $slot->type . ')')
+                ->where('location', $slot->hall->name)
+                ->where('start', $startDateTime)
+                ->where('end', $endDateTime)
+                ->first();
+
+            if (!$existingEvent) {
+                Event::create([
+                    'event_title' => $slot->course . ' (' . $slot->type . ')', //check this with $slot->course->name
+                    'location' => $slot->hall->name,
+                    'start' => $startDateTime,
+                    'end' => $endDateTime,
+                ]);
+            }
+
+            // Move to the next week
+            $dayOfWeek->addWeek();
+        }
+    }
+
+    return redirect()->back()->with('success', 'Events generated successfully from the timetable');
+}
+
 
     public function store(Request $request)
     {
