@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
 use App\Http\Controllers\EventRegistrationController;
+use App\Http\Controllers\CourseConfirmationController;
 
 
 
@@ -96,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('permissions', PermissionController::class);
 
 });
+
 
 
 
