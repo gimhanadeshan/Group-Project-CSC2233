@@ -27,6 +27,8 @@ const CourseRegistrations = ({
         );
     };
 
+   
+
     const handleSubmit = () => {
         Inertia.post(
             "/course-registrations",
