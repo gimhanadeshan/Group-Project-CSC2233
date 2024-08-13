@@ -1,19 +1,27 @@
-import React from "react";
-import { useForm, Link } from "@inertiajs/react";
+import React, { useEffect } from "react";
+import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head ,Link} from "@inertiajs/react";
 
 const Edit = ({ auth, semester }) => {
     const { data, setData, put, processing, errors } = useForm({
-        academic_year: semester.academic_year,
-        level: semester.level,
-        semester: semester.semester,
-        name: semester.name,
-        start_date: semester.start_date,
-        end_date: semester.end_date,
-        registration_start_date: semester.registration_start_date,
-        registration_end_date: semester.registration_end_date,
+        academic_year: semester.academic_year || "",
+        level: semester.level || "",
+        semester: semester.semester || "",
+        start_date: semester.start_date || "",
+        end_date: semester.end_date || "",
+        registration_start_date: semester.registration_start_date || "",
+        registration_end_date: semester.registration_end_date || "",
+        course_capacity: semester.course_capacity || 0,
+        enrollment_count: semester.enrollment_count || 0,
+        status: semester.status || "Upcoming",
+        description: semester.description || "",
     });
+
+    useEffect(() => {
+        // Set data when semester prop changes
+        setData({ ...semester });
+    }, [semester]);
 
     const handleChange = (e) => {
         const { id, value, type, checked } = e.target;
@@ -25,7 +33,6 @@ const Edit = ({ auth, semester }) => {
         put(route("semesters.update", semester.id));
     };
 
-    // Options for select dropdowns
     const levels = ["Level 1", "Level 2", "Level 3", "Level 4"];
     const semesters = ["Semester 1", "Semester 2"];
     const currentYear = new Date().getFullYear();
@@ -34,12 +41,23 @@ const Edit = ({ auth, semester }) => {
         (_, index) => currentYear - index
     );
 
-    // Error rendering function
-    const renderErrors = (field) => {
+    const renderErrors = () => {
+        if (!Object.keys(errors).length) return null;
+
         return (
-            errors[field] && (
-                <div className="text-red-600 text-sm mt-2">{errors[field]}</div>
-            )
+            <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                role="alert"
+            >
+                <strong className="font-bold">
+                    Whoops! Something went wrong.
+                </strong>
+                <ul className="mt-3 list-disc list-inside text-sm">
+                    {Object.values(errors).map((error, index) => (
+                        <li key={index}>{error}</li>
+                    ))}
+                </ul>
+            </div>
         );
     };
 
@@ -56,6 +74,7 @@ const Edit = ({ auth, semester }) => {
                     <div className="border-t border-gray-200">
                         <form onSubmit={handleSubmit}>
                             <div className="px-4 py-5 sm:p-6">
+                                {renderErrors()}
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-3">
                                         <label
@@ -70,6 +89,7 @@ const Edit = ({ auth, semester }) => {
                                             value={data.academic_year}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         >
                                             <option value="">
                                                 Select Academic Year
@@ -80,7 +100,11 @@ const Edit = ({ auth, semester }) => {
                                                 </option>
                                             ))}
                                         </select>
-                                        {renderErrors("academic_year")}
+                                        {errors.academic_year && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.academic_year}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -96,6 +120,7 @@ const Edit = ({ auth, semester }) => {
                                             value={data.level}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         >
                                             <option value="">
                                                 Select Level
@@ -109,7 +134,11 @@ const Edit = ({ auth, semester }) => {
                                                 </option>
                                             ))}
                                         </select>
-                                        {renderErrors("level")}
+                                        {errors.level && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.level}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -125,6 +154,7 @@ const Edit = ({ auth, semester }) => {
                                             value={data.semester}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         >
                                             <option value="">
                                                 Select Semester
@@ -140,25 +170,43 @@ const Edit = ({ auth, semester }) => {
                                                 )
                                             )}
                                         </select>
-                                        {renderErrors("semester")}
+                                        {errors.semester && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.semester}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
                                         <label
-                                            htmlFor="name"
+                                            htmlFor="status"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            Remarks
+                                            Status
                                         </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            value={data.name}
+                                        <select
+                                            id="status"
+                                            name="status"
+                                            value={data.status}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                        {renderErrors("name")}
+                                            required
+                                        >
+                                            <option value="Upcoming">
+                                                Upcoming
+                                            </option>
+                                            <option value="Ongoing">
+                                                Ongoing
+                                            </option>
+                                            <option value="Completed">
+                                                Completed
+                                            </option>
+                                        </select>
+                                        {errors.status && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.status}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -175,8 +223,13 @@ const Edit = ({ auth, semester }) => {
                                             value={data.start_date}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         />
-                                        {renderErrors("start_date")}
+                                        {errors.start_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.start_date}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -193,96 +246,144 @@ const Edit = ({ auth, semester }) => {
                                             value={data.end_date}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         />
-                                        {renderErrors("end_date")}
+                                        {errors.end_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.end_date}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* <div className="col-span-6 sm:col-span-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                id="course_registration_open"
-                                                name="course_registration_open"
-                                                type="checkbox"
-                                                checked={
-                                                    data.course_registration_open
-                                                }
-                                                onChange={handleChange}
-                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <label
-                                                htmlFor="course_registration_open"
-                                                className="ml-2 block text-sm font-medium text-gray-700"
-                                            >
-                                                Open Course Registration
-                                            </label>
-                                        </div>
-                                    </div> */}
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="registration_start_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Registration Start Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="registration_start_date"
+                                            name="registration_start_date"
+                                            value={data.registration_start_date}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.registration_start_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.registration_start_date}
+                                            </div>
+                                        )}
+                                    </div>
 
-                                    <>
-                                        <div className="col-span-6 sm:col-span-3">
-                                            <label
-                                                htmlFor="registration_start_date"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Registration Start Date
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="registration_start_date"
-                                                name="registration_start_date"
-                                                value={
-                                                    data.registration_start_date
-                                                }
-                                                onChange={handleChange}
-                                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            />
-                                            {renderErrors(
-                                                "registration_start_date"
-                                            )}
-                                        </div>
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="registration_end_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Registration End Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="registration_end_date"
+                                            name="registration_end_date"
+                                            value={data.registration_end_date}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.registration_end_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.registration_end_date}
+                                            </div>
+                                        )}
+                                    </div>
 
-                                        <div className="col-span-6 sm:col-span-3">
-                                            <label
-                                                htmlFor="registration_end_date"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Registration End Date
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="registration_end_date"
-                                                name="registration_end_date"
-                                                value={
-                                                    data.registration_end_date
-                                                }
-                                                onChange={handleChange}
-                                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            />
-                                            {renderErrors(
-                                                "registration_end_date"
-                                            )}
-                                        </div>
-                                    </>
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="course_capacity"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Course Capacity
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="course_capacity"
+                                            name="course_capacity"
+                                            value={data.course_capacity}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            min="0"
+                                        />
+                                        {errors.course_capacity && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.course_capacity}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="enrollment_count"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Enrollment Count
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="enrollment_count"
+                                            name="enrollment_count"
+                                            value={data.enrollment_count}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            min="0"
+                                        />
+                                        {errors.enrollment_count && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.enrollment_count}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="col-span-6">
+                                        <label
+                                            htmlFor="description"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Description
+                                        </label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            rows="3"
+                                            value={data.description}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.description && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.description}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="px-4 py-3 text-right sm:px-6">
+                                <Link
+                                    href={route("semesters.index")}
+                                    className="inline-flex justify-center mr-5 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Back to Semesters
+                                </Link>
                                 <button
                                     type="submit"
                                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     disabled={processing}
                                 >
-                                    Update
+                                    Update Semester
                                 </button>
                             </div>
                         </form>
-                        <div className="px-4 py-3 text-left sm:px-6">
-                            <Link
-                                href={route("semesters.index")}
-                                className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Back to Semesters
-                            </Link>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ use App\Models\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class SemesterController extends Controller
 {
@@ -13,8 +14,11 @@ class SemesterController extends Controller
     {
         $this->authorize('read_semester', $request->user());
 
+        // Update semester statuses
+        $this->updateSemestersStatus();
+
         $semesters = Semester::all();
-        return Inertia::render('Semesters/Index', compact('semesters'));
+        return Inertia::render('Semesters/Index', ['semesters' => $semesters]);
     }
 
     public function create(Request $request)
@@ -29,17 +33,22 @@ class SemesterController extends Controller
         $this->authorize('create_semester', $request->user());
 
         $request->validate([
-            'academic_year' => 'required|string',
-            'level' => 'required|string',
-            'semester' => 'required|string',
-            'name' => 'nullable|string',
+            'academic_year' => 'required|string|max:255',
+            'level' => 'required|in:1,2,3,4',
+            'semester' => 'required|in:1,2',
+            'reference_number' => 'required|string|unique:semesters|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            
+            'is_active' => 'required|boolean',
+            'description' => 'nullable|string',
+            'course_capacity' => 'nullable|integer|min:0',
+            'enrollment_count' => 'nullable|integer|min:0',
+            'status' => 'required|in:Upcoming,In Progress,Completed',
         ]);
 
+        // Assuming generateReferenceNumber is a method that generates a unique reference number
         $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
 
         try {
@@ -48,12 +57,15 @@ class SemesterController extends Controller
                 'level' => $request->level,
                 'semester' => $request->semester,
                 'reference_number' => $reference_number,
-                'name' => $request->name,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                
+                'is_active' => $request->is_active,
+                'description' => $request->description,
+                'course_capacity' => $request->course_capacity,
+                'enrollment_count' => $request->enrollment_count,
+                'status' => $request->status,
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
@@ -67,7 +79,7 @@ class SemesterController extends Controller
     {
         $this->authorize('update_semester', $request->user());
 
-        return Inertia::render('Semesters/Edit', compact('semester'));
+        return Inertia::render('Semesters/Edit', ['semester' => $semester]);
     }
 
     public function update(Request $request, Semester $semester)
@@ -75,17 +87,22 @@ class SemesterController extends Controller
         $this->authorize('update_semester', $request->user());
 
         $request->validate([
-            'academic_year' => 'required|string',
-            'level' => 'required|string',
-            'semester' => 'required|string',
-            'name' => 'nullable|string',
+            'academic_year' => 'required|string|max:255',
+            'level' => 'required|in:1,2,3,4',
+            'semester' => 'required|in:1,2',
+            'reference_number' => 'required|string|max:255|unique:semesters,reference_number,' . $semester->id,
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            
+            'is_active' => 'required|boolean',
+            'description' => 'nullable|string',
+            'course_capacity' => 'nullable|integer|min:0',
+            'enrollment_count' => 'nullable|integer|min:0',
+            'status' => 'required|in:Upcoming,In Progress,Completed',
         ]);
 
+        // Generate reference number if needed, or use the existing one
         $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
 
         try {
@@ -93,13 +110,16 @@ class SemesterController extends Controller
                 'academic_year' => $request->academic_year,
                 'level' => $request->level,
                 'semester' => $request->semester,
-                'reference_number' => $reference_number,
-                'name' => $request->name,
+                'reference_number' => $reference_number, // Comment out if reference_number should not be updated
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                
+                'is_active' => $request->is_active,
+                'description' => $request->description,
+                'course_capacity' => $request->course_capacity,
+                'enrollment_count' => $request->enrollment_count,
+                'status' => $request->status,
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
@@ -113,9 +133,7 @@ class SemesterController extends Controller
     {
         $this->authorize('read_semester', $request->user());
 
-        return Inertia::render('Semesters/Show', [
-            'semester' => $semester
-        ]);
+        return Inertia::render('Semesters/Show', ['semester' => $semester]);
     }
 
     public function destroy(Request $request, Semester $semester)
@@ -133,11 +151,8 @@ class SemesterController extends Controller
 
     private function handleQueryException(QueryException $e)
     {
-        // Default error message
         $errorMessage = 'An unexpected error occurred. Please try again later.';
 
-        // You can add more specific error handling based on $e->getCode() or $e->getMessage()
-        // Here are a few common error codes:
         switch ($e->getCode()) {
             case '23000':
                 $errorMessage = 'There is a database constraint violation. Please ensure that the data you entered is unique and valid.';
@@ -148,5 +163,20 @@ class SemesterController extends Controller
         return $errorMessage;
     }
 
-   
+    private function updateSemestersStatus()
+    {
+        $now = Carbon::now();
+
+        $semesters = Semester::all();
+        foreach ($semesters as $semester) {
+            if ($now->lt(Carbon::parse($semester->start_date))) {
+                $semester->status = 'Upcoming';
+            } elseif ($now->gt(Carbon::parse($semester->end_date))) {
+                $semester->status = 'Completed';
+            } else {
+                $semester->status = 'In Progress';
+            }
+            $semester->save();
+        }
+    }
 }
