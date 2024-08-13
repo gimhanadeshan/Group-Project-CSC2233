@@ -234,10 +234,12 @@ const EventCalendar = ({ allevents, auth }) => {
                     </div>
 
                     <form onSubmit={handleSubmit}>
+
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">
                                 Title:
                             </label>
+                            
                             <input
                                 type="text"
                                 value={data.event_title}
@@ -246,13 +248,18 @@ const EventCalendar = ({ allevents, auth }) => {
                                 }
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 required
+                                disabled={!canEdit}
+                                
                             />
+                            
                             {errors.event_title && (
                                 <div className="text-red-600">
                                     {errors.event_title}
                                 </div>
                             )}
+                            
                         </div>
+
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">
                                 Location:
@@ -265,6 +272,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                 }
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 required
+                                disabled={!canEdit}
                             />
                             {errors.location && (
                                 <div className="text-red-600">
@@ -284,6 +292,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                 }
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 required
+                                disabled={!canEdit}
                             />
                             {errors.start && (
                                 <div className="text-red-600">
@@ -301,6 +310,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                 onChange={(e) => setData("end", e.target.value)}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 required
+                                disabled={!canEdit}
                             />
                             {errors.end && (
                                 <div className="text-red-600">{errors.end}</div>
@@ -371,7 +381,7 @@ const EventCalendar = ({ allevents, auth }) => {
                             </button>
                         }   
 
-                        { !currentEvent &&
+                        {!canEdit && !currentEvent &&
                             <button
                                 type="submit"
                                 className="bg-blue-600 text-white py-2 px-4 rounded-md"

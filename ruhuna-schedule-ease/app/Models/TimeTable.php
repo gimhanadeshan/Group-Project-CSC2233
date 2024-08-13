@@ -23,7 +23,7 @@ class TimeTable extends Model
         'start_time',
         'end_time',
         'day_of_week',
-        'course',
+        'course_id',
         'hall_id',
         'lecturer',
         'semester_id',

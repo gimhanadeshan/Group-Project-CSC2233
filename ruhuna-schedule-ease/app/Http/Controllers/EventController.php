@@ -57,6 +57,8 @@ class EventController extends Controller
         $dayOfWeek = Carbon::parse($semester->start_date)->subDay()->next($slot->day_of_week);
         $startTime = Carbon::parse($slot->start_time);
         $endTime = Carbon::parse($slot->end_time);
+        $courseName = $slot->course->code;
+        $hallName = $slot->hall->name;
 
         while ($dayOfWeek->lessThanOrEqualTo(Carbon::parse($semester->end_date))) {
 
@@ -64,7 +66,7 @@ class EventController extends Controller
             $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
             // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course . ' (' . $slot->type . ')')
+            $existingEvent = Event::where('event_title', $slot->course->name . ' (' . $slot->type . ')')
                 ->where('location', $slot->hall->name)
                 ->where('start', $startDateTime)
                 ->where('end', $endDateTime)
@@ -72,8 +74,8 @@ class EventController extends Controller
 
             if (!$existingEvent) {
                 Event::create([
-                    'event_title' => $slot->course . ' (' . $slot->type . ')', //check this with $slot->course->name . ' (' . $slot->type . ')'
-                    'location' => $slot->hall->name,
+                    'event_title' => $courseName . ' (' . $slot->type . ')',
+                    'location' => $hallName,
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
