@@ -2,9 +2,10 @@
 import { useMemo,React,useEffect,useState } from 'react';
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadFull } from 'tsparticles';
+import { Link } from '@inertiajs/react';
 import Guest from '@/Layouts/GuestLayout';
 import AOS from 'aos';
-import 'aos/dist/aos.css';;
+import 'aos/dist/aos.css';
 
 const Info = () => {
     AOS.init();
@@ -34,39 +35,33 @@ const Info = () => {
  const teamMembers = [
     {
       id: 1,
-      name: 'Gimhana Deshan',
-      position: 'Lead Developer',
-      image: 'https://via.placeholder.com/150',
+      name: 'Sameera Athukorala',
+      position: 'Member',
+      image: '/Team/mem_sameera.jpeg',
     },
     {
       id: 2,
-      name: 'Sameera Athukorala',
+      name: 'Charith jayasankha',
       position: 'Member',
-      image: 'https://via.placeholder.com/150',
+      image: '/Team/mem_charith.jpeg',
     },
     {
       id: 3,
-      name: 'Charith jayasankha',
+      name: 'Oshan Harshad',
       position: 'Member',
-      image: 'https://via.placeholder.com/150',
+      image: '/Team/mem_oshan.jpg',
     },
     {
       id: 4,
-      name: 'Oshan Harshad',
+      name: 'Janith Sandaruwan',
       position: 'Member',
-      image: 'https://via.placeholder.com/150',
+      image: '/Team/mem_janith.jpg',
     },
     {
       id: 5,
-      name: 'Janith Sandaruwan',
-      position: 'Member',
-      image: 'https://via.placeholder.com/150',
-    },
-    {
-      id: 6,
       name: 'Asanka Idunil',
       position: 'Member',
-      image: 'https://via.placeholder.com/150',
+      image: '/Team/mem_asanka.jpg',
     },
   ];
 
@@ -170,7 +165,7 @@ const Info = () => {
                 <div className=" text-white py-20 text-center">
                     <h1 className="text-4xl font-bold">Streamline Your Academic Operations</h1>
                     <p className="mt-4 text-xl">Discover how RUHUNA ScheduleEase can revolutionize academic management.</p>
-                    <button className="mt-6 px-6 py-3 bg-blue-700 text-white rounded hover:bg-blue-800">Get Started</button>
+                    <Link href={route('login')} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">Get Started</Link>
                 </div>
             </header>
 
@@ -253,25 +248,38 @@ const Info = () => {
                 <p className="text-lg text-gray-600">Efficiency, ease of use, and improved academic management.</p>
             </section>
 
-            <section id='team' className="py-8 ">
-            <div className="container mx-auto px-4">
-             <h2 className="text-3xl font-bold text-white text-center mb-8">Meet the Team</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                {teamMembers.map(member => (
-                   <div data-aos="zoom-in" data-aos-duration="1500" className="text-white p-4 rounded-lg shadow-lg border border-gray-600">
+            <section id='team' className="py-8">
+  <div className="container mx-auto px-4">
+    <h2 className="text-3xl font-bold text-white text-center mb-8">Meet the Team</h2>
 
-                        <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-24 h-24 rounded-full mx-auto"
-                        />
-            <h3 className="text-xl font-semibold mt-4 text-center">{member.name}</h3>
-            <p className="text-center">{member.position}</p>
-          </div>
-                ))}
-                 </div>
-            </div>
-            </section>
+    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-8 py-6">
+      <div data-aos="zoom-in" data-aos-duration="1500" className="text-white p-4 rounded-lg shadow-lg border border-gray-600">
+        <img
+          src={'/Team/mem_gimhana.jpeg'}
+          alt='Gimhana Deshan'
+          className="w-32 h-32 md:w-36 md:h-36 rounded-full mx-auto object-cover"
+        />
+        <h3 className="text-xl font-semibold mt-4 text-center">Gimhana Deshan</h3>
+        <p className="text-center">Project Leader</p>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
+      {teamMembers.map(member => (
+        <div key={member.name} data-aos="zoom-in" data-aos-duration="1500" className="text-white p-4 rounded-lg shadow-lg border border-gray-600">
+          <img
+            src={member.image}
+            alt={member.name}
+            className="w-32 h-32 md:w-36 md:h-36 rounded-full mx-auto object-cover"
+          />
+          <h3 className="text-xl font-semibold mt-4 text-center">{member.name}</h3>
+          <p className="text-center">{member.position}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
 
             {/* Footer */}
             <footer className="bg-gray-800 text-white py-6">

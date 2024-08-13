@@ -14,6 +14,8 @@ use App\Http\Requests\UpdateTimeTableRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 
 class TimeTableController extends Controller
@@ -37,6 +39,21 @@ class TimeTableController extends Controller
         ]);
     }
 
+    public function generatePdf($semester)
+{
+        $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
+        $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
+        $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
+            ->where('semester_id', $semester)
+            ->get();
+        $semesterinfo =Semester::where('id', $semester)->first();
+
+    $pdf = new Dompdf();
+    $pdf->loadHtml(view('pdf.timetable', compact('timetables', 'semesterinfo','lunchTime'))->render());
+    $pdf->setPaper('A4', 'landscape');
+    $pdf->render();
+    return $pdf->stream('timetable.pdf');
+}
 
     public function modify($semester)
     {
@@ -176,7 +193,7 @@ class TimeTableController extends Controller
 
 
                 TimeTable::create([
-                'course' => $course['id'],
+                'course_id' => $course['id'],
                 'hall_id' => $hall['id'],
                 'lecturer' => $lecturer['id'],
                 'semester_id' => $semester,
@@ -340,7 +357,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $type = $request->input('type');
         try{
         TimeTable::create([
-            'course' => $course,
+            'course_id' => $course,
             'hall_id' => $hall,
             'lecturer' => $lecturer,
             'semester_id' => $semester,
