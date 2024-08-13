@@ -72,11 +72,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/course-confirmation/{courseCode}/cancel', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
 
 
-    Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
-
+    //Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
 
     //TimeTable table  into Events table
-   // Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
+   Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
 
 
 
