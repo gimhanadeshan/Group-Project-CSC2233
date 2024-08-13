@@ -18,7 +18,7 @@ return new class extends Migration
             $table->String('type');
             $table->boolean('availability');
             $table->enum('day_of_week', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-            $table->foreignId('course')->constrained('courses')->onDelete('cascade');
+            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->foreignId('hall_id')->constrained('lecture_halls')->onDelete('cascade');
             $table->foreignId('lecturer')->constrained('users')->onDelete('cascade');
             $table->foreignId('semester_id')->constrained('semesters')->onDelete('cascade');
