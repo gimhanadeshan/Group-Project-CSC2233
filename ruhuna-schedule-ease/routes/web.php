@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
+    Route::get('/timetables/{semester}/pdf', [TimetableController::class, 'generatePdf'])->name('timetables.pdf');
     Route::get('timetables/modify/{id}', [TimeTableController::class, 'destroySingle'])->name('timetables.destroySingle');
     Route::get('timetables/modify/interval/update',[TimeTableController::class, 'updateInterval'])->name('timetables.updateInterval');
     Route::post('timetables/modify/add', [TimeTableController::class, 'storeSingle'])->name('timetables.storeSingle');
@@ -62,11 +63,21 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events', [EventController::class, 'store'])->name('event.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
-    //TimeTable table  into Events table
-    Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
 
     Route::get('/dashboard', [EventController1::class, 'index'])->name('dashboard');
     //Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
+    Route::post('/course-confirmation/{courseCode}/confirm', [CourseConfirmationController::class, 'confirmCourse'])->name('course-confirmation.confirm');
+    Route::delete('/course-confirmation/{courseCode}/cancel', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
+
+
+    Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
+
+
+    //TimeTable table  into Events table
+   // Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
+
 
 
 });

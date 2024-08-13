@@ -31,6 +31,7 @@
         "@inertiajs/inertia-react": "^0.8.1",
         "@mui/material": "^5.16.6",
         "@tsparticles/react": "^3.0.0",
+        "aos": "^2.3.4",
         "react-beautiful-dnd": "^13.1.1",
         "react-big-calendar": "^1.13.2",
         "react-csv": "^2.2.2",
