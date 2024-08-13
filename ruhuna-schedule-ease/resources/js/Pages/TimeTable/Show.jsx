@@ -10,6 +10,9 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
             deleteTimeTable(route("timetables.destroy", semester));
         }
     };
+    const handleDownloadPDF = () => {
+        window.location.href = route('timetables.pdf', { semester });
+    };
 
     return (
     <Authenticated user={auth.user} permissions={auth.permissions}>
@@ -33,6 +36,12 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
                         >
                             Modify
                         </Link>
+                        <button
+                            onClick={handleDownloadPDF}
+                            className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            Download PDF
+                        </button>
                         <button
                             onClick={handleDelete}
                             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"

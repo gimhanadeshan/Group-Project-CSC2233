@@ -15,19 +15,44 @@ class SemesterSeeder extends Seeder
     {
                 Semester::factory()->create([
                     'academic_year' =>2021,
-                    'level' => 1,
-                    'semester' => 2,
+                    'level' => 3,
+                    'semester' => 1,
                     ]);
                 Semester::factory()->create([
-                    'academic_year' =>2021,
-                    'level' => 1,
+                    'academic_year' =>2022,
+                    'level' => 2,
                     'semester' => 1,
                    ]);
                 Semester::factory()->create([
-                    'academic_year' =>2021,
-                    'level' => 2,
-                    'semester' => 2,
+                    'academic_year' =>2023,
+                    'level' => 1,
+                    'semester' => 1,
                     ]);
+                Semester::factory()->create([
+                        'academic_year' =>2024,
+                        'level' => 1,
+                        'semester' => 1,
+                        ]);
+                Semester::factory()->create([
+                        'academic_year' =>2021,
+                        'level' => 3,
+                        'semester' => 2,
+                       ]);
+                Semester::factory()->create([
+                        'academic_year' =>2022,
+                        'level' => 2,
+                        'semester' => 2,
+                        ]); 
+                Semester::factory()->create([
+                      'academic_year' =>2023,
+                      'level' => 1,
+                      'semester' => 2,
+                      ]); 
+                Semester::factory()->create([
+                     'academic_year' =>2024,
+                     'level' => 1,
+                     'semester' => 2,
+                     ]);                    
 
 
 

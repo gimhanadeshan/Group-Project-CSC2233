@@ -25,6 +25,10 @@ export default function PopOver({timeslot}) {
         aria-haspopup="true"
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
+        className={`text-sm text-gray-600 font-serif ${
+            timeslot ? timeslot.course.name === 'Lunch Break' ? 'dark:text-yellow-400' :'dark:text-gray-100': 'dark:text-gray-100'
+          }`}
+
       >
             {timeslot? timeslot.course.name:''}
       </Typography>
