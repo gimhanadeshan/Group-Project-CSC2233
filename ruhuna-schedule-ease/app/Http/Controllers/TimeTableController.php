@@ -176,7 +176,7 @@ class TimeTableController extends Controller
 
 
                 TimeTable::create([
-                'course' => $course['id'],
+                'course_id' => $course['id'],
                 'hall_id' => $hall['id'],
                 'lecturer' => $lecturer['id'],
                 'semester_id' => $semester,
@@ -340,7 +340,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $type = $request->input('type');
         try{
         TimeTable::create([
-            'course' => $course,
+            'course_id' => $course,
             'hall_id' => $hall,
             'lecturer' => $lecturer,
             'semester_id' => $semester,
