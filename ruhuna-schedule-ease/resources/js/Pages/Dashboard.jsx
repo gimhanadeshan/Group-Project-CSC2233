@@ -23,7 +23,7 @@ export default function Dashboard({ auth,allevents }) {
 
           
 
-            <EventCalendar name={allevents} defaultView="month" views={['month','day']} style={ calendarStyles}/>
+            <EventCalendar name={allevents} defaultView="day" views={['month','day']} style={ calendarStyles}/>
 
 
 

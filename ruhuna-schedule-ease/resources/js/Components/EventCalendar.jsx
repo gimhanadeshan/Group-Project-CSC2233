@@ -209,7 +209,7 @@ let allevents=props.name;
         />
 </div>
 
-
+{props.defaultView!='month' &&
 <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
@@ -364,7 +364,7 @@ let allevents=props.name;
                     </form>
                 </div>
 </Modal>
-
+}
 </>
 
     )
