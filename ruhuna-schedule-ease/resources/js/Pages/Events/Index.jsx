@@ -141,6 +141,10 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
 
 const [semID,setSem]=useState(0);  
 
+const canCreate = auth.permissions.includes("create_event");
+const canEdit = auth.permissions.includes("update_event");
+const canDelete = auth.permissions.includes("delete_event");
+
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Events" />
@@ -150,12 +154,15 @@ const [semID,setSem]=useState(0);
                         <h1 className="text-lg font-bold leading-6 text-gray-900">
                             Events
                         </h1>
-                        <button
+                        {canCreate &&
+                            <button
                             onClick={handleCreateNewEvent}
                             className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Create New Event
                         </button>
+                        }
+                        
                         <br></br>
                         <select name='semID' onChange={(e) => setSem(e.target.value)}>
                              <option value=''>SELECT SEMESTER</option>
