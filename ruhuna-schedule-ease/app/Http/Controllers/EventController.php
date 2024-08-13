@@ -55,7 +55,7 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         //$slots = TimeTable::with('course', 'hall')->get(); // Ensure 'course' is included in the eager loading
 
         // Get the day of the week for the timetable slot
-        $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
+        $dayOfWeek = Carbon::parse($semester->start_date)->subDay()->next($slot->day_of_week);
         $startTime = Carbon::parse($slot->start_time);
         $endTime = Carbon::parse($slot->end_time);
 
