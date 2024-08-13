@@ -20,7 +20,6 @@ class SemesterFactory extends Factory
 
 
         return [
-            'name' => $this->faker->word,  // Generate a random name
             'start_date' => $this->faker->date(),
             'end_date' => $this->faker->date(),
         ];

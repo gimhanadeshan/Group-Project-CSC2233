@@ -17,17 +17,17 @@ class SemesterSeeder extends Seeder
                     'academic_year' =>2021,
                     'level' => 1,
                     'semester' => 2,
-                    'reference_number' => 'L1S22021']);
+                    ]);
                 Semester::factory()->create([
                     'academic_year' =>2021,
                     'level' => 1,
                     'semester' => 1,
-                    'reference_number' => 'L1S12021']);
+                   ]);
                 Semester::factory()->create([
                     'academic_year' =>2021,
                     'level' => 2,
                     'semester' => 2,
-                    'reference_number' => 'L2S22021']);
+                    ]);
 
 
 
