@@ -36,12 +36,10 @@ class SemesterController extends Controller
             'academic_year' => 'required|string|max:255',
             'level' => 'required|in:1,2,3,4',
             'semester' => 'required|in:1,2',
-            'reference_number' => 'required|string|unique:semesters|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            'is_active' => 'required|boolean',
             'description' => 'nullable|string',
             'course_capacity' => 'nullable|integer|min:0',
             'enrollment_count' => 'nullable|integer|min:0',
@@ -49,19 +47,17 @@ class SemesterController extends Controller
         ]);
 
         // Assuming generateReferenceNumber is a method that generates a unique reference number
-        $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
+//$reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
 
         try {
             Semester::create([
                 'academic_year' => $request->academic_year,
                 'level' => $request->level,
                 'semester' => $request->semester,
-                'reference_number' => $reference_number,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                'is_active' => $request->is_active,
                 'description' => $request->description,
                 'course_capacity' => $request->course_capacity,
                 'enrollment_count' => $request->enrollment_count,
@@ -90,12 +86,10 @@ class SemesterController extends Controller
             'academic_year' => 'required|string|max:255',
             'level' => 'required|in:1,2,3,4',
             'semester' => 'required|in:1,2',
-            'reference_number' => 'required|string|max:255|unique:semesters,reference_number,' . $semester->id,
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
-            'is_active' => 'required|boolean',
             'description' => 'nullable|string',
             'course_capacity' => 'nullable|integer|min:0',
             'enrollment_count' => 'nullable|integer|min:0',
@@ -103,19 +97,17 @@ class SemesterController extends Controller
         ]);
 
         // Generate reference number if needed, or use the existing one
-        $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
+       // $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
 
         try {
             $semester->update([
                 'academic_year' => $request->academic_year,
                 'level' => $request->level,
                 'semester' => $request->semester,
-                'reference_number' => $reference_number, // Comment out if reference_number should not be updated
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
-                'is_active' => $request->is_active,
                 'description' => $request->description,
                 'course_capacity' => $request->course_capacity,
                 'enrollment_count' => $request->enrollment_count,
