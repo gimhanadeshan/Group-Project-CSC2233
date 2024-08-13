@@ -34,7 +34,9 @@ class TimeTable extends Model
     // Define relationships
     public function course()
     {
+
         return $this->belongsTo(Course::class, 'course_id','id');
+
     }
 
     public function hall()

@@ -40,13 +40,13 @@ class EventController extends Controller
 
 
 
-    public function generateEventsFromTimetable(Request $request,$semesterId)
+public function generateEventsFromTimetable(Request $request, $semesterId)
 {
-
-    error_log("o");
+    error_log("Generating events from timetable");
 
     $user = $request->user();
     $semester = Semester::findOrFail($semesterId);
+
     $timeTables = TimeTable::where('semester_id', $semesterId)->get();
 
     foreach ($timeTables as $slot) {
@@ -81,15 +81,16 @@ class EventController extends Controller
                     'user_id' => $user->id,
                     'semester_id' => $semesterId 
                 ]);
-            }
 
-            // Move to the next week
-            $dayOfWeek->addWeek();
+            }
         }
     }
-    //return 1;
+
     return redirect()->back()->with('success', 'Events generated successfully from the timetable');
 }
+
+
+
 
 
     public function store(Request $request)
