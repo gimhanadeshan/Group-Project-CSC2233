@@ -58,5 +58,9 @@ class DashboardController extends Controller
             default:
                 return Inertia::render('Dashboard');
         }
+
+   
     }
+
+    
 }
