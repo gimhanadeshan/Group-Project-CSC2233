@@ -256,6 +256,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                                 Select Degree Program
                                             </option>
                                             {degreePrograms.map((program) => (
+                                               
                                                 <option
                                                     key={program.id}
                                                     value={program.id}

@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('location');
             $table->dateTime('start');
             $table->dateTime('end');
-        
+            $table->unsignedBigInteger('user_id')->nullable(); // Add user_id column
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Set up foreign key constraint
+            $table->integer('semester_id')->nullable();
             $table->timestamps();
         });
     }

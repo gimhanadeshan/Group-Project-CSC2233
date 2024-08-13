@@ -201,7 +201,7 @@ class TimeTableController extends Controller
     ]);
     DB::commit();
     return $this->show($semester);
-
+    
     } catch (\Exception $e) {
         DB::rollBack();
 
