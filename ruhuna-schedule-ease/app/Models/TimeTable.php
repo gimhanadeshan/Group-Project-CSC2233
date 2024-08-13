@@ -34,17 +34,17 @@ class TimeTable extends Model
     // Define relationships
     public function course()
     {
-        return $this->belongsTo(Course::class, 'course');
+        return $this->belongsTo(Course::class, 'course_id','id');
     }
 
     public function hall()
     {
-        return $this->belongsTo(LectureHall::class, 'hall_id');
+        return $this->belongsTo(LectureHall::class, 'hall_id','id');
     }
 
     public function lecturer()
     {
-        return $this->belongsTo(User::class, 'lecturer');
+        return $this->belongsTo(User::class, 'lecturer','id');
     }
 
     public function semester()
