@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([LectureHallSeeder::class]);
         $this->call([CourseSeeder::class]);
         $this->call([SemesterSeeder::class]);
-        $this->call([EventsSeeder::class]);
+        //$this->call([EventsSeeder::class]);
 
 
 
@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'student@example.com',
             'registration_no'=>'Student',
             'role_id'=>2,
+            'academic_year'=>2021,
+           
            
         ]);
 

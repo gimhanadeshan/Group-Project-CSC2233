@@ -12,46 +12,74 @@ use Illuminate\Support\Carbon;
 class EventController extends Controller
 {
     public function index(Request $request)
-    {
-        $this->authorize('read_event', $request->user());
-        $allevents = Event::all();
+{
+    $this->authorize('read_event', $request->user());
+
+    // Fetch the semester_id from the course_registrations table for the logged-in user
+    $semesterId = \DB::table('course_registrations')
+                    ->where('user_id', $request->user()->id)
+                    ->orderBy('created_at', 'desc') // Adjust ordering as necessary
+                    ->value('semester_id');
+
+    // If no semester_id is found, return an empty set of events
+    if (!$semesterId) {
+        $allevents = Event::whereNull('semester_id')->get();
         return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
     }
 
-    public function generateEventsFromTimetable($semesterId)
+    // Fetch events that match the user's semester_id
+    //$allevents = Event::where('semester_id', $semesterId)->get();
+    $allevents = Event::where('semester_id', $semesterId)
+                      ->orWhereNull('semester_id')
+                      ->get();
+    return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+}
+
+
+public function generateEventsFromTimetable(Request $request, $semesterId)
 {
+    error_log("Generating events from timetable");
+
+    $user = $request->user();
     $semester = Semester::findOrFail($semesterId);
-    $timeTables = TimeTable::where('semester_id', $semesterId)->get();
+    $timeTables = TimeTable::where('semester_id', $semesterId)
+        ->with('course', 'hall') // Eager load course and hall relationships
+        ->get();
 
     foreach ($timeTables as $slot) {
-        // Get the day of the week for the timetable slot
-        $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
-        $startTime = Carbon::parse($slot->start_time);
-        $endTime = Carbon::parse($slot->end_time);
+        // Ensure course and hall relationships are properly loaded
 
-        while ($dayOfWeek->lessThanOrEqualTo(Carbon::parse($semester->end_date))) {
+        
+        if ($slot->course && $slot->hall) {
+            $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
+            $startTime = Carbon::parse($slot->start_time);
+            $endTime = Carbon::parse($slot->end_time);
+            $courseName = $slot->course->code;
+            $hallName = $slot->hall->name;
 
-            $startDateTime = $dayOfWeek->copy()->setTimeFrom($startTime)->toDateTimeString();
-            $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
+            while ($dayOfWeek->lessThanOrEqualTo(Carbon::parse($semester->end_date))) {
+                $startDateTime = $dayOfWeek->copy()->setTimeFrom($startTime)->toDateTimeString();
+                $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
-            // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course . ' (' . $slot->type . ')')
-                ->where('location', $slot->hall->name)
-                ->where('start', $startDateTime)
-                ->where('end', $endDateTime)
-                ->first();
+                $existingEvent = Event::where('event_title', $slot->course->name . ' (' . $slot->type . ')')
+                    ->where('location', $slot->hall->name)
+                    ->where('start', $startDateTime)
+                    ->where('end', $endDateTime)
+                    ->first();
 
-            if (!$existingEvent) {
-                Event::create([
-                    'event_title' => $slot->course . ' (' . $slot->type . ')', //check this with $slot->course->name
-                    'location' => $slot->hall->name,
-                    'start' => $startDateTime,
-                    'end' => $endDateTime,
-                ]);
+                if (!$existingEvent) {
+                    Event::create([
+                        'event_title' => $courseName . ' (' . $slot->type . ')',
+                        'location' => $hallName,
+                        'start' => $startDateTime,
+                        'end' => $endDateTime,
+                        'user_id' => $user->id,
+                        'semester_id' => $semesterId
+                    ]);
+                }
+
+                $dayOfWeek->addWeek();
             }
-
-            // Move to the next week
-            $dayOfWeek->addWeek();
         }
     }
 
@@ -59,8 +87,12 @@ class EventController extends Controller
 }
 
 
+
+
+
     public function store(Request $request)
     {
+        $user = $request->user();
         $data = $request->validate([
             'event_title' => 'required',
             'location' => 'required',
@@ -70,6 +102,7 @@ class EventController extends Controller
             'weekly' => 'sometimes|boolean',
             'monthly' => 'sometimes|boolean',
         ]);
+        $data['user_id'] = $user->id;
 
         // Determine the number of events to create based on recurrence
         if ($request->daily) {
@@ -88,7 +121,7 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $event = Event::findOrFail($id);
-
+        $user = $request->user();
         $data = $request->validate([
             'event_title' => 'required',
             'location' => 'required',
@@ -101,7 +134,7 @@ class EventController extends Controller
 
         // Delete existing event if recurrence options are updated
         $event->delete();
-
+        $data['user_id'] = $user->id;
         // Handle recurrence update
         if ($request->daily) {
             $this->createRecurringEvents($data, 'day');

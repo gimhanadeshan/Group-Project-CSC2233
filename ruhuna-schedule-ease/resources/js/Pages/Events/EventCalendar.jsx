@@ -19,7 +19,6 @@ moment.updateLocale("en", {
 const minTime = new Date(1970, 1, 1, 8, 0);
 const maxTime = new Date(1970, 1, 1, 19, 0);
 
-
 const EventCalendar = ({ allevents, auth,permissions }) => {
   const [events, setEvents] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -154,6 +153,11 @@ const EventCalendar = ({ allevents, auth,permissions }) => {
         });
     };
 
+   
+        const eventPropGetter = (event) => {
+            const backgroundColor = event.semester_id ? '#007bff' : '#ff0000'; // Default color vs. red for NULL semester_id
+            return { style: { backgroundColor } };
+        };
 
   const CustomEvent = ({ event }) => {
     return (
@@ -191,6 +195,7 @@ const EventCalendar = ({ allevents, auth,permissions }) => {
           components={{
             event: CustomEvent,
           }}
+          eventPropGetter={eventPropGetter}
         />
       </div>
 

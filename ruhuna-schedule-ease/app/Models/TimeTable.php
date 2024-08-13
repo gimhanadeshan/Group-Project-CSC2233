@@ -39,12 +39,12 @@ class TimeTable extends Model
 
     public function hall()
     {
-        return $this->belongsTo(LectureHall::class, 'hall_id');
+        return $this->belongsTo(LectureHall::class, 'hall_id','id');
     }
 
     public function lecturer()
     {
-        return $this->belongsTo(User::class, 'lecturer');
+        return $this->belongsTo(User::class, 'lecturer','id');
     }
 
     public function semester()

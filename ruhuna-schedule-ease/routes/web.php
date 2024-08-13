@@ -47,13 +47,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('course-registrations', CourseRegistrationController::class);
 
+    Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
+    Route::post('/course-confirmation/{courseCode}/confirm', [CourseConfirmationController::class, 'confirmCourse'])->name('course-confirmation.confirm');
+    Route::delete('/course-confirmation/{courseCode}/cancel', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
+
+    //Events
     Route::resource('events-registration', EventRegistrationController::class);
     Route::delete('/events-registration/{id}', [EventRegistrationController::class, 'destroy'])->name('events.destroy');
     Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
 
     Route::get('events', [EventController::class, 'index'])->name('events');
-
     Route::put('/events', [EventController::class, 'store'])->name('event.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
@@ -68,6 +72,8 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
 
 
+    //TimeTable table  into Events table
+   // Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
 
 
 
