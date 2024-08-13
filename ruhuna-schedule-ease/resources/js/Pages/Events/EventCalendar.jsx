@@ -318,7 +318,7 @@ const EventCalendar = ({ allevents, auth }) => {
                         </div>
 
                         {/* Recurrence Checkboxes */}
-                        <div className="mb-4">
+                        {canEdit && <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">
                                 Recurrence:
                             </label>
@@ -356,7 +356,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                 <span>Monthly</span>
                             </div>
                         </div>
-                        
+                        }
                         {/* Attentedance Checkboxes */}
 
 
