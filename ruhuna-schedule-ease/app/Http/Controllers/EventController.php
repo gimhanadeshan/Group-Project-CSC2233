@@ -66,8 +66,8 @@ public function generateEventsFromTimetable(Request $request, $semesterId)
             $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
             // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course->name . ' (' . $slot->type . ')')
-                ->where('location', $slot->hall->name)
+            $existingEvent = Event::where('event_title', $courseName . ' (' . $slot->type . ')')
+                ->where('location', $hallName)
                 ->where('start', $startDateTime)
                 ->where('end', $endDateTime)
                 ->first();
@@ -83,6 +83,7 @@ public function generateEventsFromTimetable(Request $request, $semesterId)
                 ]);
 
             }
+            
         }
     }
 
