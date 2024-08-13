@@ -5,11 +5,6 @@ import { Head } from "@inertiajs/react";
 import { Link } from "@inertiajs/react";
 
 const Create = ({ auth }) => {
-    const [holidayCount, setHolidayCount] = useState(0);
-    const [midBreakCount, setMidBreakCount] = useState(0);
-    const [endBreakCount, setEndBreakCount] = useState(0);
-    const [examPeriodCount, setExamPeriodCount] = useState(0);
-
     const { data, setData, post, processing, errors } = useForm({
         academic_year: "",
         level: "",
@@ -22,10 +17,6 @@ const Create = ({ auth }) => {
         enrollment_count: 0,
         status: "Upcoming",
         description: "",
-        holidays: [],
-        mid_breaks: [],
-        end_breaks: [],
-        exam_periods: [],
     });
 
     const handleChange = (e) => {
@@ -38,13 +29,6 @@ const Create = ({ auth }) => {
         } else {
             setData(id, type === "checkbox" ? checked : value);
         }
-    };
-
-    const handleAddField = (type) => {
-        if (type === "holiday") setHolidayCount(holidayCount + 1);
-        if (type === "midBreak") setMidBreakCount(midBreakCount + 1);
-        if (type === "endBreak") setEndBreakCount(endBreakCount + 1);
-        if (type === "examPeriod") setExamPeriodCount(examPeriodCount + 1);
     };
 
     const handleSubmit = (e) => {
@@ -382,8 +366,6 @@ const Create = ({ auth }) => {
                                             </div>
                                         )}
                                     </div>
-
-                                    
                                 </div>
                             </div>
                             <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">

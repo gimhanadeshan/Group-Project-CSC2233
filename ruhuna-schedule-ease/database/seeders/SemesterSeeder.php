@@ -22,7 +22,7 @@ class SemesterSeeder extends Seeder
                     'academic_year' =>2021,
                     'level' => 1,
                     'semester' => 1,
-                    ]);
+                   ]);
                 Semester::factory()->create([
                     'academic_year' =>2021,
                     'level' => 2,
