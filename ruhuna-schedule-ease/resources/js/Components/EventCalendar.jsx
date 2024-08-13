@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import "../../../css/bigCalendar.css";
+import "../../css/bigCalendar.css";
 import Modal from "react-modal";
 import { useForm } from "@inertiajs/react";
 
@@ -19,21 +18,13 @@ moment.updateLocale("en", {
 const minTime = new Date(1970, 1, 1, 8, 0);
 const maxTime = new Date(1970, 1, 1, 19, 0);
 
-const EventCalendar = ({ allevents, auth }) => {
-
-    const canCreate = auth.permissions.includes("create_event");
-    const canEdit = auth.permissions.includes("update_event");
-    const canDelete = auth.permissions.includes("delete_event");
-    const canRead = auth.permissions.includes("read_event");
-
-
-
-
+const EventCalendar = (props,{ auth,permissions }) => {
   const [events, setEvents] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
 
-
+//setEvents(props.name);
+let allevents=props.name;
 
     const {
         data,
@@ -55,12 +46,16 @@ const EventCalendar = ({ allevents, auth }) => {
 
     useEffect(() => {
         if (allevents) {
+            console.log('got allevets');
             const parsedEvents = allevents.map((event) => ({
                 ...event,
                 start: new Date(event.start),
                 end: new Date(event.end),
             }));
             setEvents(parsedEvents);
+        }
+        else{
+            console.log('allevets is null');
         }
     }, [allevents]);
 
@@ -186,14 +181,16 @@ const EventCalendar = ({ allevents, auth }) => {
 
 
 
+
   return (
-    <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
-      <div style={{ height: '800px' }}>
+<>
+
+<div style={props.style}>
         <Calendar
           localizer={localizer}
           events={events}
-          defaultView={'week'}
-          views={['month', 'week', 'day', 'agenda']}
+          defaultView={props.defaultView}
+          views={props.views}
           formats={{
             weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture),
           }}
@@ -210,10 +207,10 @@ const EventCalendar = ({ allevents, auth }) => {
           }}
           eventPropGetter={eventPropGetter}
         />
-      </div>
+</div>
 
 
-            <Modal
+<Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 contentLabel="Event Modal"
@@ -346,13 +343,9 @@ const EventCalendar = ({ allevents, auth }) => {
                                 <span>Monthly</span>
                             </div>
                         </div>
-                        
-                        {/* Attentedance Checkboxes */}
-
-
 
                         <div className="flex justify-end">
-                            {currentEvent && canDelete && (
+                            {currentEvent && (
                                 <button
                                     type="button"
                                     onClick={handleDelete}
@@ -361,34 +354,20 @@ const EventCalendar = ({ allevents, auth }) => {
                                     Delete
                                 </button>
                             )}
-                        { canEdit &&
                             <button
                                 type="submit"
                                 className="bg-blue-600 text-white py-2 px-4 rounded-md"
                             >
-                                {currentEvent ?  "Update" : "Add"}
-
+                                {currentEvent ? "Update" : "Add"}
                             </button>
-                        }   
-
-                        { !currentEvent &&
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white py-2 px-4 rounded-md"
-                            >
-                                Add
-                            </button>
-                        }  
-
-
-
-
                         </div>
                     </form>
                 </div>
-            </Modal>
-        </AuthenticatedLayout>
-    );
-};
+</Modal>
 
-export default EventCalendar;
+</>
+
+    )
+}
+
+  export default EventCalendar;

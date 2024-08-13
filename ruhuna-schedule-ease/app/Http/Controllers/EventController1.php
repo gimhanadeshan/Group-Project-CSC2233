@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
 
-class EventController extends Controller
+class EventController1 extends Controller
 {
     public function index(Request $request)
 {
@@ -24,17 +24,20 @@ class EventController extends Controller
     // If no semester_id is found, return an empty set of events
     if (!$semesterId) {
         $allevents = Event::whereNull('semester_id')->get();
-        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        return Inertia::render('Dashboard', ['allevents' => $allevents]);
     }
 
     // Fetch events that match the user's semester_id
+    //$allevents = Event::where('semester_id', $semesterId)->get();
     $allevents = Event::where('semester_id', $semesterId)
                       ->orWhereNull('semester_id')
                       ->get();
 
-     return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+     //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
                  
-    }
+    return Inertia::render('Dashboard', ['allevents' => $allevents]);
+}
 
 
 
@@ -48,13 +51,14 @@ class EventController extends Controller
     $user = $request->user();
     $semester = Semester::findOrFail($semesterId);
     $timeTables = TimeTable::where('semester_id', $semesterId)->get();
+    //$timeTables = TimeTable::with('course', 'hall')->get();
 
     foreach ($timeTables as $slot) {
         //dd($slot);
         //$slots = TimeTable::with('course', 'hall')->get(); // Ensure 'course' is included in the eager loading
 
         // Get the day of the week for the timetable slot
-        $dayOfWeek = Carbon::parse($semester->start_date)->subDay()->next($slot->day_of_week);
+        $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
         $startTime = Carbon::parse($slot->start_time);
         $endTime = Carbon::parse($slot->end_time);
 

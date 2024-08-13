@@ -13,6 +13,7 @@ use App\Http\Controllers\ResourceAllocationController;
 use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventController1;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
@@ -57,13 +58,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
 
     Route::get('events', [EventController::class, 'index'])->name('events');
+    
     Route::put('/events', [EventController::class, 'store'])->name('event.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
     //TimeTable table  into Events table
     Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
 
-
+    Route::get('/dashboard', [EventController1::class, 'index'])->name('dashboard');
+    //Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
 });
@@ -84,9 +87,9 @@ Route::get('/info', function () {
     return Inertia::render('Info');
 })->name('info');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 
 
