@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
 
-class EventController extends Controller
+class EventController1 extends Controller
 {
     public function index(Request $request)
 {
@@ -24,41 +24,43 @@ class EventController extends Controller
     // If no semester_id is found, return an empty set of events
     if (!$semesterId) {
         $allevents = Event::whereNull('semester_id')->get();
-        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        return Inertia::render('Dashboard', ['allevents' => $allevents]);
     }
 
     // Fetch events that match the user's semester_id
+    //$allevents = Event::where('semester_id', $semesterId)->get();
     $allevents = Event::where('semester_id', $semesterId)
                       ->orWhereNull('semester_id')
                       ->get();
 
-     return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+     //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
                  
-    }
+    return Inertia::render('Dashboard', ['allevents' => $allevents]);
+}
 
 
 
 
 
-public function generateEventsFromTimetable(Request $request, $semesterId)
+    public function generateEventsFromTimetable(Request $request,$semesterId)
 {
-    error_log("Generating events from timetable");
+
+    error_log("o");
 
     $user = $request->user();
     $semester = Semester::findOrFail($semesterId);
-
     $timeTables = TimeTable::where('semester_id', $semesterId)->get();
+    //$timeTables = TimeTable::with('course', 'hall')->get();
 
     foreach ($timeTables as $slot) {
         //dd($slot);
         //$slots = TimeTable::with('course', 'hall')->get(); // Ensure 'course' is included in the eager loading
 
         // Get the day of the week for the timetable slot
-        $dayOfWeek = Carbon::parse($semester->start_date)->subDay()->next($slot->day_of_week);
+        $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
         $startTime = Carbon::parse($slot->start_time);
         $endTime = Carbon::parse($slot->end_time);
-        $courseName = $slot->course->code;
-        $hallName = $slot->hall->name;
 
         while ($dayOfWeek->lessThanOrEqualTo(Carbon::parse($semester->end_date))) {
 
@@ -66,7 +68,7 @@ public function generateEventsFromTimetable(Request $request, $semesterId)
             $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
             // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course->name . ' (' . $slot->type . ')')
+            $existingEvent = Event::where('event_title', $slot->course . ' (' . $slot->type . ')')
                 ->where('location', $slot->hall->name)
                 ->where('start', $startDateTime)
                 ->where('end', $endDateTime)
@@ -74,23 +76,22 @@ public function generateEventsFromTimetable(Request $request, $semesterId)
 
             if (!$existingEvent) {
                 Event::create([
-                    'event_title' => $courseName . ' (' . $slot->type . ')',
-                    'location' => $hallName,
+                    'event_title' => $slot->course . ' (' . $slot->type . ')', //check this with $slot->course->name . ' (' . $slot->type . ')'
+                    'location' => $slot->hall->name,
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
                     'semester_id' => $semesterId 
                 ]);
-
             }
+
+            // Move to the next week
+            $dayOfWeek->addWeek();
         }
     }
-
+    //return 1;
     return redirect()->back()->with('success', 'Events generated successfully from the timetable');
 }
-
-
-
 
 
     public function store(Request $request)
