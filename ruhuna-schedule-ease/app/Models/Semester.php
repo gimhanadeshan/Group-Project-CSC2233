@@ -13,12 +13,10 @@ class Semester extends Model
         'academic_year',
         'level',
         'semester',
-        'reference_number',
         'start_date',
         'end_date',
         'registration_start_date',
         'registration_end_date',
-        'is_active', 
         'description', 
         'course_capacity', 
         'enrollment_count', 
@@ -28,10 +26,10 @@ class Semester extends Model
     /**
      * Generate a reference number based on the level, semester, and academic year.
      */
-    public static function generateReferenceNumber($level, $semester, $academic_year)
-    {
-        return 'L' . $level . 'S' . $semester . $academic_year;
-    }
+    // public static function generateReferenceNumber($level, $semester, $academic_year)
+    // {
+    //     return 'L' . $level . 'S' . $semester . $academic_year;
+    // }
 
     /**
      * Get the timetables associated with the semester.
