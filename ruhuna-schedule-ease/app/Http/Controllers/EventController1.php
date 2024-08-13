@@ -12,32 +12,33 @@ use Illuminate\Support\Carbon;
 class EventController1 extends Controller
 {
     public function index(Request $request)
-{
-    $this->authorize('read_event', $request->user());
-
-    // Fetch the semester_id from the course_registrations table for the logged-in user
-    $semesterId = \DB::table('course_registrations')
-                    ->where('user_id', $request->user()->id)
-                    ->orderBy('created_at', 'desc') // Adjust ordering as necessary
-                    ->value('semester_id');
-
-    // If no semester_id is found, return an empty set of events
-    if (!$semesterId) {
-        $allevents = Event::whereNull('semester_id')->get();
-        //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-        return Inertia::render('Dashboard', ['allevents' => $allevents]);
+    {
+        $this->authorize('read_event', $request->user());
+    
+        // Fetch the semester_id from the course_registrations table for the logged-in user
+        $semesterId = \DB::table('course_registrations')
+                        ->where('user_id', $request->user()->id)
+                        ->orderBy('created_at', 'desc') // Adjust ordering as necessary
+                        ->value('semester_id');
+    
+        // Fetch the current semester details
+        $now = Carbon::now();
+        $currentSemester = Semester::where('id', $semesterId)
+                                   ->where('start_date', '<=', $now)
+                                   ->where('end_date', '>=', $now)
+                                   ->first();
+    
+        // Fetch events based on the semester_id
+        $allevents = Event::where('semester_id', $semesterId)
+                          ->orWhereNull('semester_id')
+                          ->get();
+    
+        return Inertia::render('Dashboard', [
+            'currentSemester' => $currentSemester,
+            'allevents' => $allevents
+        ]);
     }
-
-    // Fetch events that match the user's semester_id
-    //$allevents = Event::where('semester_id', $semesterId)->get();
-    $allevents = Event::where('semester_id', $semesterId)
-                      ->orWhereNull('semester_id')
-                      ->get();
-
-     //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-                 
-    return Inertia::render('Dashboard', ['allevents' => $allevents]);
-}
+    
 
 
 
