@@ -16,12 +16,10 @@ return new class extends Migration
             $table->string('academic_year');
             $table->enum('level', ['1', '2', '3', '4']);
             $table->enum('semester', ['1', '2']);
-            $table->string('reference_number')->unique();
             $table->date('start_date');
             $table->date('end_date');
             $table->date('registration_start_date')->nullable();
             $table->date('registration_end_date')->nullable();
-            $table->boolean('is_active')->default(true);
             $table->text('description')->nullable();
             $table->integer('course_capacity')->default(0);
             $table->integer('enrollment_count')->default(0);
