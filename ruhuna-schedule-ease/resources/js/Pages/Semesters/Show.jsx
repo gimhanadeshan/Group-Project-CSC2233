@@ -41,14 +41,7 @@ const Show = ({ auth, semester }) => {
                                         {semester.semester}
                                     </dd>
                                 </div>
-                                <div className="sm:col-span-1">
-                                    <dt className="text-sm font-medium text-gray-500">
-                                        Remarks
-                                    </dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.name}
-                                    </dd>
-                                </div>
+                               
                                 <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
                                         Start Date
@@ -83,12 +76,35 @@ const Show = ({ auth, semester }) => {
                                 </div>
                                 <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
-                                        Course Registration Open
+                                        Course Capacity
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.course_registration_open
-                                            ? "Yes"
-                                            : "No"}
+                                        {semester.course_capacity}
+                                    </dd>
+                                </div>
+                                <div className="sm:col-span-1">
+                                    <dt className="text-sm font-medium text-gray-500">
+                                        Enrollment Count
+                                    </dt>
+                                    <dd className="mt-1 text-sm text-gray-900">
+                                        {semester.enrollment_count}
+                                    </dd>
+                                </div>
+                                <div className="sm:col-span-1">
+                                    <dt className="text-sm font-medium text-gray-500">
+                                        Status
+                                    </dt>
+                                    <dd className="mt-1 text-sm text-gray-900">
+                                        {semester.status}
+                                    </dd>
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <dt className="text-sm font-medium text-gray-500">
+                                        Description
+                                    </dt>
+                                    <dd className="mt-1 text-sm text-gray-900">
+                                        {semester.description ||
+                                            "No description available"}
                                     </dd>
                                 </div>
                             </div>

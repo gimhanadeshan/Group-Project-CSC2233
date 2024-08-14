@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Inertia } from "@inertiajs/inertia";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 
 const CourseRegistrations = ({
     auth,
     semesterCourses,
     confirmedCourses = [],
-    pendingCourses = [],
     registeredCourses = [],
     message,
 }) => {
@@ -16,9 +15,10 @@ const CourseRegistrations = ({
         useState(registeredCourses);
     const [localSemesterCourses, setLocalSemesterCourses] =
         useState(semesterCourses);
+    const [confirmRemove, setConfirmRemove] = useState(null); // Store course to be removed
+    const [successMessage, setSuccessMessage] = useState("");
 
     const handleCourseToggle = (courseId) => {
-        // Do not allow toggling for confirmed courses
         if (confirmedCourses.includes(courseId)) return;
 
         setSelectedCourses((prevSelectedCourses) =>
@@ -36,9 +36,7 @@ const CourseRegistrations = ({
             },
             {
                 onSuccess: () => {
-                    // Update local state to reflect new registrations
                     setSelectedCourses([]);
-                    // Update available courses by removing registered courses
                     setLocalSemesterCourses((prevSemesterCourses) => {
                         const updatedSemesterCourses = {
                             ...prevSemesterCourses,
@@ -56,195 +54,290 @@ const CourseRegistrations = ({
 
                         return updatedSemesterCourses;
                     });
+
+                    // Refresh the page after successful registration
+                    window.location.reload();
                 },
                 onError: (errors) => {
                     console.error(errors);
-                    // Optionally, handle errors here
                 },
             }
         );
     };
 
-    const handleRemove = (courseId) => {
-        Inertia.delete(`/course-registrations/${courseId}`, {
-            onSuccess: () => {
-                setLocalRegisteredCourses((prevCourses) =>
-                    prevCourses.filter((course) => course.id !== courseId)
-                );
-                // Optionally, you could also refresh the available courses
-            },
-            onError: (errors) => {
-                console.error(errors);
-                // Optionally, handle errors here
-            },
-        });
+    const handleRemove = () => {
+        if (confirmRemove) {
+            Inertia.delete(`/course-registrations/${confirmRemove}`, {
+                onSuccess: () => {
+                    setLocalRegisteredCourses((prevCourses) =>
+                        prevCourses.filter(
+                            (course) => course.id !== confirmRemove
+                        )
+                    );
+                    setConfirmRemove(null); // Clear confirmation state
+
+                    // Refresh the page after successful removal
+                    window.location.reload();
+                },
+                onError: (errors) => {
+                    console.error(errors);
+                },
+            });
+        }
     };
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Course Registrations" />
-            <div className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4 text-center">
+            <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+                <h1 className="text-3xl font-extrabold mb-6 text-center text-gray-900">
                     Course Registrations
                 </h1>
                 {message && (
-                    <p className="text-center text-red-500">{message}</p>
+                    <p className="text-center text-red-600 mb-6 font-semibold">
+                        {message}
+                    </p>
                 )}
 
                 {/* Available Courses Table */}
                 {Object.keys(localSemesterCourses).length > 0 ? (
                     Object.entries(localSemesterCourses).map(
-                        ([semesterId, { semester, courses }]) => (
-                            <div key={semesterId} className="mb-8">
-                                <h2 className="text-xl font-bold mb-4 text-center">
-                                    {`Level ${semester.level} - Semester ${semester.semester} (${semester.academic_year})`}
-                                </h2>
-                                <h3 className="text-lg font-semibold mb-2 text-center">
-                                    Registration closes on:{" "}
-                                    {new Date(
-                                        semester.registration_end_date
-                                    ).toLocaleDateString()}
-                                </h3>
-                                <table className="min-w-full bg-white mb-4">
-                                    <thead>
-                                        <tr>
-                                            <th className="py-2 px-4 border-b">
-                                                Code
-                                            </th>
-                                            <th className="py-2 px-4 border-b text-left">
-                                                Name
-                                            </th>
-                                            <th className="py-2 px-4 border-b">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {courses.map((course) => (
-                                            <tr
-                                                key={course.id}
-                                                className="hover:bg-gray-100"
-                                            >
-                                                <td className="py-2 px-4 border-b text-center">
-                                                    {course.code}
-                                                </td>
-                                                <td className="py-2 px-4 border-b">
-                                                    {course.name}
-                                                </td>
-                                                <td className="py-2 px-4 border-b text-center">
-                                                    {!confirmedCourses.includes(
-                                                        course.id
-                                                    ) && (
-                                                        <button
-                                                            className={`text-base px-4 py-2 rounded-md ${
-                                                                selectedCourses.includes(
-                                                                    course.id
-                                                                )
-                                                                    ? "bg-red-500"
-                                                                    : "bg-green-500"
-                                                            } hover:bg-red-700 text-white w-24`}
-                                                            onClick={() =>
-                                                                handleCourseToggle(
-                                                                    course.id
-                                                                )
-                                                            }
-                                                        >
-                                                            {selectedCourses.includes(
-                                                                course.id
-                                                            )
-                                                                ? "Remove"
-                                                                : "Add"}
-                                                        </button>
+                        ([semesterId, { semester, courses }]) => {
+                            const coreCourses = courses.filter(
+                                (course) => course.is_core
+                            );
+                            const optionalCourses = courses.filter(
+                                (course) => !course.is_core
+                            );
+
+                            return (
+                                <div
+                                    key={semesterId}
+                                    className="mb-10 p-6 border border-gray-200 rounded-lg shadow-sm"
+                                >
+                                    <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+                                        {`Level ${semester.level} - Semester ${semester.semester} (${semester.academic_year})`}
+                                    </h2>
+                                    <h3 className="text-lg font-semibold mb-4 text-center text-gray-700">
+                                        Registration closes on:{" "}
+                                        {new Date(
+                                            semester.registration_end_date
+                                        ).toLocaleDateString()}
+                                    </h3>
+
+                                    {/* Core Courses Table */}
+                                    {coreCourses.length > 0 && (
+                                        <>
+                                            <h3 className="text-xl font-bold mb-4 text-gray-700">
+                                                Core Courses
+                                            </h3>
+                                            <table className="min-w-full divide-y divide-gray-300 bg-white mb-6">
+                                                <thead className="bg-gray-100">
+                                                    <tr>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Code
+                                                        </th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Name
+                                                        </th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                    {coreCourses.map(
+                                                        (course) => (
+                                                            <tr key={course.id}>
+                                                                <td className="px-6 py-4 text-sm text-gray-700">
+                                                                    {
+                                                                        course.code
+                                                                    }
+                                                                </td>
+                                                                <td className="px-6 py-4 text-sm text-gray-700">
+                                                                    {
+                                                                        course.name
+                                                                    }
+                                                                </td>
+                                                                <td className="px-6 py-4 text-sm text-gray-700 ">
+                                                                    {!confirmedCourses.includes(
+                                                                        course.id
+                                                                    ) && (
+                                                                        <button
+                                                                            className={`px-4 py-2 rounded-md text-white ${
+                                                                                selectedCourses.includes(
+                                                                                    course.id
+                                                                                )
+                                                                                    ? "bg-red-600 hover:bg-red-700"
+                                                                                    : "bg-green-600 hover:bg-green-700"
+                                                                            }`}
+                                                                            onClick={() =>
+                                                                                handleCourseToggle(
+                                                                                    course.id
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {selectedCourses.includes(
+                                                                                course.id
+                                                                            )
+                                                                                ? "Remove"
+                                                                                : "Add"}
+                                                                        </button>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        )
                                                     )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                {courses.length > 0 &&
-                                    selectedCourses.length > 0 && (
-                                        <div className="text-center">
-                                            {!confirmedCourses.length > 0 && (
+                                                </tbody>
+                                            </table>
+                                        </>
+                                    )}
+
+                                    {/* Optional Courses Table */}
+                                    {optionalCourses.length > 0 && (
+                                        <>
+                                            <h3 className="text-xl font-bold mb-4 text-gray-700">
+                                                Optional Courses
+                                            </h3>
+                                            <table className="min-w-full divide-y divide-gray-300 bg-white">
+                                                <thead className="bg-gray-100">
+                                                    <tr>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Code
+                                                        </th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Name
+                                                        </th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                    {optionalCourses.map(
+                                                        (course) => (
+                                                            <tr key={course.id}>
+                                                                <td className="px-6 py-4 text-sm text-gray-700">
+                                                                    {
+                                                                        course.code
+                                                                    }
+                                                                </td>
+                                                                <td className="px-6 py-4 text-sm text-gray-700">
+                                                                    {
+                                                                        course.name
+                                                                    }
+                                                                </td>
+                                                                <td className="px-6 py-4 text-sm text-gray-700 ">
+                                                                    {!confirmedCourses.includes(
+                                                                        course.id
+                                                                    ) && (
+                                                                        <button
+                                                                            className={`px-4 py-2 rounded-md text-white ${
+                                                                                selectedCourses.includes(
+                                                                                    course.id
+                                                                                )
+                                                                                    ? "bg-red-600 hover:bg-red-700"
+                                                                                    : "bg-green-600 hover:bg-green-700"
+                                                                            }`}
+                                                                            onClick={() =>
+                                                                                handleCourseToggle(
+                                                                                    course.id
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {selectedCourses.includes(
+                                                                                course.id
+                                                                            )
+                                                                                ? "Remove"
+                                                                                : "Add"}
+                                                                        </button>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </>
+                                    )}
+
+                                    {selectedCourses.length > 0 && (
+                                        <div className="text-center mt-6">
+                                            {!confirmedCourses.length && (
                                                 <button
-                                                    className="text-base px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-700 text-white font-bold mt-4"
+                                                    className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-bold"
                                                     onClick={handleSubmit}
                                                 >
-                                                    Submit
-                                                </button>
-                                            )}
-                                            {confirmedCourses.length > 0 && (
-                                                <button
-                                                    className="text-base px-4 py-2 rounded-md bg-green-500 hover:bg-green-700 text-white font-bold mt-4"
-                                                    onClick={handleConfirm}
-                                                >
-                                                    Confirm Selected
+                                                    Register Courses
                                                 </button>
                                             )}
                                         </div>
                                     )}
-                            </div>
-                        )
+                                </div>
+                            );
+                        }
                     )
                 ) : (
-                    <p className="text-center">
+                    <p className="text-center text-gray-600">
                         No courses available for registration.
                     </p>
                 )}
 
                 {/* Registered Courses Table */}
                 {localRegisteredCourses.length > 0 && (
-                    <div className="mb-8">
-                        <h2 className="text-xl font-bold mb-4 text-center">
+                    <div className="mt-10 p-6 border border-gray-200 rounded-lg shadow-sm">
+                        <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
                             Registered Courses
                         </h2>
-                        <table className="min-w-full bg-white mb-4">
-                            <thead>
+                        <table className="min-w-full divide-y divide-gray-300 bg-white">
+                            <thead className="bg-gray-100">
                                 <tr>
-                                    <th className="py-2 px-4 border-b">Code</th>
-                                    <th className="py-2 px-4 border-b text-left">
+                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                        Code
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
                                         Name
                                     </th>
-                                    <th className="py-2 px-4 border-b">
+                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th className="py-2 px-4 border-b">
+                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
                                         Action
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="bg-white divide-y divide-gray-200">
                                 {localRegisteredCourses.map((course) => (
-                                    <tr
-                                        key={course.id}
-                                        className="hover:bg-gray-100"
-                                    >
-                                        <td className="py-2 px-4 border-b text-center">
+                                    <tr key={course.id}>
+                                        <td className="px-6 py-4 text-sm text-gray-700">
                                             {course.code}
                                         </td>
-                                        <td className="py-2 px-4 border-b">
+                                        <td className="px-6 py-4 text-sm text-gray-700">
                                             {course.name}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-center">
+                                        <td className="px-6 py-4 text-sm text-gray-700">
                                             {course.status === "confirmed" ? (
-                                                <span className="text-green-500 font-semibold">
+                                                <span className="text-green-600 font-semibold">
                                                     Confirmed
                                                 </span>
                                             ) : (
-                                                <span className="text-yellow-500 font-semibold">
+                                                <span className="text-yellow-600 font-semibold">
                                                     Pending
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-center">
+                                        <td className="px-6 py-4 text-sm text-gray-700">
                                             {course.status === "confirmed" ? (
-                                                <span className="text-gray-500">
+                                                <span className="text-gray-600">
                                                     No Action
                                                 </span>
                                             ) : (
                                                 <button
-                                                    className="text-base px-4 py-2 rounded-md bg-red-500 hover:bg-red-700 text-white w-24"
+                                                    className="text-red-600 hover:text-red-700"
                                                     onClick={() =>
-                                                        handleRemove(course.id)
+                                                        setConfirmRemove(
+                                                            course.id
+                                                        )
                                                     }
                                                 >
                                                     Remove
@@ -255,6 +348,35 @@ const CourseRegistrations = ({
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {/* Confirmation Dialog */}
+                {confirmRemove && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg">
+                            <h3 className="text-lg font-semibold mb-4">
+                                Confirm Removal
+                            </h3>
+                            <p className="mb-4">
+                                Are you sure you want to remove this course from
+                                your registered courses?
+                            </p>
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-bold"
+                                    onClick={handleRemove}
+                                >
+                                    Yes, Remove
+                                </button>
+                                <button
+                                    className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400 text-gray-800"
+                                    onClick={() => setConfirmRemove(null)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

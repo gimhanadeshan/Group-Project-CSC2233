@@ -100,7 +100,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
             }
 
             const data = await response.json();
-            console.log(data); // Handle success response as needed
+            // console.log(data); // Handle success response as needed
 
             // Reset form after successful submission
             setCommonData({
@@ -256,6 +256,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                                 Select Degree Program
                                             </option>
                                             {degreePrograms.map((program) => (
+                                               
                                                 <option
                                                     key={program.id}
                                                     value={program.id}

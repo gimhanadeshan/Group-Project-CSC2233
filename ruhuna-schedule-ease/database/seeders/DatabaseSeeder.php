@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
         $this->call([LectureHallSeeder::class]);
         $this->call([CourseSeeder::class]);
         $this->call([SemesterSeeder::class]);
-        $this->call([EventsSeeder::class]);
+        $this->call(DegreeProgramsTableSeeder::class);
+
+        //$this->call([EventsSeeder::class]);
 
 
 
@@ -38,10 +40,42 @@ class DatabaseSeeder extends Seeder
         
         User::factory()->create([
 
-            'name' => 'Student',
-            'email' => 'student@example.com',
-            'registration_no'=>'Student',
+            'name' => 'Student1',
+            'email' => 'student1@example.com',
+            'registration_no'=>'sc1',
             'role_id'=>2,
+            'academic_year'=>2021,
+           
+           
+        ]);
+        User::factory()->create([
+
+            'name' => 'Student2',
+            'email' => 'student2@example.com',
+            'registration_no'=>'sc2',
+            'role_id'=>2,
+            'academic_year'=>2022,
+           
+           
+        ]);
+        User::factory()->create([
+
+            'name' => 'Student3',
+            'email' => 'student3@example.com',
+            'registration_no'=>'sc3',
+            'role_id'=>2,
+            'academic_year'=>2023,
+           
+           
+        ]);
+        User::factory()->create([
+
+            'name' => 'Student4',
+            'email' => 'student4@example.com',
+            'registration_no'=>'sc4',
+            'role_id'=>2,
+            'academic_year'=>2024,
+           
            
         ]);
 
@@ -54,7 +88,7 @@ class DatabaseSeeder extends Seeder
            
         ]);
 
-        User::factory()->count(30)->create();
+        User::factory()->count(10)->create();
 
 
 

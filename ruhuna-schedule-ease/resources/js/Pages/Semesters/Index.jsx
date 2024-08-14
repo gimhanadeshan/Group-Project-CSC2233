@@ -44,7 +44,7 @@ const Index = ({ auth, semesters }) => {
                                             Semester
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Remarks
+                                            Status
                                         </th>
                                         {canEdit || canRead || canDelete ? (
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -66,7 +66,7 @@ const Index = ({ auth, semesters }) => {
                                                 {semester.semester}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {semester.name}
+                                                {semester.status}
                                             </td>
                                             {canEdit || canRead || canDelete ? (
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

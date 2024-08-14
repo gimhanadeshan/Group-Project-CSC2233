@@ -1,25 +1,34 @@
 import React, { useState } from "react";
-import { Inertia } from "@inertiajs/inertia";
-import { useForm, Link } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
 const Create = ({ auth }) => {
     const { data, setData, post, processing, errors } = useForm({
         academic_year: "",
         level: "",
         semester: "",
-        name: "",
         start_date: "",
         end_date: "",
         registration_start_date: "",
         registration_end_date: "",
-        course_registration_open: false,
+        course_capacity: 0,
+        enrollment_count: 0,
+        status: "Upcoming",
+        description: "",
     });
 
     const handleChange = (e) => {
-        const { id, value, type, checked } = e.target;
-        setData(id, type === "checkbox" ? checked : value);
+        const { id, value, type, checked, dataset } = e.target;
+        if (dataset.index >= 0) {
+            const { name, index } = dataset;
+            const updatedArray = [...data[name]];
+            updatedArray[index][id] = type === "checkbox" ? checked : value;
+            setData(name, updatedArray);
+        } else {
+            setData(id, type === "checkbox" ? checked : value);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -173,22 +182,31 @@ const Create = ({ auth }) => {
 
                                     <div className="col-span-6 sm:col-span-3">
                                         <label
-                                            htmlFor="name"
+                                            htmlFor="status"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            Remarks
+                                            Status
                                         </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            value={data.name}
+                                        <select
+                                            id="status"
+                                            name="status"
+                                            value={data.status}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                        {errors.name && (
+                                        >
+                                            <option value="Upcoming">
+                                                Upcoming
+                                            </option>
+                                            <option value="Ongoing">
+                                                Ongoing
+                                            </option>
+                                            <option value="Completed">
+                                                Completed
+                                            </option>
+                                        </select>
+                                        {errors.status && (
                                             <div className="text-red-600 text-sm mt-2">
-                                                {errors.name}
+                                                {errors.status}
                                             </div>
                                         )}
                                     </div>
@@ -240,92 +258,131 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                id="course_registration_open"
-                                                name="course_registration_open"
-                                                type="checkbox"
-                                                checked={
-                                                    data.course_registration_open
-                                                }
-                                                onChange={handleChange}
-                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <label
-                                                htmlFor="course_registration_open"
-                                                className="ml-2 block text-sm font-medium text-gray-700"
-                                            >
-                                                Open Course Registration
-                                            </label>
-                                        </div>
+                                        <label
+                                            htmlFor="registration_start_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Registration Start Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="registration_start_date"
+                                            name="registration_start_date"
+                                            value={data.registration_start_date}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.registration_start_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.registration_start_date}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {data.course_registration_open && (
-                                        <>
-                                            <div className="col-span-6 sm:col-span-3">
-                                                <label
-                                                    htmlFor="registration_start_date"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                >
-                                                    Registration Start Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="registration_start_date"
-                                                    name="registration_start_date"
-                                                    value={
-                                                        data.registration_start_date
-                                                    }
-                                                    onChange={handleChange}
-                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    required
-                                                />
-                                                {errors.registration_start_date && (
-                                                    <div className="text-red-600 text-sm mt-2">
-                                                        {
-                                                            errors.registration_start_date
-                                                        }
-                                                    </div>
-                                                )}
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="registration_end_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Registration End Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="registration_end_date"
+                                            name="registration_end_date"
+                                            value={data.registration_end_date}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.registration_end_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.registration_end_date}
                                             </div>
+                                        )}
+                                    </div>
 
-                                            <div className="col-span-6 sm:col-span-3">
-                                                <label
-                                                    htmlFor="registration_end_date"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                >
-                                                    Registration End Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="registration_end_date"
-                                                    name="registration_end_date"
-                                                    value={
-                                                        data.registration_end_date
-                                                    }
-                                                    onChange={handleChange}
-                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    required
-                                                />
-                                                {errors.registration_end_date && (
-                                                    <div className="text-red-600 text-sm mt-2">
-                                                        {
-                                                            errors.registration_end_date
-                                                        }
-                                                    </div>
-                                                )}
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="course_capacity"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Course Capacity
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="course_capacity"
+                                            name="course_capacity"
+                                            value={data.course_capacity}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.course_capacity && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.course_capacity}
                                             </div>
-                                        </>
-                                    )}
+                                        )}
+                                    </div>
+
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="enrollment_count"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Enrollment Count
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="enrollment_count"
+                                            name="enrollment_count"
+                                            value={data.enrollment_count}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        {errors.enrollment_count && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.enrollment_count}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="col-span-6">
+                                        <label
+                                            htmlFor="description"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Description
+                                        </label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            value={data.description}
+                                            onChange={handleChange}
+                                            rows="3"
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        ></textarea>
+                                        {errors.description && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.description}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                                <Link
+                                    href={route("semesters.index")}
+                                    className="inline-flex justify-center mr-5 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Back to Semesters
+                                </Link>
                                 <button
                                     type="submit"
-                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     disabled={processing}
+                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Create Semester
+                                    {processing
+                                        ? "Saving..."
+                                        : "Create Semester"}
                                 </button>
                             </div>
                         </form>
