@@ -2,6 +2,9 @@ import { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Bar } from "react-chartjs-2";
+import WeeklyTimetable from "@/Components/WeeklyTimetable";
+
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -61,6 +64,20 @@ export default function Dashboard({
         return false;
     });
 
+    // Group events by day of the week
+    const groupedEvents = allevents.reduce((acc, event) => {
+        const eventDay = new Date(event.start).getDay();
+        if (!acc[eventDay]) {
+            acc[eventDay] = [];
+        }
+        acc[eventDay].push(event);
+        return acc;
+    }, {});
+
+    
+
+    
+
     // Format dates for the new chart
     const startDate = new Date(currentSemester?.start_date);
     const endDate = new Date(currentSemester?.end_date);
@@ -118,6 +135,8 @@ export default function Dashboard({
             },
         },
     };
+
+    
 
     return (
         <AuthenticatedLayout
@@ -341,6 +360,15 @@ export default function Dashboard({
                     </div>
                 )}
             </div>
+
+
+            <div className="p-6 ">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
+                Weekly Timetable
+                </h3>
+           {/* Weekly Timetable */}
+           <WeeklyTimetable groupedEvents={groupedEvents} />
+                </div>
         </AuthenticatedLayout>
     );
 }
