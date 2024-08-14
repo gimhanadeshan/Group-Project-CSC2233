@@ -122,50 +122,63 @@ export default function Dashboard({
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Student Dashboard
-                </h2>
-            }
+            // header={
+            //     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+            //         Student Dashboard
+            //     </h2>
+            // }
             permissions={auth.permissions}
         >
             {/* Display current semester details */}
             {currentSemester ? (
-                <div className="mb-8 p-6 border rounded-lg shadow-lg bg-white">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
+                <div className="p-6 ">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
                         Current Semester Details
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
-                            <p className="text-sm text-gray-600">
-                                <strong>Academic Year:</strong>{" "}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
+                                    Academic Year:
+                                </strong>{" "}
                                 {currentSemester.academic_year}
                             </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>Level:</strong> {currentSemester.level}
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
+                                    Level:
+                                </strong>{" "}
+                                {currentSemester.level}
                             </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>Semester:</strong>{" "}
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
+                                    Semester:
+                                </strong>{" "}
                                 {currentSemester.semester}
                             </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>Status:</strong>{" "}
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
+                                    Status:
+                                </strong>{" "}
                                 {currentSemester.status}
                             </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>Start Date:</strong>{" "}
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
+                                    Start Date:
+                                </strong>{" "}
                                 {currentSemester.start_date}
                             </p>
-                            <p className="text-sm text-gray-600">
-                                <strong>End Date:</strong>{" "}
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
+                                    End Date:
+                                </strong>{" "}
                                 {currentSemester.end_date}
                             </p>
                         </div>
-                        <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
-                            <h4 className="text-lg font-semibold mb-2">
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
+                            <h4 className="text-xl font-semibold mb-4 text-gray-800">
                                 Semester Duration & Progress
                             </h4>
-                            <div className="h-64">
+                            <div className="h-72">
                                 <Bar
                                     data={durationData}
                                     options={durationOptions}
@@ -176,20 +189,20 @@ export default function Dashboard({
 
                     {/* Display registered courses */}
                     {registeredCourses?.length > 0 ? (
-                        <div className="mt-8 bg-gray-100 p-4 rounded-lg shadow-sm">
-                            <h4 className="text-lg font-semibold mb-2">
+                        <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
+                            <h4 className="text-xl font-semibold mb-4 text-gray-800">
                                 Registered Courses
                             </h4>
-                            <ul className="list-disc list-inside text-gray-700">
+                            <ul className="list-disc list-inside text-gray-800">
                                 {registeredCourses.map((course) => (
-                                    <li key={course.id}>
+                                    <li key={course.id} className="mb-1">
                                         {course.code} - {course.name}
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     ) : (
-                        <p className="text-gray-600">
+                        <p className="mt-8 text-gray-600">
                             No registered courses found for the current
                             semester.
                         </p>
@@ -199,98 +212,135 @@ export default function Dashboard({
                 <p className="text-gray-600">No current semester found.</p>
             )}
 
-            {/* Display daily events */}
-            {dailyEvents.length > 0 && (
-                <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
-                        Today's Events
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {dailyEvents.map((event) => (
-                            <div
-                                key={event.id}
-                                className="bg-blue-100 p-4 rounded-lg shadow-md"
-                            >
-                                <h4 className="text-lg font-semibold text-blue-800">
-                                    {event.event_title}
-                                </h4>
-                                <p className="text-sm text-blue-600">
-                                    Time:{" "}
-                                    {new Date(event.start).toLocaleTimeString()}
-                                    - {new Date(event.end).toLocaleTimeString()}
-                                </p>
+            <div className="p-6 ">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
+                    Events
+                </h3>
+                {/* Display daily events */}
+                {dailyEvents.length > 0 && (
+                    <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">
+                            Today's Events
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {dailyEvents.map((event) => (
+                                <div
+                                    key={event.id}
+                                    className="bg-blue-100 p-4 rounded-lg shadow-md"
+                                >
+                                    <h4 className="text-lg font-semibold text-blue-800">
+                                        {event.event_title}
+                                    </h4>
+                                    <p className="text-sm text-blue-600">
+                                        Time:{" "}
+                                        {new Date(
+                                            event.start
+                                        ).toLocaleTimeString("en-US", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: false,
+                                        })}{" "}
+                                        -{" "}
+                                        {new Date(event.end).toLocaleTimeString(
+                                            "en-US",
+                                            {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: false,
+                                            }
+                                        )}
+                                    </p>
 
-                                <p className="text-sm text-blue-600">
-                                    Location:{" "}
-                                    {event.location || "Not specified"}
-                                </p>
-                            </div>
-                        ))}
+                                    <p className="text-sm text-blue-600">
+                                        Location:{" "}
+                                        {event.location || "Not specified"}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* Display upcoming events with filter buttons */}
-            {filteredUpcomingEvents.length > 0 && (
-                <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
-                        Upcoming Events
-                    </h3>
-                    <div className="mb-4 flex space-x-4">
-                        <button
-                            onClick={() => setFilter("all")}
-                            className={`px-4 py-2 rounded-lg text-white ${
-                                filter === "all"
-                                    ? "bg-blue-500"
-                                    : "bg-blue-300"
-                            }`}
-                        >
-                            All Events
-                        </button>
-                        <button
-                            onClick={() => setFilter("nextWeek")}
-                            className={`px-4 py-2 rounded-lg text-white ${
-                                filter === "nextWeek"
-                                    ? "bg-gray-500"
-                                    : "bg-gray-300"
-                            }`}
-                        >
-                            Next Week
-                        </button>
-                        <button
-                            onClick={() => setFilter("tomorrow")}
-                            className={`px-4 py-2 rounded-lg text-white ${
-                                filter === "tomorrow"
-                                    ? "bg-yellow-500"
-                                    : "bg-yellow-300"
-                            }`}
-                        >
-                            Tomorrow
-                        </button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredUpcomingEvents.map((event) => (
-                            <div
-                                key={event.id}
-                                className="bg-green-100 p-4 rounded-lg shadow-md"
+                {/* Display upcoming events with filter buttons */}
+                {filteredUpcomingEvents.length > 0 && (
+                    <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">
+                            Upcoming Events
+                        </h3>
+                        <div className="mb-4 flex space-x-4">
+                            <button
+                                onClick={() => setFilter("all")}
+                                className={`px-4 py-2 rounded-lg text-white ${
+                                    filter === "all"
+                                        ? "bg-blue-500"
+                                        : "bg-blue-300"
+                                }`}
                             >
-                                <h4 className="text-lg font-semibold text-green-800">
-                                    {event.event_title}
-                                </h4>
-                                <p className="text-sm text-green-600">
-                                    Time:{" "}
-                                    {new Date(event.start).toLocaleTimeString()}
-                                    - {new Date(event.end).toLocaleTimeString()}
-                                </p>
-                                <p className="text-sm text-green-600">
-                                    Location:{" "}
-                                    {event.location || "Not specified"}
-                                </p>
-                            </div>
-                        ))}
+                                All Events
+                            </button>
+                            <button
+                                onClick={() => setFilter("nextWeek")}
+                                className={`px-4 py-2 rounded-lg text-white ${
+                                    filter === "nextWeek"
+                                        ? "bg-gray-500"
+                                        : "bg-gray-300"
+                                }`}
+                            >
+                                Next Week
+                            </button>
+                            <button
+                                onClick={() => setFilter("tomorrow")}
+                                className={`px-4 py-2 rounded-lg text-white ${
+                                    filter === "tomorrow"
+                                        ? "bg-yellow-500"
+                                        : "bg-yellow-300"
+                                }`}
+                            >
+                                Tomorrow
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {filteredUpcomingEvents.map((event) => (
+                                <div
+                                    key={event.id}
+                                    className="bg-green-100 p-4 rounded-lg shadow-md"
+                                >
+                                    <h4 className="text-lg font-semibold text-green-800">
+                                        {event.event_title}
+                                    </h4>
+                                    <p className="text-sm text-green-600">
+                                        Date:{" "}
+                                        {new Date(event.start).toDateString()}
+                                    </p>
+                                    <p className="text-sm text-green-600">
+                                        Time:{" "}
+                                        {new Date(
+                                            event.start
+                                        ).toLocaleTimeString("en-US", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: false,
+                                        })}{" "}
+                                        -{" "}
+                                        {new Date(event.end).toLocaleTimeString(
+                                            "en-US",
+                                            {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: false,
+                                            }
+                                        )}
+                                    </p>
+                                    <p className="text-sm text-green-600">
+                                        Location:{" "}
+                                        {event.location || "Not specified"}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </AuthenticatedLayout>
     );
 }
