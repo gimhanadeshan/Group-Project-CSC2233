@@ -130,7 +130,7 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                 <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
                     Create Users
                 </h1>
-                {auth.permissions.includes("import_user") && (
+                {auth.permissions.includes("import_users") && (
                     <Link
                         href={route("users.createFromImport")}
                         className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -256,7 +256,6 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                                 Select Degree Program
                                             </option>
                                             {degreePrograms.map((program) => (
-                                               
                                                 <option
                                                     key={program.id}
                                                     value={program.id}
