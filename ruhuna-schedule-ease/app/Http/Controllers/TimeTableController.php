@@ -17,6 +17,8 @@ use Inertia\Inertia;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use App\Models\TimeTable_Notification;
+use App\Notifications\TimeTableInitialized;
 
 class TimeTableController extends Controller
 {
@@ -41,6 +43,7 @@ class TimeTableController extends Controller
 
     public function generatePdf($semester)
 {
+        $this->notify($semester);
         $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
         $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
         $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
@@ -218,7 +221,7 @@ class TimeTableController extends Controller
     ]);
     DB::commit();
     return $this->show($semester);
-    
+
     } catch (\Exception $e) {
         DB::rollBack();
 
@@ -402,5 +405,31 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         }catch (QueryException $e) {
             return back()->withErrors(['msg' => 'An error occurred while updating the interval.']);
         }
+    }
+    public function confirm($semester){
+        error_log('here');
+        $condition = Condition::where('semester_id', $semester)->first();
+        $condition->confirmed = true;
+        $condition->save();
+        $this->notify($semester);
+        return redirect()->back()->with('status','successful!');
+    }
+    public function notify($semester)
+    {
+
+        $TimeTable_notification=TimeTable_Notification::create([
+            'level' => Semester::where('id', $semester)->pluck('level')->first(),
+            'semester' => Semester::where('id', $semester)->pluck('semester')->first(),
+            'year' => Semester::where('id', $semester)->pluck('academic_year')->first(),
+            'user_id' => auth()->user()->id,
+        ]);
+        $users = User::where('academic_year',$TimeTable_notification->year)->get();
+        try{
+        User::find(auth()->user()->id)->notify(new TimeTableInitialized($TimeTable_notification));
+        error_log('notified');
+        }catch(Exception){
+            error_log('error');
+        }
+
     }
 }

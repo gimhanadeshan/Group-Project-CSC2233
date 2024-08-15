@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('conditions', function (Blueprint $table) {
+        Schema::create('time_table__notifications', function (Blueprint $table) {
             $table->id();
-            $table->string('lunchtime_start')->nullable();
-            $table->string('lunchtime_end')->nullable();
-            $table->foreignId('semester_id')->constrained()->onDelete('cascade');
-            $table->boolean('confirmed')->default(false);
+            $table->string('level');
+            $table->string('semester');
+            $table->string('year');
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('conditions');
+        Schema::dropIfExists('time_table__notifications');
     }
 };

@@ -13,6 +13,11 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
     const handleDownloadPDF = () => {
         window.location.href = route('timetables.pdf', { semester });
     };
+    const handleConfirm = () => {
+        if (confirm("Are you sure you want to initialize this TimeTable?")) {
+            window.location.href = route('timetables.confirm', {semester});
+        }
+    };
 
     return (
     <Authenticated user={auth.user} permissions={auth.permissions}>
@@ -36,6 +41,12 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
                         >
                             Modify
                         </Link>
+                        <button
+                            onClick={handleConfirm}
+                            className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            Confirm and Push
+                        </button>
                         <button
                             onClick={handleDownloadPDF}
                             className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
