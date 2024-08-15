@@ -19,11 +19,23 @@ return new class extends Migration
             $table->dateTime('end');
             $table->unsignedBigInteger('user_id')->nullable(); // Add user_id column
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Set up foreign key constraint
-            $table->unsignedBigInteger('semester_id')->nullable(); // Add semester_id column
+
+            
+            $table->unsignedBigInteger('semester_id')->nullable();// Add semester_id column
             $table->foreign('semester_id')->references('semester_id')->on('time_tables')->onDelete('cascade');
+            
+            $table->unsignedBigInteger('hall_id')->nullable();// Add semester_id column
+            $table->foreign('hall_id')->references('hall_id')->on('time_tables')->onDelete('cascade');
+            
+            $table->unsignedBigInteger('lec_id')->nullable();// Add semester_id column
+            $table->foreign('lec_id')->references('lecturer')->on('time_tables')->onDelete('cascade');
+            
+            $table->boolean('attended')->nullable();
+
             $table->unsignedBigInteger('course_id')->nullable(); // Add course_id column
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null'); // Set up foreign key constraint
     
+
             $table->timestamps();
         });
     }

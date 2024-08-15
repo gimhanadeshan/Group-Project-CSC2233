@@ -16,25 +16,40 @@ class EventController extends Controller
 {
     $this->authorize('read_event', $request->user());
 
+
     // Fetch the semester_id from the course_registrations table for the logged-in user
     $semesterId = CourseRegistration::
                     where('user_id', $request->user()->id)
                     ->orderBy('created_at', 'desc') // Adjust ordering as necessary
                     ->value('semester_id');
+    $UId=$request->user()->id;
 
-    // If no semester_id is found, return an empty set of events
-    if (!$semesterId) {
-        $allevents = Event::whereNull('semester_id')->get();
-        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-    }
 
-    // Fetch events that match the user's semester_id
-    $allevents = Event::where('semester_id', $semesterId)
-                      ->orWhereNull('semester_id')
-                      ->get();
+    //$allevents = Event::whereNull('semester_id', $semesterId)->get();
+    //$allevents = null;
+    if ($semesterId) {
+        // Fetch events that match the user's semester_id
+        $allevents = Event::where('semester_id', $semesterId)->get();
+                      //->orWhereNull('semester_id')
+                      //->get();
 
      return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-                 
+       
+        
+    }else{
+        if($request->user()->role_id==3){
+
+            $allevents = Event::where('lec_id',$UId)->get();
+            return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        }
+    }
+    
+    
+    
+    $allevents = Event::whereNull('semester_id', $semesterId)->get();
+    return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+
+               
     }
 
 
@@ -79,8 +94,12 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
-                    'semester_id' => $semesterId ,
+
+                    'semester_id' => $semesterId,
+                    'hall_id' => $slot->hall_id,
+                    'lec_id' => $slot->lecturer,
                     'course_id' => $slot->course->id
+
                 ]);
             }
 
