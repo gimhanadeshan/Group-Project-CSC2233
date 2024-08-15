@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::resource('timetables', TimeTableController::class);
     Route::resource('courses', CourseController::class);
-   // Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
     Route::resource('course-registrations', CourseRegistrationController::class);
 
@@ -70,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
-    Route::get('/dashboard', [EventController1::class, 'index'])->name('dashboard');
+    //Route::get('/dashboard', [EventController1::class, 'index'])->name('dashboard');
     //Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');

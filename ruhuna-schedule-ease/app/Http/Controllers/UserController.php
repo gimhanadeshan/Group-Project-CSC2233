@@ -44,7 +44,7 @@ class UserController extends Controller
 
     public function createFromImport(Request $request)
     {
-        $this->authorize('import_user', $request->user());
+        $this->authorize('import_users', $request->user());
         $roles = Role::all();
         $degreePrograms = DegreeProgram::all();
 
@@ -226,7 +226,7 @@ public function storeMany(Request $request)
 
 public function import(Request $request)
 {
-    $this->authorize('import_user', $request->user());
+    $this->authorize('import_users', $request->user());
     $request->validate([
         'file' => 'required|mimes:xlsx,xls|max:2048',
         'academic_year' => 'nullable|string',
