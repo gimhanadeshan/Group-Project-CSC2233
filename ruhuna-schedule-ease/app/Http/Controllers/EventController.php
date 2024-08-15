@@ -8,6 +8,7 @@ use App\Models\Semester;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
+use App\Models\CourseRegistration; 
 
 class EventController extends Controller
 {
@@ -16,8 +17,8 @@ class EventController extends Controller
     $this->authorize('read_event', $request->user());
 
     // Fetch the semester_id from the course_registrations table for the logged-in user
-    $semesterId = \DB::table('course_registrations')
-                    ->where('user_id', $request->user()->id)
+    $semesterId = CourseRegistration::
+                    where('user_id', $request->user()->id)
                     ->orderBy('created_at', 'desc') // Adjust ordering as necessary
                     ->value('semester_id');
 
@@ -78,7 +79,8 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
-                    'semester_id' => $semesterId 
+                    'semester_id' => $semesterId ,
+                    'course_id' => $slot->course->id
                 ]);
             }
 
