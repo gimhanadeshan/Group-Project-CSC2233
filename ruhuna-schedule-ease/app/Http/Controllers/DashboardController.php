@@ -30,48 +30,55 @@ class DashboardController extends Controller
     }
 
     public function student(Request $request)
-{
-    // Fetch the latest semester_id from the course_registrations table for the logged-in user
-    $semesterId = \DB::table('course_registrations')
-        ->where('user_id', $request->user()->id)
-        ->orderBy('created_at', 'desc') // Get the most recent registration
-        ->value('semester_id');
-
-    // Fetch the current semester details based on the semester_id
-    $now = Carbon::now();
-    $currentSemester = Semester::where('id', $semesterId)
-        ->where('start_date', '<=', $now)
-        ->where('end_date', '>=', $now)
-        ->first();
-
-    // Fetch events for the current semester or general events (semester_id can be null)
-    $allevents = Event::where(function ($query) use ($semesterId) {
-            $query->where('semester_id', $semesterId)
-                  ->orWhereNull('semester_id');
-        })
-        ->get();
-
-    // Fetch registered courses for the current semester with status 'confirmed'
-    $registeredCourses = CourseRegistration::with('course')
-        ->where('user_id', $request->user()->id)
-        ->where('semester_id', $semesterId)
-        ->where('status', 'confirmed') // Only confirmed registrations
-        ->get()
-        ->map(function($registration) {
-            return [
-                'id' => $registration->course->id,
-                'code' => $registration->course->code,
-                'name' => $registration->course->name,
-            ];
-        });
-
-    // Render the StudentDashboard component with the necessary data
-    return Inertia::render('Dashboards/StudentDashboard', [
-        'currentSemester' => $currentSemester,
-        'allevents' => $allevents,
-        'registeredCourses' => $registeredCourses, // Pass the registered courses to the view
-    ]);
-}
+    {
+        // Fetch the latest semester_id from the course_registrations table for the logged-in user
+        $semesterId = CourseRegistration::where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc') // Get the most recent registration
+            ->value('semester_id');
+    
+        // Fetch the current semester details based on the semester_id
+        $now = Carbon::now();
+        $currentSemester = Semester::where('id', $semesterId)
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->first();
+    
+        // Fetch confirmed courses for the current semester
+        $confirmedCourses = CourseRegistration::where('user_id', $request->user()->id)
+            ->where('semester_id', $semesterId)
+            ->where('status', 'confirmed') // Only confirmed registrations
+            ->pluck('course_id'); // Get only the course IDs
+    
+        // Fetch events related to confirmed courses for the current semester or general events
+        $allevents = Event::where(function ($query) use ($semesterId) {
+                $query->where('semester_id', $semesterId)
+                      ->orWhereNull('semester_id');
+            })
+            ->whereIn('course_id', $confirmedCourses) // Filter by confirmed course IDs
+            ->get();
+    
+        // Fetch registered courses for the current semester with status 'confirmed'
+        $registeredCourses = CourseRegistration::with('course')
+            ->where('user_id', $request->user()->id)
+            ->where('semester_id', $semesterId)
+            ->where('status', 'confirmed') // Only confirmed registrations
+            ->get()
+            ->map(function($registration) {
+                return [
+                    'id' => $registration->course->id,
+                    'code' => $registration->course->code,
+                    'name' => $registration->course->name,
+                ];
+            });
+    
+        // Render the StudentDashboard component with the necessary data
+        return Inertia::render('Dashboards/StudentDashboard', [
+            'currentSemester' => $currentSemester,
+            'allevents' => $allevents,
+            'registeredCourses' => $registeredCourses, // Pass the registered courses to the view
+        ]);
+    }
+    
 
     
 }

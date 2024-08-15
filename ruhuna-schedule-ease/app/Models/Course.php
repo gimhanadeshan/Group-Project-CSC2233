@@ -32,4 +32,9 @@ class Course extends Model
     return $this->belongsTo(Semester::class, 'semester_id');
 }
 
+public function events()
+{
+    return $this->hasMany(Event::class);
+}
+
 }
