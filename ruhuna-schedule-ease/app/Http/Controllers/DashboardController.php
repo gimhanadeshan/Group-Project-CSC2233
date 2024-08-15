@@ -32,8 +32,8 @@ class DashboardController extends Controller
     public function student(Request $request)
 {
     // Fetch the latest semester_id from the course_registrations table for the logged-in user
-    $semesterId = \DB::table('course_registrations')
-        ->where('user_id', $request->user()->id)
+    $semesterId = CourseRegistration::
+        where('user_id', $request->user()->id)
         ->orderBy('created_at', 'desc') // Get the most recent registration
         ->value('semester_id');
 
