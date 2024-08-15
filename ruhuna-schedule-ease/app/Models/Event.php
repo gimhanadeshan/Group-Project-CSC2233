@@ -20,6 +20,8 @@ class Event extends Model
         'recurrence',
         'user_id',
         'semester_id',
+        'lec_id',
+        'hall_id',
     ];
 
     // Define constants for recurrence patterns
