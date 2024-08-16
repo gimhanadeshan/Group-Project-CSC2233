@@ -20,6 +20,7 @@ class Event extends Model
         'recurrence',
         'user_id',
         'semester_id',
+        'course_id', // Add course_id to fillable attributes
         'lec_id',
         'hall_id',
     ];
