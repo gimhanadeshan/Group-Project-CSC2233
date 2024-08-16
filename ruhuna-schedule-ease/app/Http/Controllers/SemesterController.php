@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use APP\Notifications\CourseRegistrationOpened;
 
 class SemesterController extends Controller
 {
@@ -170,5 +171,22 @@ class SemesterController extends Controller
             }
             $semester->save();
         }
+    }
+    public function notify($semester)
+    {
+            $level = Semester::where('id', $semester)->pluck('level')->first();
+            $semester = Semester::where('id', $semester)->pluck('semester')->first();
+            $year = Semester::where('id', $semester)->pluck('academic_year')->first();
+            $users = User::where('academic_year',$year)->get();
+
+            //each user is notified
+        try{
+            foreach($users as $user){
+                $user->notify(new CourseRegistrationOpened(['level'=>$level,'semester'=>$semester,'year'=>$year]));
+            }
+        }catch(Exception){
+
+        }
+
     }
 }

@@ -19,7 +19,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\CourseConfirmationController;
-
+use App\Http\Controllers\NotificationController;
 
 
 
@@ -38,13 +38,23 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('lecture-halls', LectureHallController::class);
     Route::resource('semesters', SemesterController::class);
     Route::post('/mark-as-read', function () {
-        error_log('mark as read');
         Auth::user()->unreadNotifications->markAsRead();
         return redirect()->back();
+    })->name('markAllAsRead');
+    Route::post('/mark-as-read-single/{id}', function ($id) {
+        $notification = Auth::user()->unreadNotifications->find($id);
+
+        if ($notification) {
+            $notification->markAsRead();
+            error_log('Marked as read');
+        }
+
+        return redirect()->back();
     })->name('markAsRead');
+
     Route::get('/timetables/{semester}/pdf', [TimeTableController::class, 'generatePdf'])->name('timetables.pdf');
     Route::get('timetables/modify/{id}/destroy', [TimeTableController::class, 'destroySingle'])->name('timetables.destroySingle');
-    Route::get('timetables/modify/{id}/confirm', [TimeTableController::class, 'confirm'])->name('timetables.confirm');
+    Route::get('timetables/{timetable}/confirm', [TimeTableController::class, 'confirm'])->name('timetables.confirm');
     Route::get('timetables/modify/interval/update',[TimeTableController::class, 'updateInterval'])->name('timetables.updateInterval');
     Route::post('timetables/modify/add', [TimeTableController::class, 'storeSingle'])->name('timetables.storeSingle');
     Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
@@ -82,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
 
     //TimeTable table  into Events table
    Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
-
+    Route::get('/Notifications',[ NotificationController::class,'index'])->name('notifications.index');
 
 
 });

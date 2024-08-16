@@ -7,20 +7,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TimeTableInitialized extends Notification
+class CourseRegistrationOpened extends Notification
 {
     use Queueable;
-    protected $level;
-    protected $semester;
-    protected $year;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($semesterinfo)
+    public function __construct()
     {
-        $this->level = $semesterinfo['level'];
-        $this->semester = $semesterinfo['semester'];
-        $this->year = $semesterinfo['year'];
+        //
     }
 
     /**
@@ -39,10 +35,8 @@ class TimeTableInitialized extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject('Time Table Initialized')
-                    ->greeting('Hello,')
-                    ->line('Time Table Initialized for Level'.$this->level.' semester '.$this->semester.' year '.$this->year)
-                    ->action('Notification Action', url('/dashboard'))
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
     }
 
@@ -54,7 +48,7 @@ class TimeTableInitialized extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'data' => 'Time Table Initialized for Level'.$this->level.' semester '.$this->semester.' year '.$this->year,
+            'data' => 'Course Registration is Opened for Level'.$this->level.' semester '.$this->semester.' year '.$this->year,
             'link' => '/dashboard',
         ];
     }
