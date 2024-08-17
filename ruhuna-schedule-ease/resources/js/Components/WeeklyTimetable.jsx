@@ -1,6 +1,21 @@
 import React from "react";
 
-const WeeklyTimetable = ({ groupedEvents }) => {
+const WeeklyTimetable = ({ allevents }) => {
+
+
+
+    // Group events by day of the week
+    const groupedEvents = allevents.reduce((acc, event) => {
+        const eventDay = new Date(event.start).getDay();
+        if (!acc[eventDay]) {
+            acc[eventDay] = [];
+        }
+        acc[eventDay].push(event);
+        return acc;
+    }, {});
+
+
+
     // Define days of the week for Sunday to Saturday
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 

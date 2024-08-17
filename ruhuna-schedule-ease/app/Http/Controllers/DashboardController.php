@@ -54,7 +54,8 @@ class DashboardController extends Controller
                 $query->where('semester_id', $semesterId)
                       ->orWhereNull('semester_id');
             })
-            ->whereIn('course_id', $confirmedCourses) // Filter by confirmed course IDs
+            ->whereIn('course_id', $confirmedCourses)
+            ->orWhereNull('course_id') // Filter by confirmed course IDs
             ->get();
     
         // Fetch registered courses for the current semester with status 'confirmed'
