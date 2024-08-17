@@ -247,11 +247,11 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         'daily' => 'sometimes|boolean',
         'weekly' => 'sometimes|boolean',
         'monthly' => 'sometimes|boolean',
-        'user_id' => 'sometimes|exists:users,id',
-        'course_id' => 'sometimes|exists:courses,id',
-        'semester_id' => 'sometimes|exists:semesters,id',
-        'lec_id' => 'sometimes|exists:users,id',
-        'hall_id' => 'sometimes|exists:lecture_halls,id',
+        'user_id' => 'nullable|sometimes|exists:users,id',
+        'course_id' => 'nullable|sometimes|exists:courses,id',
+        'semester_id' => 'nullable|sometimes|exists:semesters,id',
+        'lec_id' => 'nullable|sometimes|exists:users,id',
+        'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
         
     ]);
 
