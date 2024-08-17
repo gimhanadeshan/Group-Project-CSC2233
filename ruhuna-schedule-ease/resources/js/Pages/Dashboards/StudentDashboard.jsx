@@ -120,6 +120,12 @@ export default function Dashboard({
                             </p>
                             <p className="text-sm text-gray-700 mb-2">
                                 <strong className="text-gray-900">
+                                    Degree Program:
+                                </strong>{" "}
+                                {currentSemester.degree_program.name}
+                            </p>
+                            <p className="text-sm text-gray-700 mb-2">
+                                <strong className="text-gray-900">
                                     Level:
                                 </strong>{" "}
                                 {currentSemester.level}
