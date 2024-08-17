@@ -44,6 +44,9 @@ const Index = ({ auth, semesters }) => {
                                             Semester
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Degree Program
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Status
                                         </th>
                                         {canEdit || canRead || canDelete ? (
@@ -66,16 +69,16 @@ const Index = ({ auth, semesters }) => {
                                                 {semester.semester}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {semester.degree_program.name} {/* Adjust according to your data structure */}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {semester.status}
                                             </td>
                                             {canEdit || canRead || canDelete ? (
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     {canEdit && (
                                                         <Link
-                                                            href={route(
-                                                                "semesters.edit",
-                                                                semester.id
-                                                            )}
+                                                            href={route("semesters.edit", semester.id)}
                                                             className="text-indigo-600 hover:text-indigo-900 mr-4"
                                                         >
                                                             Edit
@@ -83,10 +86,7 @@ const Index = ({ auth, semesters }) => {
                                                     )}
                                                     {canRead && (
                                                         <Link
-                                                            href={route(
-                                                                "semesters.show",
-                                                                semester.id
-                                                            )}
+                                                            href={route("semesters.show", semester.id)}
                                                             className="text-green-600 hover:text-green-900 mr-4"
                                                         >
                                                             View
@@ -94,10 +94,7 @@ const Index = ({ auth, semesters }) => {
                                                     )}
                                                     {canDelete && (
                                                         <Link
-                                                            href={route(
-                                                                "semesters.destroy",
-                                                                semester.id
-                                                            )}
+                                                            href={route("semesters.destroy", semester.id)}
                                                             method="delete"
                                                             as="button"
                                                             className="text-red-600 hover:text-red-900"

@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([RoleSeeder::class]);
         $this->call([LectureHallSeeder::class]);
-        $this->call([CourseSeeder::class]);
-        $this->call([SemesterSeeder::class]);
+        $this->call([CourseSeeder::class]);    
         $this->call(DegreeProgramsTableSeeder::class);
+         $this->call([SemesterSeeder::class]);
 
         //$this->call([EventsSeeder::class]);
 
