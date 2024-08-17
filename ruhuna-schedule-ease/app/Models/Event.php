@@ -23,6 +23,7 @@ class Event extends Model
         'course_id', // Add course_id to fillable attributes
         'lec_id',
         'hall_id',
+        'attended',
         
 
     ];

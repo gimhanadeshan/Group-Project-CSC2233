@@ -100,6 +100,7 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
                 return [...prev, id];
             }
         });
+        console.log(selectedEvents);
     };
 
     const handleSelectAll = () => {
@@ -113,17 +114,35 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
 
     const handleDeleteSelected = () => {
         if (confirm("Are you sure you want to delete all selected events?")) {
-            selectedEvents.forEach((id) => {
-                Inertia.delete(route("events.destroy", id), {
-                    onSuccess: () => {
-                        setEvents(events.filter((event) => event.id !== id));
-                    },
-                });
-            });
+            // selectedEvents.forEach((id) => {
+            //     Inertia.delete(route("events.destroy", id), {
+            //         onSuccess: () => {
+            //             setEvents(events.filter((event) => event.id !== id));
+            //         },
+            //     });
+                
+
+            // });
+            Inertia.delete(route('events.destroy', selectedEvents));
+
             setSelectedEvents([]);
             setSelectAll(false);
         }
     };
+    // const handleDeleteSelected = () => {
+    //     if (confirm("Are you sure you want to delete all selected events?")) {
+    //         const deletePromises = selectedEvents.map((id) =>
+    //             Inertia.delete(route("events.destroy", id))
+    //         );
+    
+    //         Promise.all(deletePromises).then(() => {
+    //             setEvents(events.filter((event) => !selectedEvents.includes(event.id)));
+    //             setSelectedEvents([]);
+    //             setSelectAll(false);
+    //         });
+    //     }
+    // };
+    
 
     const filteredEvents = allevents.filter((event) => {
         return (
