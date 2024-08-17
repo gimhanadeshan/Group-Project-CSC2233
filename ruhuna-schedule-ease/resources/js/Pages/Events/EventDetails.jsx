@@ -57,6 +57,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.event_title}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.event_title && <p className="text-red-600 text-sm">{errors.event_title}</p>}
                     </div>
@@ -70,6 +71,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.location}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.location && <p className="text-red-600 text-sm">{errors.location}</p>}
                     </div>
@@ -83,6 +85,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.start}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.start && <p className="text-red-600 text-sm">{errors.start}</p>}
                     </div>
@@ -96,6 +99,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.end}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.end && <p className="text-red-600 text-sm">{errors.end}</p>}
                     </div>
@@ -109,6 +113,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.user_id}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.user_id && <p className="text-red-600 text-sm">{errors.user_id}</p>}
                     </div>
@@ -122,6 +127,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.course_id}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.course_id && <p className="text-red-600 text-sm">{errors.course_id}</p>}
                     </div>
@@ -135,6 +141,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.semester_id}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.semester_id && <p className="text-red-600 text-sm">{errors.semester_id}</p>}
                     </div>
@@ -148,6 +155,7 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.lec_id}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.lec_id && <p className="text-red-600 text-sm">{errors.lec_id}</p>}
                     </div>
@@ -161,31 +169,33 @@ export default function EventDetails({ auth, event }) {
                             value={eventData.hall_id}
                             onChange={handleChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={(auth.user.role_id)!=1}
                         />
                         {errors.hall_id && <p className="text-red-600 text-sm">{errors.hall_id}</p>}
                     </div>
-
+{/*Attendance check Boxes*/ }
+                {auth.user.role_id!=1 &&
                     <div>
-    <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Attended</label>
-    <input
-        type="checkbox"
-        id="attended"
-        name="attended"
-        checked={!!eventData.attended} // Convert null to false for the checkbox
-        onChange={(e) =>
+                        <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Attended</label>
+                             <input
+                             type="checkbox"
+                             id="attended"
+                             name="attended"
+                             checked={!!eventData.attended} // Convert null to false for the checkbox
+                             onChange={(e) =>
             
-            setEventData((prevData) => ({
-                ...prevData,
-                attended: e.target.checked || null, // If unchecked, set to null
-            }))
+                                setEventData((prevData) => ({
+                                    ...prevData,
+                                    attended: e.target.checked || null, // If unchecked, set to null
+                                }))
             
-        }
-        className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-    />
-    {errors.attended && <p className="text-red-600 text-sm">{errors.attended}</p>}
-</div>
+                         }
+                         className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                     {errors.attended && <p className="text-red-600 text-sm">{errors.attended}</p>}
+                    </div>
 
-
+                }
                     <div>
                         <button
                             type="submit"
