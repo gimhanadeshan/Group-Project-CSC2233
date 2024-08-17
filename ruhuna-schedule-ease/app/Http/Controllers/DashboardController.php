@@ -42,6 +42,7 @@ class DashboardController extends Controller
         $currentSemester = Semester::where('id', $semesterId)
             ->where('start_date', '<=', $now)
             ->where('end_date', '>=', $now)
+            ->with('degreeProgram')
             ->first();
 
         // Fetch confirmed courses for the current semester
@@ -87,7 +88,7 @@ class DashboardController extends Controller
     
         // Fetch all current semesters
         $currentSemesters = Semester::where('start_date', '<=', $now)
-            ->where('end_date', '>=', $now)
+            ->where('end_date', '>=', $now)->with('degreeProgram')
             ->get();
     
         // Initialize arrays to hold data for multiple semesters
