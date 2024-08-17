@@ -56,7 +56,7 @@ class DashboardController extends Controller
                       ->orWhereNull('semester_id');
             })
             ->whereIn('course_id', $confirmedCourses)
-            ->orWhereNull('course_id')
+            //->orWhereNull('course_id')
             ->get();
 
         // Fetch registered courses for the current semester with status 'confirmed'
@@ -83,57 +83,65 @@ class DashboardController extends Controller
     public function lecturer(Request $request)
     {
         $user = Auth::user();
-    
-        // Fetch the current semester details
         $now = Carbon::now();
-        $currentSemester = Semester::where('start_date', '<=', $now)
+    
+        // Fetch all current semesters
+        $currentSemesters = Semester::where('start_date', '<=', $now)
             ->where('end_date', '>=', $now)
-            ->first();
-    
-        // Fetch the lecturer's courses from the TimeTable for the current semester
-        $lecturerCourses = TimeTable::with('course')
-            ->where('lecturer', $user->id)
-            ->where('semester_id', $currentSemester->id)
-            ->get()
-            ->map(function ($timetable) {
-                return [
-                    'id' => $timetable->course->id,
-                    'code' => $timetable->course->code,
-                    'name' => $timetable->course->name,
-                ];
-            })->unique('id'); // Remove duplicate courses
-    
-        // Fetch the timetable entries for the lecturer
-        $timetable = TimeTable::with(['course', 'hall'])
-            ->where('lecturer', $user->id)
-            ->where('semester_id', $currentSemester->id)
-            ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->get()
-            ->map(function ($entry) {
-                return [
-                    'day_of_week' => $entry->day_of_week,
-                    'start_time' => $entry->start_time,
-                    'end_time' => $entry->end_time,
-                    'course_code' => $entry->course->code,
-                    'course_name' => $entry->course->name,
-                    'hall' => $entry->hall->name,
-                ];
-            });
-    
-        // Fetch events related to the lecturer's courses
-        $lecturerCourseIds = $lecturerCourses->pluck('id');
-        $events = Event::whereIn('course_id', $lecturerCourseIds)
-            ->orWhereNull('course_id')
             ->get();
     
+        // Initialize arrays to hold data for multiple semesters
+        $lecturerCourses = collect();
+        $allEvents = collect(); // Collect events for all semesters
+        $nullSemesterEvents = collect(); // Collect events with null semester_id
+    
+        foreach ($currentSemesters as $semester) {
+            // Fetch the lecturer's courses for the current semester
+            $courses = TimeTable::with('course')
+                ->where('lecturer', $user->id)
+                ->where('semester_id', $semester->id)
+                ->get()
+                ->map(function ($timetable) {
+                    return [
+                        'id' => $timetable->course->id,
+                        'code' => $timetable->course->code,
+                        'name' => $timetable->course->name,
+                        'semester_id' => $timetable->semester_id,
+                    ];
+                })->unique('id'); // Remove duplicate courses
+    
+            $lecturerCourses = $lecturerCourses->merge($courses);
+    
+            // Fetch events for the current semester
+            $confirmedCourses = $courses->pluck('id');
+            $events = Event::where(function ($query) use ($semester) {
+                    $query->where('semester_id', $semester->id)
+                          ->orWhereNull('semester_id');
+                })
+                ->whereIn('course_id', $confirmedCourses)
+                ->orWhereNull('course_id')
+                ->get();
+    
+            // Separate events with null semester_id
+            $nullSemesterEvents = $nullSemesterEvents->merge($events->whereNull('semester_id'))->unique('id');
+    
+            // Merge the events from this semester with the collection of all events
+            $allEvents = $allEvents->merge($events->whereNotNull('semester_id'));
+        }
+    
+        // Add the unique null semester events to the final collection
+        $allEvents = $allEvents->merge($nullSemesterEvents)->unique('id');
+    
         return Inertia::render('Dashboards/LectureDashboard', [
-            'currentSemester' => $currentSemester,
+            'currentSemesters' => $currentSemesters,
             'lecturerCourses' => $lecturerCourses,
-            'timetable' => $timetable,
-            'events' => $events,
+            'events' => $allEvents, // Pass all events from all semesters
         ]);
     }
+    
+
+    
+    
     
 
 }
