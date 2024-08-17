@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Link } from "@inertiajs/react";
 
-const Create = ({ auth }) => {
+const Create = ({ auth, degreePrograms }) => {
     const { data, setData, post, processing, errors } = useForm({
         academic_year: "",
         level: "",
@@ -15,8 +15,8 @@ const Create = ({ auth }) => {
         registration_end_date: "",
         course_capacity: 0,
         enrollment_count: 0,
-        status: "Upcoming",
         description: "",
+        degree_program_id: "", 
     });
 
     const handleChange = (e) => {
@@ -182,31 +182,34 @@ const Create = ({ auth }) => {
 
                                     <div className="col-span-6 sm:col-span-3">
                                         <label
-                                            htmlFor="status"
+                                            htmlFor="degree_program_id"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            Status
+                                            Degree Program
                                         </label>
                                         <select
-                                            id="status"
-                                            name="status"
-                                            value={data.status}
+                                            id="degree_program_id"
+                                            name="degree_program_id"
+                                            value={data.degree_program_id}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         >
-                                            <option value="Upcoming">
-                                                Upcoming
+                                            <option value="">
+                                                Select Degree Program
                                             </option>
-                                            <option value="Ongoing">
-                                                Ongoing
-                                            </option>
-                                            <option value="Completed">
-                                                Completed
-                                            </option>
+                                            {degreePrograms.map((program) => (
+                                                <option
+                                                    key={program.id}
+                                                    value={program.id}
+                                                >
+                                                    {program.name}
+                                                </option>
+                                            ))}
                                         </select>
-                                        {errors.status && (
+                                        {errors.degree_program_id && (
                                             <div className="text-red-600 text-sm mt-2">
-                                                {errors.status}
+                                                {errors.degree_program_id}
                                             </div>
                                         )}
                                     </div>
@@ -271,6 +274,7 @@ const Create = ({ auth }) => {
                                             value={data.registration_start_date}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         />
                                         {errors.registration_start_date && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -293,6 +297,7 @@ const Create = ({ auth }) => {
                                             value={data.registration_end_date}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
                                         />
                                         {errors.registration_end_date && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -315,6 +320,7 @@ const Create = ({ auth }) => {
                                             value={data.course_capacity}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                           
                                         />
                                         {errors.course_capacity && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -337,6 +343,7 @@ const Create = ({ auth }) => {
                                             value={data.enrollment_count}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                           
                                         />
                                         {errors.enrollment_count && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -359,6 +366,7 @@ const Create = ({ auth }) => {
                                             onChange={handleChange}
                                             rows="3"
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                           
                                         ></textarea>
                                         {errors.description && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -368,22 +376,20 @@ const Create = ({ auth }) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                <Link
-                                    href={route("semesters.index")}
-                                    className="inline-flex justify-center mr-5 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Back to Semesters
-                                </Link>
+                            <div className="px-4 py-3 text-right sm:px-6">
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    {processing
-                                        ? "Saving..."
-                                        : "Create Semester"}
+                                    Save
                                 </button>
+                                <Link
+                                    href={route("semesters.index")}
+                                    className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </Link>
                             </div>
                         </form>
                     </div>

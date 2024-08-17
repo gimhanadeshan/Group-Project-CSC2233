@@ -17,19 +17,12 @@ class Semester extends Model
         'end_date',
         'registration_start_date',
         'registration_end_date',
-        'description', 
-        'course_capacity', 
-        'enrollment_count', 
-        'status', 
+        'description',
+        'course_capacity',
+        'enrollment_count',
+        'status',
+        'degree_program_id', // Add this line
     ];
-
-    /**
-     * Generate a reference number based on the level, semester, and academic year.
-     */
-    // public static function generateReferenceNumber($level, $semester, $academic_year)
-    // {
-    //     return 'L' . $level . 'S' . $semester . $academic_year;
-    // }
 
     /**
      * Get the timetables associated with the semester.
@@ -39,6 +32,11 @@ class Semester extends Model
         return $this->hasMany(TimeTable::class, 'semester_id');
     }
 
-    
-   
+    /**
+     * Get the degree program that owns the semester.
+     */
+    public function degreeProgram()
+    {
+        return $this->belongsTo(DegreeProgram::class, 'degree_program_id','id');
+    }
 }

@@ -1,9 +1,6 @@
 import React from "react";
 
 const WeeklyTimetable = ({ allevents }) => {
-
-
-
     // Group events by day of the week
     const groupedEvents = allevents.reduce((acc, event) => {
         const eventDay = new Date(event.start).getDay();
@@ -14,10 +11,16 @@ const WeeklyTimetable = ({ allevents }) => {
         return acc;
     }, {});
 
-
-
     // Define days of the week for Sunday to Saturday
-    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
 
     // Function to get the unique events for a given hour and day
     const getUniqueEventsForHour = (events, hour) => {
@@ -35,7 +38,7 @@ const WeeklyTimetable = ({ allevents }) => {
     };
 
     return (
-        <div className="mt-8 p-6 border rounded-lg shadow-lg bg-gray-50">
+        <div className="mt-8">
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border border-gray-300">
                     <thead>
@@ -59,46 +62,101 @@ const WeeklyTimetable = ({ allevents }) => {
                             return (
                                 <tr key={hourIndex}>
                                     <td className="py-3 px-4 text-center border-b bg-gray-100">
-                                        {`${hour.toString().padStart(2, "0")}:00`}
+                                        {`${hour
+                                            .toString()
+                                            .padStart(2, "0")}:00`}
                                     </td>
                                     {daysOfWeek.map((day, dayIndex) => {
-                                        const events = groupedEvents[dayIndex] || [];
-                                        const uniqueEventsForHour = getUniqueEventsForHour(events, hour);
+                                        const events =
+                                            groupedEvents[dayIndex] || [];
+                                        const uniqueEventsForHour =
+                                            getUniqueEventsForHour(
+                                                events,
+                                                hour
+                                            );
 
                                         return (
                                             <td
                                                 key={dayIndex}
                                                 className="py-3 px-4 text-center border-b relative"
-                                                style={{ position: 'relative', verticalAlign: 'top' }}
+                                                style={{
+                                                    position: "relative",
+                                                    verticalAlign: "top",
+                                                }}
                                             >
-                                                {uniqueEventsForHour.map((event) => {
-                                                    const eventStartHour = new Date(event.start).getHours();
-                                                    const eventEndHour = new Date(event.end).getHours();
-                                                    const rowspan = eventEndHour - eventStartHour;
-                                                    const isEventVisible = hour === eventStartHour;
+                                                {uniqueEventsForHour.map(
+                                                    (event) => {
+                                                        const eventStartHour =
+                                                            new Date(
+                                                                event.start
+                                                            ).getHours();
+                                                        const eventEndHour =
+                                                            new Date(
+                                                                event.end
+                                                            ).getHours();
+                                                        const rowspan =
+                                                            eventEndHour -
+                                                            eventStartHour;
+                                                        const isEventVisible =
+                                                            hour ===
+                                                            eventStartHour;
 
-                                                    return (
-                                                        isEventVisible && (
-                                                            <div
-                                                                key={event.id}
-                                                                className="bg-purple-200 text-purple-800 rounded-lg px-2 py-1 text-xs font-medium absolute flex flex-col items-center justify-center"
-                                                                style={{
-                                                                    top: `${(hour - eventStartHour) * 40}px`, // Adjust top position
-                                                                    height: `${rowspan * 40}px`, // Adjust height as needed
-                                                                    left: "50%",
-                                                                    transform: "translateX(-50%)", // Center horizontally
-                                                                    zIndex: 1,
-                                                                    whiteSpace: "nowrap",
-                                                                    overflow: "hidden",
-                                                                    textOverflow: "ellipsis",
-                                                                }}
-                                                            >
-                                                                <div className="text-sm font-semibold text-center">{event.event_title}</div>
-                                                                <div className="text-xs text-center">{`${new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</div>
-                                                            </div>
-                                                        )
-                                                    );
-                                                })}
+                                                        return (
+                                                            isEventVisible && (
+                                                                <div
+                                                                    key={
+                                                                        event.id
+                                                                    }
+                                                                    className="bg-purple-200 text-purple-800 rounded-lg px-2 py-1 text-xs font-medium absolute flex flex-col items-center justify-center"
+                                                                    style={{
+                                                                        top: `${
+                                                                            (hour -
+                                                                                eventStartHour) *
+                                                                            40
+                                                                        }px`, // Adjust top position
+                                                                        height: `${
+                                                                            rowspan *
+                                                                            40
+                                                                        }px`, // Adjust height as needed
+                                                                        left: "50%",
+                                                                        transform:
+                                                                            "translateX(-50%)", // Center horizontally
+                                                                        zIndex: 1,
+                                                                        whiteSpace:
+                                                                            "nowrap",
+                                                                        overflow:
+                                                                            "hidden",
+                                                                        textOverflow:
+                                                                            "ellipsis",
+                                                                    }}
+                                                                >
+                                                                    <div className="text-sm font-semibold text-center">
+                                                                        {
+                                                                            event.event_title
+                                                                        }
+                                                                    </div>
+                                                                    <div className="text-xs text-center">{`${new Date(
+                                                                        event.start
+                                                                    ).toLocaleTimeString(
+                                                                        [],
+                                                                        {
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                        }
+                                                                    )} - ${new Date(
+                                                                        event.end
+                                                                    ).toLocaleTimeString(
+                                                                        [],
+                                                                        {
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                        }
+                                                                    )}`}</div>
+                                                                </div>
+                                                            )
+                                                        );
+                                                    }
+                                                )}
                                             </td>
                                         );
                                     })}

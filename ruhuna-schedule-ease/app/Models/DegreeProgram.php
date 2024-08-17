@@ -20,4 +20,9 @@ class DegreeProgram extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function semesters()
+    {
+        return $this->hasMany(Semester::class);
+    }
 }

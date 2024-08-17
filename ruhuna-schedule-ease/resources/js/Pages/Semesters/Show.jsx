@@ -4,6 +4,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
 const Show = ({ auth, semester }) => {
+    const { errors } = usePage().props;
+
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Semester Details" />
@@ -41,7 +43,14 @@ const Show = ({ auth, semester }) => {
                                         {semester.semester}
                                     </dd>
                                 </div>
-                               
+                                <div className="sm:col-span-1">
+                                    <dt className="text-sm font-medium text-gray-500">
+                                        Degree Program
+                                    </dt>
+                                    <dd className="mt-1 text-sm text-gray-900">
+                                        {semester.degree_program ? semester.degree_program.name : "No degree program assigned"}
+                                    </dd>
+                                </div>
                                 <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
                                         Start Date
@@ -98,13 +107,12 @@ const Show = ({ auth, semester }) => {
                                         {semester.status}
                                     </dd>
                                 </div>
-                                <div className="sm:col-span-2">
+                                <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
                                         Description
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.description ||
-                                            "No description available"}
+                                        {semester.description || "No description available"}
                                     </dd>
                                 </div>
                             </div>
