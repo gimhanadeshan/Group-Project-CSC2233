@@ -30,7 +30,7 @@ return new class extends Migration
             $table->foreign('degree_program_id')
                   ->references('id')
                   ->on('degree_programs')
-                  ->onDelete('set null');
+                  ->onDelete('cascade');
             
             $table->softDeletes();
             $table->timestamps();
