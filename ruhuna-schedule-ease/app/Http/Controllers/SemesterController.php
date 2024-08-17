@@ -20,8 +20,9 @@ class SemesterController extends Controller
     
         // Fetch semesters with their associated degree programs
         $semesters = Semester::with('degreeProgram')->get();
+        $degreePrograms = DegreeProgram::all();
     
-        return Inertia::render('Semesters/Index', ['semesters' => $semesters]);
+        return Inertia::render('Semesters/Index', ['semesters' => $semesters,'degreePrograms' => $degreePrograms]);
     }
     
 
