@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
     Route::post('/course-confirmation/{courseCode}/confirm', [CourseConfirmationController::class, 'confirmCourse'])->name('course-confirmation.confirm');
-    Route::delete('/course-confirmation/{courseCode}/cancel', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
+    Route::post('/course-confirmation/{courseCode}/cancel', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
 
     //Events
     Route::resource('events-registration', EventRegistrationController::class);

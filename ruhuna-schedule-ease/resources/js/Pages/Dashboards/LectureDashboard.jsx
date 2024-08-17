@@ -48,7 +48,9 @@ export default function LecturerDashboard({
                 data: currentSemesters.map((semester) => {
                     const startDate = new Date(semester.start_date);
                     const endDate = new Date(semester.end_date);
-                    return Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+                    return Math.ceil(
+                        (endDate - startDate) / (1000 * 60 * 60 * 24)
+                    );
                 }),
                 backgroundColor: "rgba(75, 192, 192, 0.5)",
                 borderColor: "rgba(75, 192, 192, 1)",
@@ -143,7 +145,8 @@ export default function LecturerDashboard({
                                             <span className="mr-2 inline-block w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
                                             Level {semester.level} - Semester{" "}
                                             {semester.semester} -{" "}
-                                            {semester.academic_year}
+                                            {semester.academic_year} (
+                                            {semester.degree_program.name})
                                         </h4>
                                         <p className="text-gray-600 mb-4">
                                             Status:{" "}
@@ -158,10 +161,17 @@ export default function LecturerDashboard({
                                             </span>
                                         </p>
                                         <ul className="list-disc list-inside text-gray-800">
-                                            {coursesBySemester[semester.id].length > 0 ? (
-                                                coursesBySemester[semester.id].map((course) => (
-                                                    <li key={course.id} className="mb-1">
-                                                        {course.code} - {course.name}
+                                            {coursesBySemester[semester.id]
+                                                .length > 0 ? (
+                                                coursesBySemester[
+                                                    semester.id
+                                                ].map((course) => (
+                                                    <li
+                                                        key={course.id}
+                                                        className="mb-1"
+                                                    >
+                                                        {course.code} -{" "}
+                                                        {course.name}
                                                     </li>
                                                 ))
                                             ) : (
