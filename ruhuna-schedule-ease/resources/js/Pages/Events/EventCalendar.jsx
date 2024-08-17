@@ -162,11 +162,34 @@ const EventCalendar = ({ allevents, auth }) => {
         });
     };
 
-
     const eventPropGetter = (event) => {
-        const backgroundColor = event.semester_id ? '#007bff' : '#ff0000'; // Default color vs. red for NULL semester_id
+        let backgroundColor;
+        // Get the role ID from the auth object
+        const roleID = auth.user.role_id;
+        
+        // Determine the role value based on the role ID
+        const role = roleID === 2 ? event.Stu_attended : event.Lec_attended;
+    
+        // Determine the background color based on the role and semester_id
+        if(roleID==1){
+            backgroundColor = '#800080'; // Purple
+        }
+    
+        else if (role) {
+            // If the role is true, set color to green
+            backgroundColor = '#00ff00'; // Green
+        } else if (event.semester_id === null) {
+            // If semester_id is NULL, set color to purple
+            backgroundColor = '#800080'; // Purple
+        } else {
+            // Default color
+            backgroundColor = '#007bff'; // Blue
+        }
+    
         return { style: { backgroundColor } };
     };
+    
+    
 
     const CustomEvent = ({ event }) => {
         const startTime = new Date(event.start).toLocaleTimeString('en-US', {
@@ -197,7 +220,7 @@ const EventCalendar = ({ allevents, auth }) => {
     
 
 
-    const s = 0;
+    const s = 1;
 
 
     return (
@@ -217,7 +240,7 @@ const EventCalendar = ({ allevents, auth }) => {
                     endAccessor="end"
                     style={{ margin: '50px' }}
                     selectable
-                    onSelectEvent={openModal}
+                    //onSelectEvent={openModal}
                     onSelectSlot={handleSelectSlot}
                     components={{
                         event: CustomEvent,

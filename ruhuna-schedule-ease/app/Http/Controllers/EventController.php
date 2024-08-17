@@ -29,11 +29,11 @@ class EventController extends Controller
 
 
     //For Students 
-    if ($semesterId) {
+    if ($semesterId || $request->user()->role_id==2) {
         // Fetch events that match the user's semester_id
-        $allevents = Event::where('semester_id', $semesterId)->get();
-                      //->orWhereNull('semester_id')
-                      //->get();
+        $allevents = Event::where('semester_id', $semesterId)//->get();
+                      ->orWhereNull('semester_id')
+                      ->get();
 
      return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
        
@@ -41,7 +41,9 @@ class EventController extends Controller
     }else{
         if($request->user()->role_id==3){
 
-            $allevents = Event::where('lec_id',$UId)->get();
+            $allevents = Event::where('lec_id',$UId)//->get();
+                                ->orWhereNull('semester_id')
+                                ->get();
             return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
         }
     }
@@ -243,7 +245,8 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         'location' => 'required',
         'start' => 'required|date',
         'end' => 'required|date',
-        'attended' => 'nullable|boolean', 
+        'Stu_attended' => 'nullable|boolean', 
+        'Lec_attended' => 'nullable|boolean',
         'daily' => 'sometimes|boolean',
         'weekly' => 'sometimes|boolean',
         'monthly' => 'sometimes|boolean',

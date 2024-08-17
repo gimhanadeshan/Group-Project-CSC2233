@@ -177,19 +177,41 @@ const canEdit = auth.permissions.includes("update_event");
                         {errors.hall_id && <p className="text-red-600 text-sm">{errors.hall_id}</p>}
                     </div>
 {/*Attendance check Boxes*/ }
-                {auth.user.role_id!=1 &&
+                {auth.user.role_id==2 &&
                     <div>
                         <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Attended</label>
                              <input
                              type="checkbox"
-                             id="attended"
-                             name="attended"
-                             checked={!!eventData.attended} // Convert null to false for the checkbox
+                             id="Stu_attended"
+                             name="Stu_attended"
+                             checked={!!eventData.Stu_attended} // Convert null to false for the checkbox
                              onChange={(e) =>
             
                                 setEventData((prevData) => ({
                                     ...prevData,
-                                    attended: e.target.checked || null, // If unchecked, set to null
+                                    Stu_attended: e.target.checked || null, // If unchecked, set to null
+                                }))
+            
+                         }
+                         className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                     {errors.attended && <p className="text-red-600 text-sm">{errors.attended}</p>}
+                    </div>
+
+                }
+                {auth.user.role_id==3 &&
+                    <div>
+                        <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
+                             <input
+                             type="checkbox"
+                             id="attended"
+                             name="attended"
+                             checked={!!eventData.Lec_attended} // Convert null to false for the checkbox
+                             onChange={(e) =>
+            
+                                setEventData((prevData) => ({
+                                    ...prevData,
+                                    Lec_attended: e.target.checked || null, // If unchecked, set to null
                                 }))
             
                          }
