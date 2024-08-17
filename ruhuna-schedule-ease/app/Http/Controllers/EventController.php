@@ -80,8 +80,10 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
             $startDateTime = $dayOfWeek->copy()->setTimeFrom($startTime)->toDateTimeString();
             $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
+            $eventTitle= $slot->course->code . ' (' . $slot->type . ')';
+            
             // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course->code . ' (' . $slot->type . ')')
+            $existingEvent = Event::where('event_title',$eventTitle )
                 ->where('location', $slot->hall->name)
                 ->where('start', $startDateTime)
                 ->where('end', $endDateTime)
@@ -89,13 +91,14 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
 
             if (!$existingEvent) {
                 Event::create([
-                    'event_title' => $slot->course->code . ' (' . $slot->type . ')', //check this with $slot->course->name . ' (' . $slot->type . ')'
+                    'event_title' => $eventTitle, 
                     'location' => $slot->hall->name,
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
 
                     'semester_id' => $semesterId,
+                    'course_id' => $slot->course->id,
                     'hall_id' => $slot->hall_id,
                     'lec_id' => $slot->lecturer,
                     'course_id' => $slot->course->id

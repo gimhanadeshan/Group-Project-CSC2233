@@ -23,6 +23,9 @@ return new class extends Migration
             
             $table->unsignedBigInteger('semester_id')->nullable();// Add semester_id column
             $table->foreign('semester_id')->references('semester_id')->on('time_tables')->onDelete('cascade');
+
+            $table->unsignedBigInteger('course_id')->nullable(); // Add course_id column
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null'); // Set up foreign key constraint
             
             $table->unsignedBigInteger('hall_id')->nullable();// Add semester_id column
             $table->foreign('hall_id')->references('hall_id')->on('time_tables')->onDelete('cascade');
@@ -32,9 +35,6 @@ return new class extends Migration
             
             $table->boolean('attended')->nullable();
 
-            $table->unsignedBigInteger('course_id')->nullable(); // Add course_id column
-            $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null'); // Set up foreign key constraint
-    
 
             $table->timestamps();
         });
