@@ -35,9 +35,6 @@ return new class extends Migration
             
             $table->boolean('attended')->nullable();
 
-            $table->unsignedBigInteger('course_id')->nullable(); // Add course_id column
-            $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null'); // Set up foreign key constraint
-    
 
             $table->timestamps();
         });
