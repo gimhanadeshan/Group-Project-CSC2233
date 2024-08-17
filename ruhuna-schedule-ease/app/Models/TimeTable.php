@@ -53,4 +53,6 @@ class TimeTable extends Model
     {
         return $this->belongsTo(Semester::class, 'semester_id','id');
     }
+
+    
 }

@@ -15,7 +15,7 @@ return new class extends Migration
         $table->unsignedBigInteger('semester_id')->nullable()->after('course_id');
 
         // If you need a foreign key constraint
-        $table->foreign('semester_id')->references('id')->on('semesters')->onDelete('set null');
+        $table->foreign('semester_id')->references('id')->on('semesters')->onDelete('cascade');
     });
 }
 

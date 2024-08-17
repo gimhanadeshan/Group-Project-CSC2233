@@ -19,6 +19,7 @@ class CourseRegistrationController extends Controller
     $semesters = Semester::where('registration_start_date', '<=', now())
         ->where('registration_end_date', '>=', now())
         ->where('academic_year', $user->academic_year)
+        ->where('degree_program_id', $user->degree_program_id)
         ->get();
 
     if ($semesters->isEmpty()) {
