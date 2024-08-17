@@ -3,7 +3,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Bar } from "react-chartjs-2";
 import WeeklyTimetable from "@/Components/WeeklyTimetable";
-
+import UpcomingEvents from "@/Components/UpcomingEvents";
+import DailyEvents from "@/Components/DailyEvents";
 
 import {
     Chart as ChartJS,
@@ -33,50 +34,7 @@ export default function Dashboard({
     allevents,
     registeredCourses,
 }) {
-    const [filter, setFilter] = useState("tomorrow"); // Add state for filter
-
     const now = new Date();
-
-    // Filter daily events
-    const dailyEvents = allevents.filter((event) => {
-        const eventDate = new Date(event.start);
-        return eventDate.toDateString() === now.toDateString();
-    });
-
-    // Filter upcoming events based on filter
-    const filteredUpcomingEvents = allevents.filter((event) => {
-        const eventDate = new Date(event.start);
-        if (filter === "all") return eventDate > now;
-        if (filter === "nextWeek") {
-            const nextWeek = new Date();
-            nextWeek.setDate(now.getDate() + 7);
-            return eventDate > now && eventDate <= nextWeek;
-        }
-        if (filter === "tomorrow") {
-            const tomorrow = new Date();
-            tomorrow.setDate(now.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0); // Start of tomorrow
-            const endOfTomorrow = new Date(tomorrow);
-            endOfTomorrow.setHours(23, 59, 59, 999); // End of tomorrow
-            return eventDate >= tomorrow && eventDate <= endOfTomorrow;
-        }
-
-        return false;
-    });
-
-    // Group events by day of the week
-    const groupedEvents = allevents.reduce((acc, event) => {
-        const eventDay = new Date(event.start).getDay();
-        if (!acc[eventDay]) {
-            acc[eventDay] = [];
-        }
-        acc[eventDay].push(event);
-        return acc;
-    }, {});
-
-    
-
-    
 
     // Format dates for the new chart
     const startDate = new Date(currentSemester?.start_date);
@@ -135,8 +93,6 @@ export default function Dashboard({
             },
         },
     };
-
-    
 
     return (
         <AuthenticatedLayout
@@ -236,139 +192,19 @@ export default function Dashboard({
                     Events
                 </h3>
                 {/* Display daily events */}
-                {dailyEvents.length > 0 && (
-                    <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">
-                            Today's Events
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {dailyEvents.map((event) => (
-                                <div
-                                    key={event.id}
-                                    className="bg-blue-100 p-4 rounded-lg shadow-md"
-                                >
-                                    <h4 className="text-lg font-semibold text-blue-800">
-                                        {event.event_title}
-                                    </h4>
-                                    <p className="text-sm text-blue-600">
-                                        Time:{" "}
-                                        {new Date(
-                                            event.start
-                                        ).toLocaleTimeString("en-US", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: false,
-                                        })}{" "}
-                                        -{" "}
-                                        {new Date(event.end).toLocaleTimeString(
-                                            "en-US",
-                                            {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false,
-                                            }
-                                        )}
-                                    </p>
-
-                                    <p className="text-sm text-blue-600">
-                                        Location:{" "}
-                                        {event.location || "Not specified"}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <DailyEvents allevents={allevents} now={now} />
 
                 {/* Display upcoming events with filter buttons */}
-                {filteredUpcomingEvents.length > 0 && (
-                    <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">
-                            Upcoming Events
-                        </h3>
-                        <div className="mb-4 flex space-x-4">
-                            <button
-                                onClick={() => setFilter("all")}
-                                className={`px-4 py-2 rounded-lg text-white ${
-                                    filter === "all"
-                                        ? "bg-blue-500"
-                                        : "bg-blue-300"
-                                }`}
-                            >
-                                All Events
-                            </button>
-                            <button
-                                onClick={() => setFilter("nextWeek")}
-                                className={`px-4 py-2 rounded-lg text-white ${
-                                    filter === "nextWeek"
-                                        ? "bg-gray-500"
-                                        : "bg-gray-300"
-                                }`}
-                            >
-                                Next Week
-                            </button>
-                            <button
-                                onClick={() => setFilter("tomorrow")}
-                                className={`px-4 py-2 rounded-lg text-white ${
-                                    filter === "tomorrow"
-                                        ? "bg-yellow-500"
-                                        : "bg-yellow-300"
-                                }`}
-                            >
-                                Tomorrow
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {filteredUpcomingEvents.map((event) => (
-                                <div
-                                    key={event.id}
-                                    className="bg-green-100 p-4 rounded-lg shadow-md"
-                                >
-                                    <h4 className="text-lg font-semibold text-green-800">
-                                        {event.event_title}
-                                    </h4>
-                                    <p className="text-sm text-green-600">
-                                        Date:{" "}
-                                        {new Date(event.start).toDateString()}
-                                    </p>
-                                    <p className="text-sm text-green-600">
-                                        Time:{" "}
-                                        {new Date(
-                                            event.start
-                                        ).toLocaleTimeString("en-US", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: false,
-                                        })}{" "}
-                                        -{" "}
-                                        {new Date(event.end).toLocaleTimeString(
-                                            "en-US",
-                                            {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false,
-                                            }
-                                        )}
-                                    </p>
-                                    <p className="text-sm text-green-600">
-                                        Location:{" "}
-                                        {event.location || "Not specified"}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <UpcomingEvents allevents={allevents} now={now} />
             </div>
-
 
             <div className="p-6 ">
                 <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
-                Weekly Timetable
+                    Weekly Timetable
                 </h3>
-           {/* Weekly Timetable */}
-           <WeeklyTimetable groupedEvents={groupedEvents} />
-                </div>
+                {/* Weekly Timetable */}
+                <WeeklyTimetable allevents={allevents} />
+            </div>
         </AuthenticatedLayout>
     );
 }
