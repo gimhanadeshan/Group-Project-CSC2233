@@ -113,20 +113,21 @@ export default function LecturerDashboard({
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Lecturer Dashboard" />
 
+            
+            {/*Semester Details*/}
             <div className="pt-8 m-6 bg-gray-100 dark:bg-gray-900">
-                
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                     {/* Combined Semester Progress Chart and Course Details */}
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                    Welcome Your Semester !
-                </h3>
+                        Welcome Your Semester !
+                    </h3>
                     <div className="flex flex-col md:flex-row gap-6">
                         {/* Chart */}
                         <div className="flex-1 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
                             <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                                 Semester Progress
                             </h3>
-                            <div className="h-72">
+                            <div className="h-72 px-4 sm:px-6 lg:px-8">
                                 <Bar
                                     data={combinedDurationData}
                                     options={combinedDurationOptions}
@@ -136,9 +137,6 @@ export default function LecturerDashboard({
 
                         {/* Course Details */}
                         <div className="flex-1 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
-                            {/* <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                Courses by Semester
-                            </h3> */}
                             {currentSemesters.length > 0 ? (
                                 currentSemesters.map((semester) => (
                                     <div
@@ -203,12 +201,12 @@ export default function LecturerDashboard({
                 <DailyEvents allevents={events} now={now} />
                 <UpcomingEvents allevents={events} now={now} />
             </div>
-
+            {/* Weekly Timetable */}
             <div className="p-8 m-6 bg-gray-100 dark:bg-gray-900">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Weekly Timetable
                 </h3>
-                {/* Weekly Timetable */}
+
                 <WeeklyTimetable allevents={events} />
             </div>
         </AuthenticatedLayout>
