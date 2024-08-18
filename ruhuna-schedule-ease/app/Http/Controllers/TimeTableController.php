@@ -28,24 +28,28 @@ class TimeTableController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $this->updateAvailability();
-        // Get semesters that are in the timetable
-        $semestersInTimeTable = Semester::whereIn('id', function($query) {
-            $query->select('semester_id')->from('time_tables');
-        })->orderBy('id')->get();
+{
 
-        // Get semesters that are not in the timetable
-        $semestersNotInTimeTable = Semester::whereNotIn('id', function($query) {
+    $this->updateAvailability();
+    $semestersInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
+        ->whereIn('id', function($query) {
             $query->select('semester_id')->from('time_tables');
-        })->orderBy('id')->get();
-        //return $semestersInTimeTable;
-        return Inertia::render('TimeTable/Index', [
-            'semestersInTimeTable' => $semestersInTimeTable,
-            'semestersNotInTimeTable' => $semestersNotInTimeTable
-        ]);
-    }
+        })
+        ->orderBy('id')
+        ->get();
 
+    $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
+        ->whereNotIn('id', function($query) {
+            $query->select('semester_id')->from('time_tables');
+        })
+        ->orderBy('id')
+        ->get();
+
+    return Inertia::render('TimeTable/Index', [
+        'semestersInTimeTable' => $semestersInTimeTable,
+        'semestersNotInTimeTable' => $semestersNotInTimeTable
+    ]);
+}
     public function generatePdf($semester)
         {
                         $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
