@@ -60,14 +60,29 @@ class EventRegistrationController extends Controller
         return redirect()->back()->with('success', 'Event updated successfully');
     }
 
-    public function destroy(Request $request,$id)
-    {
-        $this->authorize('delete_event', $request->user());
+    // public function destroy(Request $request,$id)
+    // {
+    //     $this->authorize('delete_event', $request->user());
 
-            $event = Event::findOrFail($id);
-            $event->delete();
-            //return redirect()->route('events-registration.index');
-            return back();
+    //         $event = Event::findOrFail($id);
+    //         $event->delete();
+    //         //return redirect()->route('events-registration.index');
+    //         return back();
        
+    // }
+    public function destroy($ids)
+    {
+        try {
+            // Check if $ids is an array, if not convert it to an array
+            $idsArray = is_array($ids) ? $ids : [$ids];
+    
+            // Attempt to delete all events with the provided IDs
+            Event::whereIn('id', $idsArray)->delete();
+    
+            return redirect()->back()->with('success', 'Selected events deleted successfully.');
+        } catch (\Exception $e) {
+            // Log the exception or handle it as necessary
+            return response()->json(['error' => 'Failed to delete events.'], 500);
+        }
     }
 }

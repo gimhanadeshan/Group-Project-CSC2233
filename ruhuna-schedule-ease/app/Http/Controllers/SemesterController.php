@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Semester;
+use App\Models\DegreeProgram; // Import DegreeProgram model
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Inertia\Inertia;
@@ -19,15 +20,22 @@ class SemesterController extends Controller
         // Update semester statuses
         $this->updateSemestersStatus();
 
-        $semesters = Semester::all();
-        return Inertia::render('Semesters/Index', ['semesters' => $semesters]);
+        // Fetch semesters with their associated degree programs
+        $semesters = Semester::with('degreeProgram')->get();
+        $degreePrograms = DegreeProgram::all();
+
+        return Inertia::render('Semesters/Index', ['semesters' => $semesters,'degreePrograms' => $degreePrograms]);
     }
+
 
     public function create(Request $request)
     {
         $this->authorize('create_semester', $request->user());
 
-        return Inertia::render('Semesters/Create');
+        // Fetch degree programs for the form
+        $degreePrograms = DegreeProgram::all();
+
+        return Inertia::render('Semesters/Create', ['degreePrograms' => $degreePrograms]);
     }
 
     public function store(Request $request)
@@ -45,11 +53,8 @@ class SemesterController extends Controller
             'description' => 'nullable|string',
             'course_capacity' => 'nullable|integer|min:0',
             'enrollment_count' => 'nullable|integer|min:0',
-            'status' => 'required|in:Upcoming,In Progress,Completed',
+            'degree_program_id' => 'required|exists:degree_programs,id',
         ]);
-
-        // Assuming generateReferenceNumber is a method that generates a unique reference number
-//$reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
 
         try {
             Semester::create([
@@ -63,7 +68,7 @@ class SemesterController extends Controller
                 'description' => $request->description,
                 'course_capacity' => $request->course_capacity,
                 'enrollment_count' => $request->enrollment_count,
-                'status' => $request->status,
+                'degree_program_id' => $request->degree_program_id,
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
@@ -77,7 +82,13 @@ class SemesterController extends Controller
     {
         $this->authorize('update_semester', $request->user());
 
-        return Inertia::render('Semesters/Edit', ['semester' => $semester]);
+        // Fetch degree programs for the form
+        $degreePrograms = DegreeProgram::all();
+
+        return Inertia::render('Semesters/Edit', [
+            'semester' => $semester,
+            'degreePrograms' => $degreePrograms
+        ]);
     }
 
     public function update(Request $request, Semester $semester)
@@ -95,11 +106,9 @@ class SemesterController extends Controller
             'description' => 'nullable|string',
             'course_capacity' => 'nullable|integer|min:0',
             'enrollment_count' => 'nullable|integer|min:0',
-            'status' => 'required|in:Upcoming,In Progress,Completed',
+            'degree_program_id' => 'required|exists:degree_programs,id',
         ]);
 
-        // Generate reference number if needed, or use the existing one
-       // $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
        $originalStartDate = $semester->registration_start_date;
        $originalEndDate = $semester->registration_end_date;
         try {
@@ -114,7 +123,7 @@ class SemesterController extends Controller
                 'description' => $request->description,
                 'course_capacity' => $request->course_capacity,
                 'enrollment_count' => $request->enrollment_count,
-                'status' => $request->status,
+                'degree_program_id' => $request->degree_program_id,
             ]);
             // Check if the registration start or end dates have changed
 
@@ -132,8 +141,12 @@ class SemesterController extends Controller
     {
         $this->authorize('read_semester', $request->user());
 
+        // Eager load the degree program relationship
+        $semester = $semester->load('degreeProgram');
+
         return Inertia::render('Semesters/Show', ['semester' => $semester]);
     }
+
 
     public function destroy(Request $request, Semester $semester)
     {

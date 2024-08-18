@@ -19,6 +19,8 @@ use Dompdf\Options;
 use Illuminate\Http\Request;
 use App\Models\TimeTable_Notification;
 use App\Notifications\TimeTableInitialized;
+use Carbon\Carbon;
+
 
 class TimeTableController extends Controller
 {
@@ -42,6 +44,29 @@ class TimeTableController extends Controller
             'semestersNotInTimeTable' => $semestersNotInTimeTable
         ]);
     }
+{
+
+    $this->updateAvailability();
+    $semestersInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
+        ->whereIn('id', function($query) {
+            $query->select('semester_id')->from('time_tables');
+        })
+        ->orderBy('id')
+        ->get();
+
+    $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
+        ->whereNotIn('id', function($query) {
+            $query->select('semester_id')->from('time_tables');
+        })
+        ->orderBy('id')
+        ->get();
+
+    return Inertia::render('TimeTable/Index', [
+        'semestersInTimeTable' => $semestersInTimeTable,
+        'semestersNotInTimeTable' => $semestersNotInTimeTable
+    ]);
+}
+
 
     public function generatePdf($semester)
         {
@@ -429,4 +454,32 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         }
 
     }
+
+    public function updateAvailability()
+{
+    // Fetch all timetables with their associated semesters
+    $timeTables = TimeTable::with('semester')->get();
+
+    // Initialize availability value
+    $availabilityValue = 0;
+
+    foreach ($timeTables as $timeTable) {
+        // Check the status of the semester for each timetable
+        if ($timeTable->semester->status === 'Completed') {
+            $availabilityValue = 0;
+        } else {
+            $availabilityValue = 1;
+        }
+
+        // Update availability for each timetable individually
+        $timeTable->update(['availability' => $availabilityValue]);
+    }
+}
+
+
+
+
+
+
+
 }

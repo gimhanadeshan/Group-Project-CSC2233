@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\TimeTable;
 use App\Models\Semester;
+use App\Models\LectureHall;
+use App\Models\Course;
+
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
+use App\Models\CourseRegistration; 
 
 class EventController extends Controller
 {
@@ -15,25 +19,41 @@ class EventController extends Controller
 {
     $this->authorize('read_event', $request->user());
 
+
     // Fetch the semester_id from the course_registrations table for the logged-in user
-    $semesterId = \DB::table('course_registrations')
-                    ->where('user_id', $request->user()->id)
+    $semesterId = CourseRegistration::
+                    where('user_id', $request->user()->id)
                     ->orderBy('created_at', 'desc') // Adjust ordering as necessary
                     ->value('semester_id');
+    $UId=$request->user()->id;
 
-    // If no semester_id is found, return an empty set of events
-    if (!$semesterId) {
-        $allevents = Event::whereNull('semester_id')->get();
-        return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-    }
 
-    // Fetch events that match the user's semester_id
-    $allevents = Event::where('semester_id', $semesterId)
+    //For Students 
+    if ($semesterId || $request->user()->role_id==2) {
+        // Fetch events that match the user's semester_id
+        $allevents = Event::where('semester_id', $semesterId)//->get();
                       ->orWhereNull('semester_id')
                       ->get();
 
      return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-                 
+       
+    //For Lecturer     
+    }else{
+        if($request->user()->role_id==3){
+
+            $allevents = Event::where('lec_id',$UId)//->get();
+                                ->orWhereNull('semester_id')
+                                ->get();
+            return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        }
+    }
+    
+    
+    
+    $allevents = Event::whereNull('semester_id', $semesterId)->get();
+    return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+
+               
     }
 
 
@@ -64,8 +84,10 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
             $startDateTime = $dayOfWeek->copy()->setTimeFrom($startTime)->toDateTimeString();
             $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
+            $eventTitle= $slot->course->code . ' (' . $slot->type . ')';
+            
             // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course->code . ' (' . $slot->type . ')')
+            $existingEvent = Event::where('event_title',$eventTitle )
                 ->where('location', $slot->hall->name)
                 ->where('start', $startDateTime)
                 ->where('end', $endDateTime)
@@ -73,12 +95,18 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
 
             if (!$existingEvent) {
                 Event::create([
-                    'event_title' => $slot->course->code . ' (' . $slot->type . ')', //check this with $slot->course->name . ' (' . $slot->type . ')'
+                    'event_title' => $eventTitle, 
                     'location' => $slot->hall->name,
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
-                    'semester_id' => $semesterId 
+
+                    'semester_id' => $semesterId,
+                    'course_id' => $slot->course->id,
+                    'hall_id' => $slot->hall_id,
+                    'lec_id' => $slot->lecturer,
+                    'course_id' => $slot->course->id
+
                 ]);
             }
 
@@ -88,7 +116,6 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
     }
     return redirect()->back()->with('success', 'Events generated successfully from the timetable');
 }
-
 
 
     public function store(Request $request)
@@ -181,4 +208,82 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
             $end->add($frequency, 1);
         }
     }
+
+
+
+
+//EventDetails Page Functions
+
+
+    public function getEvent($id){
+
+        $event=Event::where('id',$id)->get();
+        $users=[];
+        $semesters=[];
+        $courses=[];
+        $halls=[];
+        $lecturers=[];
+
+        return Inertia::render('Events/EventDetails',[
+            'event'=>$event,
+            'users'=>$users,
+            'semesters'=>$semesters,
+            'courses' => $courses,
+            'halls'=>$halls,
+            'lecturers'=>$lecturers
+
+        ]);
+    }
+
+    public function getEventUpdate(Request $request, $id)
+{
+    $event = Event::findOrFail($id);
+    $user = $request->user();
+
+    $data = $request->validate([
+        'event_title' => 'required',
+        'location' => 'required',
+        'start' => 'required|date',
+        'end' => 'required|date',
+        'Stu_attended' => 'nullable|boolean', 
+        'Lec_attended' => 'nullable|boolean',
+        'daily' => 'sometimes|boolean',
+        'weekly' => 'sometimes|boolean',
+        'monthly' => 'sometimes|boolean',
+        'user_id' => 'nullable|sometimes|exists:users,id',
+        'course_id' => 'nullable|sometimes|exists:courses,id',
+        'semester_id' => 'nullable|sometimes|exists:semesters,id',
+        'lec_id' => 'nullable|sometimes|exists:users,id',
+        'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
+        
+    ]);
+
+    // Update existing event if no recurrence options are selected
+    if (!$request->daily && !$request->weekly && !$request->monthly) {
+        $event->update($data);
+    } else {
+        // Delete existing event if recurrence options are updated
+        $event->delete();
+
+        //$data['user_id'] = $user->id;
+
+        // Handle recurrence update
+        if ($request->daily) {
+            $this->createRecurringEvents($data, 'day');
+        } elseif ($request->weekly) {
+            $this->createRecurringEvents($data, 'week');
+        } elseif ($request->monthly) {
+            $this->createRecurringEvents($data, 'month');
+        }
+    }
+    
+    //return redirect()->route('events')->with('success', 'Event updated successfully');
+    return redirect()->back();
+}
+
+
+
+
+
+
 }
