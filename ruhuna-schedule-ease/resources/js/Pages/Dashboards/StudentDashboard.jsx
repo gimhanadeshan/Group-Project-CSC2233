@@ -5,7 +5,7 @@ import { Bar } from "react-chartjs-2";
 import WeeklyTimetable from "@/Components/WeeklyTimetable";
 import UpcomingEvents from "@/Components/UpcomingEvents";
 import DailyEvents from "@/Components/DailyEvents";
-import EventCalendar from  "@/Components/EventCalendar";
+import EventCalendar from "@/Components/EventCalendar";
 
 import {
     Chart as ChartJS,
@@ -96,68 +96,60 @@ export default function Dashboard({
     };
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            // header={
-            //     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-            //         Student Dashboard
-            //     </h2>
-            // }
-            permissions={auth.permissions}
-        >
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             {/* Display current semester details */}
             {currentSemester ? (
-                <div className="p-6 ">
-                    <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
-                        Current Semester Details
+                <div className="p-8 m-6  dark:bg-gray-900 dark:text-gray-200">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
+                        Welcome Your Semester !
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     Academic Year:
                                 </strong>{" "}
                                 {currentSemester.academic_year}
                             </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     Degree Program:
                                 </strong>{" "}
                                 {currentSemester.degree_program.name}
                             </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     Level:
                                 </strong>{" "}
                                 {currentSemester.level}
                             </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     Semester:
                                 </strong>{" "}
                                 {currentSemester.semester}
                             </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     Status:
                                 </strong>{" "}
                                 {currentSemester.status}
                             </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     Start Date:
                                 </strong>{" "}
                                 {currentSemester.start_date}
                             </p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong className="text-gray-900">
+                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
+                                <strong className="text-gray-900 dark:text-gray-200">
                                     End Date:
                                 </strong>{" "}
                                 {currentSemester.end_date}
                             </p>
                         </div>
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
-                            <h4 className="text-xl font-semibold mb-4 text-gray-800">
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <h4 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                                 Semester Duration & Progress
                             </h4>
                             <div className="h-72">
@@ -171,11 +163,11 @@ export default function Dashboard({
 
                     {/* Display registered courses */}
                     {registeredCourses?.length > 0 ? (
-                        <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
-                            <h4 className="text-xl font-semibold mb-4 text-gray-800">
+                        <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <h4 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                                 Registered Courses
                             </h4>
-                            <ul className="list-disc list-inside text-gray-800">
+                            <ul className="list-disc list-inside text-gray-800 dark:text-gray-200">
                                 {registeredCourses.map((course) => (
                                     <li key={course.id} className="mb-1">
                                         {course.code} - {course.name}
@@ -184,18 +176,20 @@ export default function Dashboard({
                             </ul>
                         </div>
                     ) : (
-                        <p className="mt-8 text-gray-600">
+                        <p className="mt-8 text-gray-600 dark:text-gray-400">
                             No registered courses found for the current
                             semester.
                         </p>
                     )}
                 </div>
             ) : (
-                <p className="text-gray-600">No current semester found.</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                    No current semester found.
+                </p>
             )}
 
-            <div className="p-6 ">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
+            <div className="p-8 m-6 dark:bg-gray-900 dark:text-gray-200">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Events
                 </h3>
                 {/* Display daily events */}
@@ -205,13 +199,13 @@ export default function Dashboard({
                 <UpcomingEvents allevents={allevents} now={now} />
             </div>
 
-            <div className="p-6 ">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">
+            <div className="p-8 m-6 dark:bg-gray-900 dark:text-gray-200">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Weekly Timetable
                 </h3>
                 {/* Weekly Timetable */}
-            <WeeklyTimetable allevents={allevents} /> 
-            {/*<EventCalendar eventlist={allevents} defaultView="week" height="800px" views={['week']} /> */}
+                <WeeklyTimetable allevents={allevents} />
+                {/* <EventCalendar eventlist={allevents} defaultView="week" height="800px" views={['week']} /> */}
             </div>
         </AuthenticatedLayout>
     );
