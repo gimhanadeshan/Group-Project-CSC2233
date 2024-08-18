@@ -26,4 +26,6 @@ class CourseRegistration extends Model
     {
         return $this->belongsTo(Course::class);
     }
+
+
 }

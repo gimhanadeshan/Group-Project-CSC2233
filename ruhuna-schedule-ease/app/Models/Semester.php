@@ -39,4 +39,9 @@ class Semester extends Model
     {
         return $this->belongsTo(DegreeProgram::class, 'degree_program_id','id');
     }
+
+    public function courseRegistrations()
+    {
+        return $this->hasMany(CourseRegistration::class, 'semester_id');
+    }
 }
