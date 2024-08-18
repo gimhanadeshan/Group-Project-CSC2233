@@ -40,61 +40,6 @@ class EventController1 extends Controller
     }
     
 
-
-
-
-
-    public function generateEventsFromTimetable(Request $request,$semesterId)
-{
-
-    error_log("o");
-
-    $user = $request->user();
-    $semester = Semester::findOrFail($semesterId);
-    $timeTables = TimeTable::where('semester_id', $semesterId)->get();
-    //$timeTables = TimeTable::with('course', 'hall')->get();
-
-    foreach ($timeTables as $slot) {
-        //dd($slot);
-        //$slots = TimeTable::with('course', 'hall')->get(); // Ensure 'course' is included in the eager loading
-
-        // Get the day of the week for the timetable slot
-        $dayOfWeek = Carbon::parse($semester->start_date)->next($slot->day_of_week);
-        $startTime = Carbon::parse($slot->start_time);
-        $endTime = Carbon::parse($slot->end_time);
-
-        while ($dayOfWeek->lessThanOrEqualTo(Carbon::parse($semester->end_date))) {
-
-            $startDateTime = $dayOfWeek->copy()->setTimeFrom($startTime)->toDateTimeString();
-            $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
-
-            // Check if an event already exists for this time slot and day
-            $existingEvent = Event::where('event_title', $slot->course . ' (' . $slot->type . ')')
-                ->where('location', $slot->hall->name)
-                ->where('start', $startDateTime)
-                ->where('end', $endDateTime)
-                ->first();
-
-            if (!$existingEvent) {
-                Event::create([
-                    'event_title' => $slot->course . ' (' . $slot->type . ')', //check this with $slot->course->name . ' (' . $slot->type . ')'
-                    'location' => $slot->hall->name,
-                    'start' => $startDateTime,
-                    'end' => $endDateTime,
-                    'user_id' => $user->id,
-                    'semester_id' => $semesterId 
-                ]);
-            }
-
-            // Move to the next week
-            $dayOfWeek->addWeek();
-        }
-    }
-    //return 1;
-    return redirect()->back()->with('success', 'Events generated successfully from the timetable');
-}
-
-
     public function store(Request $request)
     {
         $user = $request->user();
@@ -170,7 +115,7 @@ class EventController1 extends Controller
     {
         $start = Carbon::parse($data['start']);
         $end = Carbon::parse($data['end']);
-        $endDate = Carbon::now()->addMonth(6); // Set the end of recurrence (1 year from now)
+        $endDate = Carbon::now()->addMonth(6); // Set the end of recurrence 
 
         while ($start->lessThanOrEqualTo($endDate)) {
             Event::create([

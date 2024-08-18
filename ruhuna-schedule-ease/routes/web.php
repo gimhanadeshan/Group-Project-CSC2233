@@ -79,9 +79,16 @@ Route::middleware(['auth'])->group(function () {
     //Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
 
     //TimeTable table  into Events table
-   Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
+    Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
 
 
+    Route::get('/events/{id}/generate-attendance-records', [EventController::class, 'generateAttendanceRecords'])
+    ->name('events.generateAttendanceRecords');
+    
+    Route::get('/events/{eventid}/attendance', [EventController::class, 'getAttendance'])->name('events.getAttendance');
+
+    Route::get('/attendance/{eventId}/{studentId}', [EventController::class, 'viewAttendance'])->name('attendance.view');
+Route::post('/attendance/{eventId}/{studentId}', [EventController::class, 'updateAttendance'])->name('attendance.update');
 
 });
 

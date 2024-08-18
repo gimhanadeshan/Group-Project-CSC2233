@@ -7,11 +7,14 @@ use App\Models\TimeTable;
 use App\Models\Semester;
 use App\Models\LectureHall;
 use App\Models\Course;
+use App\Models\Attendance;
+use App\Models\CourseRegistration; 
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
-use App\Models\CourseRegistration; 
+use Illuminate\Support\Facades\DB;
+
 
 class EventController extends Controller
 {
@@ -283,6 +286,115 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
 
 
 
+
+//Attendance 
+
+    public function generateAttendanceRecords($eventId)
+{
+    // Get the event to fetch the associated course_id
+    $event = Event::findOrFail($eventId);
+    $courseId = $event->course_id;
+
+    // Fetch all students registered for the course
+    $studentIds = DB::table('course_registrations')
+                    ->where('course_id', $courseId)
+                    ->pluck('user_id'); // Assuming 'user_id' in 'course_registrations' is the student ID
+
+    // Prepare data for bulk insert
+    $attendanceRecords = [];
+    foreach ($studentIds as $studentId) {
+        $attendanceRecords[] = [
+            'event_id' => $eventId,
+            'student_id' => $studentId,
+            'attended' => null, // Default value
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+    }
+
+    // Insert all attendance records into the event_student table
+    DB::table('event_student')->insert($attendanceRecords);
+}
+
+
+public function attendanceUpdate(Request $request, $eventid)
+{
+    $user = $request->user();
+
+    // Validate the incoming request
+    $data = $request->validate([
+        'attended' => 'nullable|boolean',
+    ]);
+
+    // Find the attendance record using event_id and student_id
+    $record = DB::table('event_student')
+                ->where('event_id', $eventid)
+                ->where('student_id', $user->id)
+                ->first();
+
+    // If the record exists, update it
+    if ($record) {
+        DB::table('event_student')
+            ->where('event_id', $eventid)
+            ->where('student_id', $user->id)
+            ->update([
+                'attended' => $data['attended'],
+                'updated_at' => now(),
+            ]);
+    }
+
+    return redirect()->back();
+}
+
+public function getAttendance(Request $request, $eventid)
+{
+    $user = $request->user();
+
+    // Find the attendance record using event_id and student_id
+    $attendance = DB::table('event_student')
+                    ->where('event_id', $eventid)
+                    ->where('student_id', $user->id)
+                    ->first();
+
+    // Check if the record exists and get the attendance status
+    $attended = $attendance ? $attendance->attended : false;
+
+    // Return the data using Inertia
+    return Inertia::render('Events/EventDetails', [
+        'attendance' => $attended,
+    ]);
+}
+
+
+
+public function viewAttendance($eventId, $studentId)
+{
+    $attendance = DB::table('event_student')
+        ->where('event_id', $eventId)
+        ->where('student_id', $studentId)
+        ->first(['attended']);
+        
+    return Inertia::render('Events/Attendance', [
+        'attendance' => $attendance,
+        'eventId' => $eventId,
+        'studentId' => $studentId,
+    ]);
+}
+
+
+public function updateAttendance(Request $request, $eventId, $studentId)
+{
+    $data = $request->validate([
+        'attended' => 'nullable|boolean',
+    ]);
+
+    DB::table('event_student')
+        ->where('event_id', $eventId)
+        ->where('student_id', $studentId)
+        ->update(['attended' => $data['attended']]);
+
+    return redirect()->back()->with('success', 'Attendance updated successfully.');
+}
 
 
 

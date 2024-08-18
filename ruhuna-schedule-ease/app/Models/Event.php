@@ -81,4 +81,12 @@ class Event extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    
+    public function students()
+{
+    return $this->belongsToMany(User::class, 'event_student')
+                ->withPivot('attended')
+                ->withTimestamps();
+}
+
 }
