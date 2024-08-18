@@ -37,6 +37,7 @@ class TimeTableController extends Controller
         })
         ->orderBy('id')
         ->get();
+        
 
     $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
         ->whereNotIn('id', function($query) {
