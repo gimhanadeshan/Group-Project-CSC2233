@@ -5,6 +5,7 @@ import { Bar } from "react-chartjs-2";
 import WeeklyTimetable from "@/Components/WeeklyTimetable";
 import UpcomingEvents from "@/Components/UpcomingEvents";
 import DailyEvents from "@/Components/DailyEvents";
+import EventCalendar from  "@/Components/EventCalendar";
 
 import {
     Chart as ChartJS,
@@ -209,7 +210,8 @@ export default function Dashboard({
                     Weekly Timetable
                 </h3>
                 {/* Weekly Timetable */}
-                <WeeklyTimetable allevents={allevents} />
+            <WeeklyTimetable allevents={allevents} /> 
+            {/*<EventCalendar eventlist={allevents} defaultView="week" height="800px" views={['week']} /> */}
             </div>
         </AuthenticatedLayout>
     );

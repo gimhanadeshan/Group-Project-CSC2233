@@ -5,7 +5,7 @@ import moment from "moment";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import "../../../css/bigCalendar.css";
 import Modal from "react-modal";
-import { useForm } from "@inertiajs/react";
+import { useForm, Link } from "@inertiajs/react";
 
 const localizer = momentLocalizer(moment);
 
@@ -29,9 +29,9 @@ const EventCalendar = ({ allevents, auth }) => {
 
 
 
-  const [events, setEvents] = useState([]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [currentEvent, setCurrentEvent] = useState(null);
+    const [events, setEvents] = useState([]);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [currentEvent, setCurrentEvent] = useState(null);
 
 
 
@@ -162,241 +162,279 @@ const EventCalendar = ({ allevents, auth }) => {
         });
     };
 
-   
-        const eventPropGetter = (event) => {
-            const backgroundColor = event.semester_id ? '#007bff' : '#ff0000'; // Default color vs. red for NULL semester_id
-            return { style: { backgroundColor } };
-        };
+    const eventPropGetter = (event) => {
+        let backgroundColor;
+        // Get the role ID from the auth object
+        const roleID = auth.user.role_id;
+        
+        // Determine the role value based on the role ID
+        const role = roleID === 2 ? event.Stu_attended : event.Lec_attended;
+    
+        // Determine the background color based on the role and semester_id
+        if(roleID==1){
+            backgroundColor = '#800080'; // Purple
+        }
+    
+        else if (role) {
+            // If the role is true, set color to green
+            backgroundColor = '#00ff00'; // Green
+        } else if (event.semester_id === null) {
+            // If semester_id is NULL, set color to purple
+            backgroundColor = '#800080'; // Purple
+        } else {
+            // Default color
+            backgroundColor = '#007bff'; // Blue
+        }
+    
+        return { style: { backgroundColor } };
+    };
+    
+    
 
-  const CustomEvent = ({ event }) => {
+    const CustomEvent = ({ event }) => {
+        const startTime = new Date(event.start).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true, // If you want a 12-hour clock, set this to true; for a 24-hour clock, set it to false
+        });
+    
+        const endTime = new Date(event.end).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+    
+        return (
+            <Link href={`/events/view/${event.id}`}>
+                <span>
+                    <strong>{event.event_title}</strong>
+                    <br />
+                    
+                    <em>{event.location}</em>
+                    <br />
+                    <em>{startTime} - {endTime}</em>
+                </span>
+            </Link>
+        );
+    };
+    
+
+
+    const s = 1;
+
+
     return (
-      <span>
-       
-        <strong>{event.event_title}</strong>
-        
-        
-        <hr/>
-        <br />
-        <em>{event.location}</em>
-      </span>
-    );
-  };
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
+            <div style={{ height: '850px' }}>
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    defaultView={'week'}
+                    views={['month', 'week', 'day', 'agenda']}
+                    formats={{
+                        weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture),
+                    }}
+                    max={maxTime}
+                    min={minTime}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ margin: '50px' }}
+                    selectable
+                    //onSelectEvent={openModal}
+                    onSelectSlot={handleSelectSlot}
+                    components={{
+                        event: CustomEvent,
+                    }}
+                    eventPropGetter={eventPropGetter}
+                />
+            </div>
+
+            {s &&
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="Event Modal"
+                    className="fixed inset-0 flex items-center justify-center z-50"
+                    overlayClassName="fixed inset-0 bg-gray-800 bg-opacity-75 z-40"
+                >
+                    <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-2xl font-bold">
+                                {currentEvent ? "Edit Event" : "Add Event"}
+                            </h2>
+                            <button
+                                className="bg-red-600 text-white py-2 px-4 rounded-md"
+                                onClick={closeModal}
+                            >
+                                X
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Title:
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value={data.event_title}
+                                    onChange={(e) =>
+                                        setData("event_title", e.target.value)
+                                    }
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    required
+                                    disabled={!canEdit}
+
+                                />
+
+                                {errors.event_title && (
+                                    <div className="text-red-600">
+                                        {errors.event_title}
+                                    </div>
+                                )}
+
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Location:
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.location}
+                                    onChange={(e) =>
+                                        setData("location", e.target.value)
+                                    }
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    required
+                                    disabled={!canEdit}
+                                />
+                                {errors.location && (
+                                    <div className="text-red-600">
+                                        {errors.location}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Start Time:
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    value={data.start}
+                                    onChange={(e) =>
+                                        setData("start", e.target.value)
+                                    }
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    required
+                                    disabled={!canEdit}
+                                />
+                                {errors.start && (
+                                    <div className="text-red-600">
+                                        {errors.start}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    End Time:
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    value={data.end}
+                                    onChange={(e) => setData("end", e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    required
+                                    disabled={!canEdit}
+                                />
+                                {errors.end && (
+                                    <div className="text-red-600">{errors.end}</div>
+                                )}
+                            </div>
+
+                            {/* Recurrence Checkboxes */}
+                            {canEdit && <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Recurrence:
+                                </label>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={data.daily}
+                                        onChange={(e) =>
+                                            setData("daily", e.target.checked)
+                                        }
+                                        className="mr-2"
+                                    />
+                                    <span>Daily</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={data.weekly}
+                                        onChange={(e) =>
+                                            setData("weekly", e.target.checked)
+                                        }
+                                        className="mr-2"
+                                    />
+                                    <span>Weekly</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={data.monthly}
+                                        onChange={(e) =>
+                                            setData("monthly", e.target.checked)
+                                        }
+                                        className="mr-2"
+                                    />
+                                    <span>Monthly</span>
+                                </div>
+                            </div>
+                            }
+                            {/* Attentedance Checkboxes */}
+
+
+
+                            <div className="flex justify-end">
+                                {currentEvent && canDelete && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="mr-4 bg-red-600 text-white py-2 px-4 rounded-md"
+                                    >
+                                        Delete
+                                    </button>
+                                )}
+                                {canEdit &&
+                                    <button
+                                        type="submit"
+                                        className="bg-blue-600 text-white py-2 px-4 rounded-md"
+                                    >
+                                        {currentEvent ? "Update" : "Add"}
+
+                                    </button>
+                                }
+
+                                {!canEdit && !currentEvent &&
+                                    <button
+                                        type="submit"
+                                        className="bg-blue-600 text-white py-2 px-4 rounded-md"
+                                    >
+                                        Add
+                                    </button>
+                                }
 
 
 
 
-
-  return (
-    <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
-      <div style={{ height: '800px' }}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          defaultView={'week'}
-          views={['month', 'week', 'day', 'agenda']}
-          formats={{
-            weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture),
-          }}
-          max={maxTime}
-          min={minTime}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ margin: '50px' }}
-          selectable
-          onSelectEvent={openModal}
-          onSelectSlot={handleSelectSlot}
-          components={{
-            event: CustomEvent,
-          }}
-          eventPropGetter={eventPropGetter}
-        />
-      </div>
-
-
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
-                contentLabel="Event Modal"
-                className="fixed inset-0 flex items-center justify-center z-50"
-                overlayClassName="fixed inset-0 bg-gray-800 bg-opacity-75 z-40"
-            >
-                <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-2xl font-bold">
-                            {currentEvent ? "Edit Event" : "Add Event"}
-                        </h2>
-                        <button
-                            className="bg-red-600 text-white py-2 px-4 rounded-md"
-                            onClick={closeModal}
-                        >
-                            X
-                        </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <form onSubmit={handleSubmit}>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Title:
-                            </label>
-                            
-                            <input
-                                type="text"
-                                value={data.event_title}
-                                onChange={(e) =>
-                                    setData("event_title", e.target.value)
-                                }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                required
-                                disabled={!canEdit}
-                                
-                            />
-                            
-                            {errors.event_title && (
-                                <div className="text-red-600">
-                                    {errors.event_title}
-                                </div>
-                            )}
-                            
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Location:
-                            </label>
-                            <input
-                                type="text"
-                                value={data.location}
-                                onChange={(e) =>
-                                    setData("location", e.target.value)
-                                }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                required
-                                disabled={!canEdit}
-                            />
-                            {errors.location && (
-                                <div className="text-red-600">
-                                    {errors.location}
-                                </div>
-                            )}
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Start Time:
-                            </label>
-                            <input
-                                type="datetime-local"
-                                value={data.start}
-                                onChange={(e) =>
-                                    setData("start", e.target.value)
-                                }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                required
-                                disabled={!canEdit}
-                            />
-                            {errors.start && (
-                                <div className="text-red-600">
-                                    {errors.start}
-                                </div>
-                            )}
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                End Time:
-                            </label>
-                            <input
-                                type="datetime-local"
-                                value={data.end}
-                                onChange={(e) => setData("end", e.target.value)}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                required
-                                disabled={!canEdit}
-                            />
-                            {errors.end && (
-                                <div className="text-red-600">{errors.end}</div>
-                            )}
-                        </div>
-
-                        {/* Recurrence Checkboxes */}
-                        {canEdit && <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Recurrence:
-                            </label>
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={data.daily}
-                                    onChange={(e) =>
-                                        setData("daily", e.target.checked)
-                                    }
-                                    className="mr-2"
-                                />
-                                <span>Daily</span>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={data.weekly}
-                                    onChange={(e) =>
-                                        setData("weekly", e.target.checked)
-                                    }
-                                    className="mr-2"
-                                />
-                                <span>Weekly</span>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={data.monthly}
-                                    onChange={(e) =>
-                                        setData("monthly", e.target.checked)
-                                    }
-                                    className="mr-2"
-                                />
-                                <span>Monthly</span>
-                            </div>
-                        </div>
-                        }
-                        {/* Attentedance Checkboxes */}
-
-
-
-                        <div className="flex justify-end">
-                            {currentEvent && canDelete && (
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="mr-4 bg-red-600 text-white py-2 px-4 rounded-md"
-                                >
-                                    Delete
-                                </button>
-                            )}
-                        { canEdit &&
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white py-2 px-4 rounded-md"
-                            >
-                                {currentEvent ?  "Update" : "Add"}
-
-                            </button>
-                        }   
-
-                        {!canEdit && !currentEvent &&
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white py-2 px-4 rounded-md"
-                            >
-                                Add
-                            </button>
-                        }  
-
-
-
-
-                        </div>
-                    </form>
-                </div>
-            </Modal>
+                </Modal>
+            }
         </AuthenticatedLayout>
     );
 };

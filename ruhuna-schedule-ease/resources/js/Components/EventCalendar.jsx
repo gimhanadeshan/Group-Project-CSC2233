@@ -24,7 +24,7 @@ const EventCalendar = (props,{ auth,permissions }) => {
   const [currentEvent, setCurrentEvent] = useState(null);
 
 //setEvents(props.name);
-let allevents=props.name;
+let allevents=props.allevents;
 
     const {
         data,
@@ -178,14 +178,16 @@ let allevents=props.name;
   };
 
 
-
+const calendarStyles={
+    height:props.height
+};
 
 
 
   return (
 <>
 
-<div style={props.style}>
+<div style={calendarStyles}>
         <Calendar
           localizer={localizer}
           events={events}
