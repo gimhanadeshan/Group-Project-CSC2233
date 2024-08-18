@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-export default function UpcomingEvents({allevents,now}) {
-   
-    const [filter, setFilter] = useState("tomorrow"); // Add state for filter
-    
+export default function UpcomingEvents({ allevents, now }) {
+    const [filter, setFilter] = useState("tomorrow");
+
     // Filter upcoming events based on filter
     const filteredUpcomingEvents = allevents.filter((event) => {
         const eventDate = new Date(event.start);
@@ -21,22 +20,23 @@ export default function UpcomingEvents({allevents,now}) {
             endOfTomorrow.setHours(23, 59, 59, 999); // End of tomorrow
             return eventDate >= tomorrow && eventDate <= endOfTomorrow;
         }
-
         return false;
     });
 
     return (
-        <div>
+        <div className="dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700">
             {filteredUpcomingEvents.length > 0 && (
-                <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
+                <div className="mt-8 p-6 border rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:border-gray-700">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                         Upcoming Events
                     </h3>
                     <div className="mb-4 flex space-x-4">
                         <button
                             onClick={() => setFilter("all")}
                             className={`px-4 py-2 rounded-lg text-white ${
-                                filter === "all" ? "bg-blue-500" : "bg-blue-300"
+                                filter === "all"
+                                    ? "bg-blue-500"
+                                    : "bg-blue-300 dark:bg-blue-700"
                             }`}
                         >
                             All Events
@@ -46,7 +46,7 @@ export default function UpcomingEvents({allevents,now}) {
                             className={`px-4 py-2 rounded-lg text-white ${
                                 filter === "nextWeek"
                                     ? "bg-gray-500"
-                                    : "bg-gray-300"
+                                    : "bg-gray-300 dark:bg-gray-700"
                             }`}
                         >
                             Next Week
@@ -56,7 +56,7 @@ export default function UpcomingEvents({allevents,now}) {
                             className={`px-4 py-2 rounded-lg text-white ${
                                 filter === "tomorrow"
                                     ? "bg-yellow-500"
-                                    : "bg-yellow-300"
+                                    : "bg-yellow-300 dark:bg-yellow-700"
                             }`}
                         >
                             Tomorrow
@@ -66,15 +66,15 @@ export default function UpcomingEvents({allevents,now}) {
                         {filteredUpcomingEvents.map((event) => (
                             <div
                                 key={event.id}
-                                className="bg-green-100 p-4 rounded-lg shadow-md"
+                                className="bg-green-100 p-4 rounded-lg shadow-md dark:bg-green-700"
                             >
-                                <h4 className="text-lg font-semibold text-green-800">
+                                <h4 className="text-lg font-semibold text-green-800 dark:text-green-200">
                                     {event.event_title}
                                 </h4>
-                                <p className="text-sm text-green-600">
+                                <p className="text-sm text-green-600 dark:text-green-300">
                                     Date: {new Date(event.start).toDateString()}
                                 </p>
-                                <p className="text-sm text-green-600">
+                                <p className="text-sm text-green-600 dark:text-green-300">
                                     Time:{" "}
                                     {new Date(event.start).toLocaleTimeString(
                                         "en-US",
@@ -94,7 +94,7 @@ export default function UpcomingEvents({allevents,now}) {
                                         }
                                     )}
                                 </p>
-                                <p className="text-sm text-green-600">
+                                <p className="text-sm text-green-600 dark:text-green-300">
                                     Location:{" "}
                                     {event.location || "Not specified"}
                                 </p>
