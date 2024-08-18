@@ -25,23 +25,23 @@ const AttendancePage = ({auth, eventId, studentId, attendance }) => {
         >   
 
 
-        <div>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Attended</label>
-                    <input
-                        type="checkbox"
-                        id="attended"
-                        name="attended"
-                        checked={attended}
-                        onChange={(e) => setAttended(e.target.checked)}
-                        className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                </div>
-                <button type="submit" className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-md">Update Attendance</button>
-            </form>
-        
-        </div>
+            <div>
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Attended</label>
+                        <input
+                            type="checkbox"
+                            id="attended"
+                            name="attended"
+                            checked={attended}
+                            onChange={(e) => setAttended(e.target.checked)}
+                            className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
+                    <button type="submit" className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-md">Update Attendance</button>
+                </form>
+            
+            </div>
         </AuthenticatedLayout>
         </>
     );

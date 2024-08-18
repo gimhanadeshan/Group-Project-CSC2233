@@ -48,6 +48,7 @@ const EventCalendar = ({ allevents, auth }) => {
         location: "",
         start: "",
         end: "",
+        Lec_attended:false,
         daily: false,
         weekly: false,
         monthly: false,
@@ -68,10 +69,12 @@ const EventCalendar = ({ allevents, auth }) => {
         if (event) {
             setCurrentEvent(event);
             setData({
+                id:event.id,
                 event_title: event.event_title,
                 location: event.location,
                 start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
                 end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
+                Lec_attended:event.Lec_attended,
                 daily: event.daily,
                 weekly: event.weekly,
                 monthly: event.monthly,
@@ -205,7 +208,7 @@ const EventCalendar = ({ allevents, auth }) => {
         });
     
         return (
-            <Link href={`/events/view/${event.id}`}>
+            // <Link href={`/events/view/${event.id}`}>
                 <span>
                     <strong>{event.event_title}</strong>
                     <br />
@@ -214,14 +217,14 @@ const EventCalendar = ({ allevents, auth }) => {
                     <br />
                     <em>{startTime} - {endTime}</em>
                 </span>
-            </Link>
+            //</Link>
         );
     };
     
 
 
     const s = 1;
-
+    
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
@@ -240,7 +243,7 @@ const EventCalendar = ({ allevents, auth }) => {
                     endAccessor="end"
                     style={{ margin: '50px' }}
                     selectable
-                    //onSelectEvent={openModal}
+                    onSelectEvent={openModal}
                     onSelectSlot={handleSelectSlot}
                     components={{
                         event: CustomEvent,
@@ -395,7 +398,36 @@ const EventCalendar = ({ allevents, auth }) => {
                             </div>
                             }
                             {/* Attentedance Checkboxes */}
+                            {auth.user.role_id==2 &&
+                            <div className="mb-4">
+                                   <Link href={`/attendance/${data.id}/${auth.user.id}`} className="text-blue-500">View Attendance</Link>
+           
+                            
+                            </div>
+                        
+                        }
+                         {auth.user.role_id==3 &&
+                            <div>
+                                <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
+                                    <input
+                                    type="checkbox"
+                                    id="attended"
+                                    name="attended"
+                                    checked={data.Lec_attended} // Convert null to false for the checkbox
+                                    onChange={(e) =>
+                    
+                                        setData((prevData) => ({
+                                            ...prevData,
+                                            Lec_attended: e.target.checked || null, // If unchecked, set to null
+                                        }))
+                    
+                                }
+                                className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            
+                            </div>
 
+                            }
 
 
                             <div className="flex justify-end">
