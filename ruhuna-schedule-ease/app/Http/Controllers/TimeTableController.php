@@ -29,6 +29,7 @@ class TimeTableController extends Controller
      */
     public function index()
     {
+        $this->updateAvailability();
         // Get semesters that are in the timetable
         $semestersInTimeTable = Semester::whereIn('id', function($query) {
             $query->select('semester_id')->from('time_tables');
@@ -44,29 +45,6 @@ class TimeTableController extends Controller
             'semestersNotInTimeTable' => $semestersNotInTimeTable
         ]);
     }
-{
-
-    $this->updateAvailability();
-    $semestersInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
-        ->whereIn('id', function($query) {
-            $query->select('semester_id')->from('time_tables');
-        })
-        ->orderBy('id')
-        ->get();
-
-    $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
-        ->whereNotIn('id', function($query) {
-            $query->select('semester_id')->from('time_tables');
-        })
-        ->orderBy('id')
-        ->get();
-
-    return Inertia::render('TimeTable/Index', [
-        'semestersInTimeTable' => $semestersInTimeTable,
-        'semestersNotInTimeTable' => $semestersNotInTimeTable
-    ]);
-}
-
 
     public function generatePdf($semester)
         {
