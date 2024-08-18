@@ -113,13 +113,12 @@ export default function LecturerDashboard({
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Lecturer Dashboard" />
 
-            
             {/*Semester Details*/}
             <div className="pt-8 m-6 bg-gray-100 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                     {/* Combined Semester Progress Chart and Course Details */}
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        Welcome Your Semester !
+                        Welcome Your Semester!
                     </h3>
                     <div className="flex flex-col md:flex-row gap-6">
                         {/* Chart */}
@@ -193,21 +192,36 @@ export default function LecturerDashboard({
                     </div>
                 </div>
             </div>
+
             {/* Events Section */}
             <div className="p-8 m-6 bg-gray-100 dark:bg-gray-900">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Events
                 </h3>
-                <DailyEvents allevents={events} now={now} />
-                <UpcomingEvents allevents={events} now={now} />
+                {events.length > 0 ? (
+                    <>
+                        <DailyEvents allevents={events} now={now} />
+                        <UpcomingEvents allevents={events} now={now} />
+                    </>
+                ) : (
+                    <div className="text-gray-500 dark:text-gray-400">
+                        No events available.
+                    </div>
+                )}
             </div>
+
             {/* Weekly Timetable */}
             <div className="p-8 m-6 bg-gray-100 dark:bg-gray-900">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Weekly Timetable
                 </h3>
-
-                <WeeklyTimetable allevents={events} />
+                {events.length > 0 ? (
+                    <WeeklyTimetable allevents={events} />
+                ) : (
+                    <div className="text-gray-500 dark:text-gray-400">
+                        No timetable available.
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );
