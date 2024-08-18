@@ -16,11 +16,10 @@ class TimeTableInitialized extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct($semesterinfo)
-    {
-        $this->level = $semesterinfo['level'];
-        $this->semester = $semesterinfo['semester'];
-        $this->year = $semesterinfo['year'];
+    public function __construct($level, $semester, $year)   {
+        $this->level = $level;
+        $this->semester = $semester;
+        $this->year = $year;
     }
 
     /**

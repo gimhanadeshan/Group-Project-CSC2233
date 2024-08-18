@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Inertia\Inertia;
 use Carbon\Carbon;
-use APP\Notifications\CourseRegistrationOpened;
+use App\Notifications\CourseRegistrationOpened;
 
 class SemesterController extends Controller
 {
@@ -99,7 +100,8 @@ class SemesterController extends Controller
 
         // Generate reference number if needed, or use the existing one
        // $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
-
+       $originalStartDate = $semester->registration_start_date;
+       $originalEndDate = $semester->registration_end_date;
         try {
             $semester->update([
                 'academic_year' => $request->academic_year,
@@ -114,7 +116,11 @@ class SemesterController extends Controller
                 'enrollment_count' => $request->enrollment_count,
                 'status' => $request->status,
             ]);
+            // Check if the registration start or end dates have changed
 
+    if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
+        $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
+    }
             return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
         } catch (QueryException $e) {
             $errorMessage = $this->handleQueryException($e);
@@ -172,21 +178,20 @@ class SemesterController extends Controller
             $semester->save();
         }
     }
-    public function notify($semester)
+    public function notify($semester,$start,$end)
     {
             $level = Semester::where('id', $semester)->pluck('level')->first();
-            $semester = Semester::where('id', $semester)->pluck('semester')->first();
+            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
             $year = Semester::where('id', $semester)->pluck('academic_year')->first();
             $users = User::where('academic_year',$year)->get();
-
             //each user is notified
         try{
             foreach($users as $user){
-                $user->notify(new CourseRegistrationOpened(['level'=>$level,'semester'=>$semester,'year'=>$year]));
+
+                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end));
             }
         }catch(Exception){
 
         }
-
-    }
+        }
 }

@@ -10,13 +10,20 @@ use Illuminate\Notifications\Notification;
 class CourseRegistrationOpened extends Notification
 {
     use Queueable;
-
+    protected $level;
+    protected $semester;
+    protected $year;
+    protected $start;
+    protected $end;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
-    {
-        //
+    public function __construct($level,$semester,$year,$start,$end)   {
+        $this->level = $level;
+        $this->semester = $semester;
+        $this->year = $year;
+        $this->start = $start;
+        $this->end = $end;
     }
 
     /**
@@ -48,8 +55,8 @@ class CourseRegistrationOpened extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'data' => 'Course Registration is Opened for Level'.$this->level.' semester '.$this->semester.' year '.$this->year,
-            'link' => '/dashboard',
+            'data' => 'Course Registration is Opened for Level'.$this->level.' semester '.$this->semester.' year '.$this->year .' from '.$this->start.' to '.$this->end,
+            'link' => '/course-registration',
         ];
     }
 }
