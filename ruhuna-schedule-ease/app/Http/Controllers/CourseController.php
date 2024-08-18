@@ -16,6 +16,16 @@ class CourseController extends Controller
         return Inertia::render('Courses/Index', ['courses' => $courses]);
     }
 
+    public function show(Request $request,$id)
+    {
+        $this->authorize('read_course', $request->user());
+        $course = Course::findOrFail($id);
+
+        return Inertia::render('Courses/Show', [
+            'course' => $course
+        ]);
+    }
+
     public function create(Request $request)
     {
         $this->authorize('create_course', $request->user());

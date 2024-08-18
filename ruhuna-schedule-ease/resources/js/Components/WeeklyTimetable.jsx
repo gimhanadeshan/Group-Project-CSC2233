@@ -40,16 +40,16 @@ const WeeklyTimetable = ({ allevents }) => {
     return (
         <div className="mt-8">
             <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-300">
+                <table className="min-w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-200">
                     <thead>
                         <tr>
-                            <th className="py-3 px-4 bg-gray-200 text-gray-800 border-b">
+                            <th className="py-3 px-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
                                 Time
                             </th>
                             {daysOfWeek.map((day, index) => (
                                 <th
                                     key={index}
-                                    className="py-3 px-4 bg-gray-200 text-gray-800 border-b"
+                                    className="py-3 px-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
                                 >
                                     {day}
                                 </th>
@@ -60,8 +60,8 @@ const WeeklyTimetable = ({ allevents }) => {
                         {Array.from({ length: 11 }, (_, hourIndex) => {
                             const hour = hourIndex + 8; // Start from 8 AM
                             return (
-                                <tr key={hourIndex}>
-                                    <td className="py-3 px-4 text-center border-b bg-gray-100">
+                                <tr key={hourIndex} className="border-none">
+                                    <td className="py-3 px-4 text-center bg-gray-300 dark:bg-gray-900 border-none">
                                         {`${hour
                                             .toString()
                                             .padStart(2, "0")}:00`}
@@ -78,7 +78,7 @@ const WeeklyTimetable = ({ allevents }) => {
                                         return (
                                             <td
                                                 key={dayIndex}
-                                                className="py-3 px-4 text-center border-b relative"
+                                                className="py-3 px-4 text-center border-none relative"
                                                 style={{
                                                     position: "relative",
                                                     verticalAlign: "top",
@@ -107,16 +107,16 @@ const WeeklyTimetable = ({ allevents }) => {
                                                                     key={
                                                                         event.id
                                                                     }
-                                                                    className="bg-purple-200 text-purple-800 rounded-lg px-2 py-1 text-xs font-medium absolute flex flex-col items-center justify-center"
+                                                                    className="bg-purple-400 dark:bg-purple-500 text-purple-900 dark:text-purple-100 rounded-lg px-2 py-1 text-xs font-medium absolute flex flex-col items-center justify-center"
                                                                     style={{
                                                                         top: `${
                                                                             (hour -
                                                                                 eventStartHour) *
-                                                                            40
+                                                                            49
                                                                         }px`, // Adjust top position
                                                                         height: `${
                                                                             rowspan *
-                                                                            40
+                                                                            49
                                                                         }px`, // Adjust height as needed
                                                                         left: "50%",
                                                                         transform:

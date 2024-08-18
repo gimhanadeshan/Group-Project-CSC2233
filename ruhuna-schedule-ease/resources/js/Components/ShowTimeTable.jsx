@@ -50,7 +50,6 @@ export default function ShowTimeTable({ timetables, semester, lunchTime,semester
                     };
                 }
                 matrix[Math.round((startIndex + endIndex) / 2)-1] = {timetable :timetable, color: Randcolor};
-                console.log(matrix[2].timetable);
             });
 
         return matrix;

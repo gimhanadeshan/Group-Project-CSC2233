@@ -17,6 +17,8 @@ use Inertia\Inertia;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use App\Models\TimeTable_Notification;
+use App\Notifications\TimeTableInitialized;
 use Carbon\Carbon;
 
 
@@ -35,6 +37,7 @@ class TimeTableController extends Controller
         })
         ->orderBy('id')
         ->get();
+        
 
     $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
         ->whereNotIn('id', function($query) {
@@ -48,42 +51,36 @@ class TimeTableController extends Controller
         'semestersNotInTimeTable' => $semestersNotInTimeTable
     ]);
 }
-
-
     public function generatePdf($semester)
-{
-        $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
-        $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
-        $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
-            ->where('semester_id', $semester)
-            ->get();
-        $semesterinfo =Semester::where('id', $semester)->first();
+        {
+                        $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
+                        $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
+                        $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
+                                                    ->where('semester_id', $semester)
+                                                    ->get();
+                        $semesterinfo =Semester::where('id', $semester)->first();
 
-    $pdf = new Dompdf();
-    $pdf->loadHtml(view('pdf.timetable', compact('timetables', 'semesterinfo','lunchTime'))->render());
-    $pdf->setPaper('A4', 'landscape');
-    $pdf->render();
-    return $pdf->stream('timetable.pdf');
-}
+                        $pdf = new Dompdf();
+                        $pdf->loadHtml(view('pdf.timetable', compact('timetables', 'semesterinfo','lunchTime'))->render());
+                        $pdf->setPaper('A4', 'landscape');
+                        $pdf->render();
+            return $pdf->stream('timetable.pdf');
+        }
 
     public function modify($semester)
     {
-        $semesterDetails = Semester::find($semester);
-        $level=$semesterDetails->level;
-        $semesterNumber=$semesterDetails->semester;
-
-        $courses = Course::where('level', $level)->where('semester', $semesterNumber)->get();
-        $lecturers = User::where('role_id', 3)->get();
-        $halls = LectureHall::all();
-
-        $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
-        error_log($lunchTime['start']);
-        $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
-        error_log($lunchTime['end']);
-        $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
-            ->where('semester_id', $semester)
-            ->get();
-        $semesterinfo =Semester::where('id', $semester)->first();
+                        $semesterDetails = Semester::find($semester);
+                        $level=$semesterDetails->level;
+                        $semesterNumber=$semesterDetails->semester;
+                        $courses = Course::where('level', $level)->where('semester', $semesterNumber)->get();
+                        $lecturers = User::where('role_id', 3)->get();
+                        $halls = LectureHall::all();
+                        $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
+                        $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
+                        $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
+                            ->where('semester_id', $semester)
+                            ->get();
+                        $semesterinfo =Semester::where('id', $semester)->first();
         return Inertia::render('TimeTable/Update', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo,'courses' => $courses,'halls' => $halls,'lecturers' => $lecturers]);
     }
 
@@ -93,34 +90,33 @@ class TimeTableController extends Controller
      */
     public function create(Request $request)
     {
-        
-        $level = $request->query('level');
-        $semester = $request->query('semester');
-        $semester_id = $request->query('semester_id');
+                        $level = $request->query('level');
+                        $semester = $request->query('semester');
+                        $semester_id = $request->query('semester_id');
 
-        if (is_null($semester_id)) {
-            return redirect()->route('timetables.index');
-        }
+                        if (is_null($semester_id)) {
+        return redirect()->route('timetables.index');
+                        }
 
-        $isAlreadyIn = TimeTable::where('semester_id', $semester_id)->exists();
-        $semesterDetails = Semester::find($semester_id);
+                        $isAlreadyIn = TimeTable::where('semester_id', $semester_id)->exists();
+                        $semesterDetails = Semester::find($semester_id);
 
-        if ($isAlreadyIn || !$semesterDetails ||
-            $semesterDetails->level != $level ||
-            $semesterDetails->semester != $semester) {
-            return redirect()->route('timetables.index');
-        }
+                        if ($isAlreadyIn || !$semesterDetails ||
+                            $semesterDetails->level != $level ||
+                            $semesterDetails->semester != $semester) {
+        return redirect()->route('timetables.index');
+                        }
 
-        $courses = Course::where('level', $level)->where('semester', $semester)->get();
-        $lecturers = User::where('role_id', 3)->get();
-        $halls = LectureHall::all();
+                        $courses = Course::where('level', $level)->where('semester', $semester)->get();
+                        $lecturers = User::where('role_id', 3)->get();
+                        $halls = LectureHall::all();
 
         return Inertia::render('TimeTable/Create', [
-            'courses' => $courses,
-            'lecturers' => $lecturers,
-            'semester' => $semester_id,
-            'semesterdetails' => $semesterDetails,
-            'halls' => $halls,
+                                'courses' => $courses,
+                                'lecturers' => $lecturers,
+                                'semester' => $semester_id,
+                                'semesterdetails' => $semesterDetails,
+                                'halls' => $halls,
         ]);
     }
 
@@ -128,114 +124,114 @@ class TimeTableController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $tableData = $request->input('timetable');
-    $semester = $request->input('semester_id');
-    $condition = $request->input('conditions');
+    {
+                        $tableData = $request->input('timetable');
+                        $semester = $request->input('semester_id');
+                        $condition = $request->input('conditions');
 
-    // Newly added Conditions
-    $lunchTime = [
-        'start' => $condition['lunchTime']['start'] ?? '12:00:00',
-        'end' => $condition['lunchTime']['end'] ?? '13:00:00'
-    ];
+                        // Newly added Conditions
+                        $lunchTime = [
+                            'start' => $condition['lunchTime']['start'] ?? '12:00:00',
+                            'end' => $condition['lunchTime']['end'] ?? '13:00:00'
+                        ];
 
-    $lectureTime = [
-        'start' => $condition['lectureTime']['start'] ?? '08:00:00',
-        'end' => $condition['lectureTime']['end'] ?? '16:00:00'
-    ];
+                        $lectureTime = [
+                            'start' => $condition['lectureTime']['start'] ?? '08:00:00',
+                            'end' => $condition['lectureTime']['end'] ?? '16:00:00'
+                        ];
 
-    $practicalTime = [
-        'start' => $condition['practicalTime']['start'] ?? '08:00:00',
-        'end' => $condition['practicalTime']['end'] ?? '16:00:00'
-    ];
+                        $practicalTime = [
+                            'start' => $condition['practicalTime']['start'] ?? '08:00:00',
+                            'end' => $condition['practicalTime']['end'] ?? '16:00:00'
+                        ];
 
-    $freeTimeslots = $condition['freeTimeslots'] ?? [];
+                        $freeTimeslots = $condition['freeTimeslots'] ?? [];
 
-    $lunchtimeStart = $lunchTime['start'];
-    $lunchtimeEnd = $lunchTime['end'];
-    $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                        $lunchtimeStart = $lunchTime['start'];
+                        $lunchtimeEnd = $lunchTime['end'];
+                        $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-    $existingEntries = [];
-    foreach ($daysOfWeek as $day) {
-        $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
-            return [
-                'start' => $entry->start_time,
-                'end' => $entry->end_time,
-                'type' => $entry->type,
-            ];
-        })->toArray();
+                        $existingEntries = [];
+                        foreach ($daysOfWeek as $day) {
+                            $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
+                                return [
+                                    'start' => $entry->start_time,
+                                    'end' => $entry->end_time,
+                                    'type' => $entry->type,
+                                ];
+                            })->toArray();
+                        }
+
+                        $levelsExistingEntries = [];
+                        foreach ($daysOfWeek as $day) {
+                            $levelsExistingEntries[$day] = TimeTable::where('day_of_week', $day)->where('availability',1)->get()->map(function ($entry) {
+                                return [
+                                    'start' => $entry->start_time,
+                                    'end' => $entry->end_time,
+                                    'lecturer' => $entry->lecturer,
+                                    'hall' => $entry->hall_id,
+                                ];
+                            })->toArray();
+                        }
+
+
+
+                        try {
+                            DB::beginTransaction();
+
+                        foreach ($tableData as $entry) {
+                            $course = $entry['course']['value'];
+                            $lecturer = $entry['lecturer']['value'];
+                            $hall = $entry['hall']['value'];
+                            $type = $entry['type']['value'];
+
+                            $duration = match ($type) {
+                                'Theory' => $course['theory_hours'] * 60,
+                                'Practical' => $course['practical_hours'] * 60,
+                                'Tutorial' => $course['tutorial_hours'] * 60,
+                                default => throw new Exception("Invalid type: $type")
+                            };
+
+                            $timeSlot = $this->findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type,$freeTimeslots, $levelsExistingEntries);
+
+                            if ($timeSlot) {
+                                $startTime = $timeSlot['start'];
+                                $endTime = $timeSlot['end'];
+                                $dayOfWeek = $timeSlot['day_of_week'];
+
+
+                                    TimeTable::create([
+                                    'course_id' => $course['id'],
+                                    'hall_id' => $hall['id'],
+                                    'lecturer' => $lecturer['id'],
+                                    'semester_id' => $semester,
+                                    'start_time' => $startTime,
+                                    'end_time' => $endTime,
+                                    'day_of_week' => $dayOfWeek,
+                                    'type' => $type,
+                                    'availability' => 1,
+                                ]);
+
+                                $existingEntries[$dayOfWeek][] = ['start' => $startTime, 'end' => $endTime, 'type' => $type];
+                            } else {
+    return back()->withErrors(['msg' => 'No available time slot found for ' . $type . ' ' . $course['name']])->withInput();
+                            }
     }
 
-    $levelsExistingEntries = [];
-    foreach ($daysOfWeek as $day) {
-        $levelsExistingEntries[$day] = TimeTable::where('day_of_week', $day)->where('availability',1)->get()->map(function ($entry) {
-            return [
-                'start' => $entry->start_time,
-                'end' => $entry->end_time,
-                'lecturer' => $entry->lecturer,
-                'hall' => $entry->hall_id,
-            ];
-        })->toArray();
-    }
 
-
-
-    try {
-        DB::beginTransaction();
-
-    foreach ($tableData as $entry) {
-        $course = $entry['course']['value'];
-        $lecturer = $entry['lecturer']['value'];
-        $hall = $entry['hall']['value'];
-        $type = $entry['type']['value'];
-
-        $duration = match ($type) {
-            'Theory' => $course['theory_hours'] * 60,
-            'Practical' => $course['practical_hours'] * 60,
-            'Tutorial' => $course['tutorial_hours'] * 60,
-            default => throw new Exception("Invalid type: $type")
-        };
-
-        $timeSlot = $this->findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalTime, $duration, $existingEntries, $lunchtimeStart, $lunchtimeEnd, $daysOfWeek, $type,$freeTimeslots, $levelsExistingEntries);
-
-        if ($timeSlot) {
-            $startTime = $timeSlot['start'];
-            $endTime = $timeSlot['end'];
-            $dayOfWeek = $timeSlot['day_of_week'];
-
-
-                TimeTable::create([
-                'course_id' => $course['id'],
-                'hall_id' => $hall['id'],
-                'lecturer' => $lecturer['id'],
-                'semester_id' => $semester,
-                'start_time' => $startTime,
-                'end_time' => $endTime,
-                'day_of_week' => $dayOfWeek,
-                'type' => $type,
-                'availability' => 1,
-            ]);
-
-            $existingEntries[$dayOfWeek][] = ['start' => $startTime, 'end' => $endTime, 'type' => $type];
-        } else {
-            return back()->withErrors(['msg' => 'No available time slot found for ' . $type . ' ' . $course['name']])->withInput();
-        }
-    }
-
-
-    Condition::create([
-        'lunchtime_start' => $lunchtimeStart,
-        'lunchtime_end' => $lunchtimeEnd,
-        'semester_id' => $semester,
-    ]);
-    DB::commit();
+                                Condition::create([
+                                    'lunchtime_start' => $lunchtimeStart,
+                                    'lunchtime_end' => $lunchtimeEnd,
+                                    'semester_id' => $semester,
+                                ]);
+                                DB::commit();
     return $this->show($semester);
-    
-    } catch (\Exception $e) {
-        DB::rollBack();
 
-        return back()->withErrors(['msg' => $e.getMessage()])->withInput();
-    }
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+
+    return back()->withErrors(['msg' => $e.getMessage()])->withInput();
+                        }
 
 
 
@@ -316,7 +312,8 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             ->where('semester_id', $semester)
             ->get();
         $semesterinfo =Semester::where('id', $semester)->first();
-        return Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo]);
+        $confirmation = Condition::where('semester_id', $semester)->pluck('confirmed');
+        return Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo ,'confirmation'=>$confirmation]);
     }
 
     /**
@@ -415,6 +412,31 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
             return back()->withErrors(['msg' => 'An error occurred while updating the interval.']);
         }
     }
+    public function confirm($semester){
+        error_log('here');
+        $condition = Condition::where('semester_id', $semester)->first();
+        $condition->confirmed = true;
+        $condition->save();
+        $this->notify($semester);
+        return redirect()->back()->with('status','successful!');
+    }
+    public function notify($semester)
+    {
+            $level = Semester::where('id', $semester)->pluck('level')->first();
+            $semester = Semester::where('id', $semester)->pluck('semester')->first();
+            $year = Semester::where('id', $semester)->pluck('academic_year')->first();
+            $users = User::where('academic_year',$year)->get();
+
+            //each user is notified
+        try{
+            foreach($users as $user){
+                $user->notify(new TimeTableInitialized(['level'=>$level,'semester'=>$semester,'year'=>$year]));
+            }
+        }catch(Exception){
+
+        }
+
+    }
 
     public function updateAvailability()
 {
@@ -440,7 +462,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
 
 
 
-    
 
-   
+
+
 }

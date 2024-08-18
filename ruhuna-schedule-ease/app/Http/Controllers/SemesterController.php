@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Semester;
 use App\Models\DegreeProgram; // Import DegreeProgram model
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use App\Notifications\CourseRegistrationOpened;
 
 class SemesterController extends Controller
 {
     public function index(Request $request)
     {
         $this->authorize('read_semester', $request->user());
-    
+
         // Update semester statuses
         $this->updateSemestersStatus();
-    
+
         // Fetch semesters with their associated degree programs
         $semesters = Semester::with('degreeProgram')->get();
         $degreePrograms = DegreeProgram::all();
-    
+
         return Inertia::render('Semesters/Index', ['semesters' => $semesters,'degreePrograms' => $degreePrograms]);
     }
-    
+
 
     public function create(Request $request)
     {
@@ -107,6 +109,8 @@ class SemesterController extends Controller
             'degree_program_id' => 'required|exists:degree_programs,id',
         ]);
 
+       $originalStartDate = $semester->registration_start_date;
+       $originalEndDate = $semester->registration_end_date;
         try {
             $semester->update([
                 'academic_year' => $request->academic_year,
@@ -121,7 +125,11 @@ class SemesterController extends Controller
                 'enrollment_count' => $request->enrollment_count,
                 'degree_program_id' => $request->degree_program_id,
             ]);
+            // Check if the registration start or end dates have changed
 
+    if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
+        $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
+    }
             return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
         } catch (QueryException $e) {
             $errorMessage = $this->handleQueryException($e);
@@ -132,13 +140,13 @@ class SemesterController extends Controller
     public function show(Request $request, Semester $semester)
     {
         $this->authorize('read_semester', $request->user());
-    
+
         // Eager load the degree program relationship
         $semester = $semester->load('degreeProgram');
-    
+
         return Inertia::render('Semesters/Show', ['semester' => $semester]);
     }
-    
+
 
     public function destroy(Request $request, Semester $semester)
     {
@@ -183,4 +191,20 @@ class SemesterController extends Controller
             $semester->save();
         }
     }
+    public function notify($semester,$start,$end)
+    {
+            $level = Semester::where('id', $semester)->pluck('level')->first();
+            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
+            $year = Semester::where('id', $semester)->pluck('academic_year')->first();
+            $users = User::where('academic_year',$year)->get();
+            //each user is notified
+        try{
+            foreach($users as $user){
+
+                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end));
+            }
+        }catch(Exception){
+
+        }
+        }
 }

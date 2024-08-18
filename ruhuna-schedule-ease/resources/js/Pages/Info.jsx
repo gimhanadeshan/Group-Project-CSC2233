@@ -150,6 +150,7 @@ const Info = () => {
 
       if (init) {
         return (
+            
         <>
                 <div style={{ position: 'relative', zIndex: 1 }}>
                 <div className="flex flex-col min-h-screen ">

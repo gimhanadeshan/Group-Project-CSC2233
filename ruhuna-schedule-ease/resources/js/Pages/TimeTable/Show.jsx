@@ -3,7 +3,7 @@ import ShowTimeTable from '../../Components/ShowTimeTable';
 import { Head, Link, useForm } from '@inertiajs/react';
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 
-export default function Show({ auth, timetables, semester, lunchTime,semesterinfo}) {
+export default function Show({ auth, timetables, semester, lunchTime,semesterinfo,confirmation}) {
     const { delete: deleteTimeTable } = useForm();
     const handleDelete = () => {
         if (confirm("Are you sure you want to delete this TimeTable?")) {
@@ -12,6 +12,11 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
     };
     const handleDownloadPDF = () => {
         window.location.href = route('timetables.pdf', { semester });
+    };
+    const handleConfirm = () => {
+        if (confirm("Are you sure you want to initialize this TimeTable?")) {
+            window.location.href = route('timetables.confirm', {timetable: semester ,semester:semester});
+        }
     };
 
     return (
@@ -36,6 +41,18 @@ export default function Show({ auth, timetables, semester, lunchTime,semesterinf
                         >
                             Modify
                         </Link>
+                        {confirmation==0 ? (
+                            <div>
+                                <button
+                            onClick={handleConfirm}
+                            className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            Confirm and Push
+                        </button>
+                            </div>
+                            ):(<p className="text-center text-gray-600">
+                                This TimeTable is already Confirmed
+                            </p>)}
                         <button
                             onClick={handleDownloadPDF}
                             className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
