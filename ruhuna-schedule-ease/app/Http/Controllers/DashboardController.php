@@ -20,12 +20,12 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        switch ($user->role_id) {
-            case 1:
+        switch ($user->role->role_type) {
+            case 'administrator':
                 return $this->admin($request);
-            case 2:
+            case 'student':
                 return $this->student($request);
-            case 3:
+            case 'lecturer':
                 return $this->lecturer($request);
             default:
                 return Inertia::render('Dashboard');
