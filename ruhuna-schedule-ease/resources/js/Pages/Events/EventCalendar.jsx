@@ -398,7 +398,7 @@ const EventCalendar = ({ allevents, auth }) => {
                             </div>
                             }
                             {/* Attentedance Checkboxes */}
-                            {auth.user.role_id==2 &&
+                            {auth.user.role.role_type==='lecturer' &&
                             <div className="mb-4">
                                    <Link href={`/attendance/${data.id}/${auth.user.id}`} className="text-blue-500">View Attendance</Link>
            
@@ -406,7 +406,7 @@ const EventCalendar = ({ allevents, auth }) => {
                             </div>
                         
                         }
-                         {auth.user.role_id==3 &&
+                         {auth.user.role.role_type==='student' &&
                             <div>
                                 <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
                                     <input
