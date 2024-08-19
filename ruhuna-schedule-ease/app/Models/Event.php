@@ -24,6 +24,7 @@ class Event extends Model
         'lec_id',
         'hall_id',
         'Lec_attended',
+        'course_type',
         
 
     ];
