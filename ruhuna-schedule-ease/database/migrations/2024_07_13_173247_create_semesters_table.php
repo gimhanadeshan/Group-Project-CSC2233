@@ -22,8 +22,6 @@ return new class extends Migration
             $table->date('registration_start_date')->nullable();
             $table->date('registration_end_date')->nullable();
             $table->text('description')->nullable();
-            $table->integer('course_capacity')->default(0);
-            $table->integer('enrollment_count')->default(0);
             $table->enum('status', ['Upcoming', 'In Progress', 'Completed'])->default('Upcoming');
             
             // Foreign key constraint

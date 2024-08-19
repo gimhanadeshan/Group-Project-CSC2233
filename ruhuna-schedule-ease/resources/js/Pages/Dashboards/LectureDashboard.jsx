@@ -118,7 +118,7 @@ export default function LecturerDashboard({
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                     {/* Combined Semester Progress Chart and Course Details */}
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        Welcome Your Semester!
+                        Welcome, {auth.user.name}!
                     </h3>
                     <div className="flex flex-col md:flex-row gap-6">
                         {/* Chart */}
