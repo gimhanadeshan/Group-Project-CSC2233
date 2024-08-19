@@ -6,20 +6,6 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
     const roleId = auth.user.role_id;
     const isStudent = roleId === 2;
 
-    console.log(attendanceRecords[2]);
-    const getCourseTypeName = (type) => {
-        switch (type) {
-            case 1:
-                return 'Theory';
-            case 2:
-                return 'Tutorial';
-            case 3:
-                return 'Practical';
-            default:
-                return 'Unknown';
-        }
-    };
-
     return (
         <>
             <Head title="Attendance" />
@@ -29,14 +15,13 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
                 permissions={auth.permissions}
             >  
                 <div className="container mx-auto p-4">
-                    <h1 className="text-2xl font-bold text-clack mb-4">
+                    <h1 className="text-2xl font-bold text-black mb-4">
                         {isStudent ? 'Student Attendance Records' : 'Lecturer Attendance Records'}
                     </h1>
                     <table className="min-w-full bg-gray-800 border border-gray-700 rounded-lg">
                         <thead>
                             <tr className="text-white">
                                 <th className="py-2 px-4 border-b border-gray-700">Course Code</th>
-                                <th className="py-2 px-4 border-b border-gray-700">Course Type</th>
                                 <th className="py-2 px-4 border-b border-gray-700">Total Attended / Total Events</th>
                             </tr>
                         </thead>
@@ -47,7 +32,6 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
                                 return (
                                     <tr key={index} className="text-gray-300">
                                         <td className="py-2 px-4 border-b border-gray-700">{record.course_code}</td>
-                                        <td className="py-2 px-4 border-b border-gray-700">{getCourseTypeName(record.course_type)}</td>
                                         <td className="py-2 px-4 border-b border-gray-700">
                                             <div className="flex items-center">
                                                 <span className="mr-2">

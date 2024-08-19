@@ -14,13 +14,17 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('student_id');
+
+            $table->unsignedBigInteger('course_type')->nullable(); // Add course_type_id column
+            $table->foreign('course_type')->references('id')->on('course_types')->onDelete('set null'); // Foreign key constraint
+
             $table->boolean('attended')->nullable();
             $table->timestamps();
 
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
 
-            $table->unique(['event_id', 'student_id']);
+            $table->unique(['event_id', 'student_id', 'course_type']);
         });
     }
 

@@ -108,8 +108,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/events/{eventid}/attendance', [EventController::class, 'getAttendance'])->name('events.getAttendance');
 
-    Route::get('/attendance/{eventId}/{studentId}', [EventController::class, 'viewAttendance'])->name('attendance.view');
-    Route::post('/attendance/{eventId}/{studentId}', [EventController::class, 'updateAttendance'])->name('attendance.update');
+    //Route::get('/attendance/{eventId}/{studentId}', [EventController::class, 'viewAttendance'])->name('attendance.view');
+    Route::get('/attendance/{courseType}/{eventId}/{studentId}', [EventController::class, 'viewAttendance'])->name('attendance.view');
+
+    Route::put('/attendance/{courseType}/{eventId}/{studentId}/update', [EventController::class, 'updateAttendance'])->name('attendance.update');
 
     Route::get('/events/attendance', [EventController::class, 'showAttendancePage'])->name('events.attendance');
 });

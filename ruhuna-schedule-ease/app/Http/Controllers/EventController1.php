@@ -8,6 +8,7 @@ use App\Models\Semester;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EventController1 extends Controller
 {
@@ -130,4 +131,22 @@ class EventController1 extends Controller
             $end->add($frequency, 1);
         }
     }
+
+
+    public function showCalendarAttendance($courseType,$eventId, $studentId)
+
+{
+    $attendance = DB::table('event_student')
+        ->where('event_id', $eventId)
+        ->where('student_id', $studentId)
+        ->where('course_type',$courseType)
+        ->first(['attended','course_type' ]);
+        //dd($attendance);
+    return Inertia::render('Events/EventCalendar', [
+        'attendance' => $attendance,
+        'eventId' => $eventId,
+        'studentId' => $studentId,
+    ]);
+
+}
 }
