@@ -196,7 +196,7 @@ const canEdit = auth.permissions.includes("update_event");
                             
                             
 
-                            {auth.user.role_id==3 &&
+                            {auth.user.role.role_type==='lecturer' &&
                             <div>
                                 <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
                                     <input
@@ -234,7 +234,7 @@ const canEdit = auth.permissions.includes("update_event");
                 
 
                     <div className='w-1/3'> 
-                        {auth.user.role_id==2 &&
+                        {auth.user.role.role_type==='student' &&
                             <div>
                                    <Link href={`/attendance/${eventData.id}/${auth.user.id}`} className="text-blue-500">View Attendance</Link>
 
@@ -257,7 +257,7 @@ const canEdit = auth.permissions.includes("update_event");
                     </div>
                 </div>
 {/*Attendance check Boxes*/ }
-                {/*auth.user.role_id==2 &&
+                {/*auth.user.role.role_type==='student' &&
                     <div>
                         <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Attended</label>
                              <input
