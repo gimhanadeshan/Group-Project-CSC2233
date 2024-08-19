@@ -15,15 +15,17 @@ class CourseRegistrationOpened extends Notification
     protected $year;
     protected $start;
     protected $end;
+    protected $name;
     /**
      * Create a new notification instance.
      */
-    public function __construct($level,$semester,$year,$start,$end)   {
+    public function __construct($level,$semester,$year,$start,$end,$name)   {
         $this->level = $level;
         $this->semester = $semester;
         $this->year = $year;
         $this->start = $start;
         $this->end = $end;
+        $this->name = $name;
     }
 
     /**
@@ -42,7 +44,8 @@ class CourseRegistrationOpened extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
+                    ->line('Hello'.$this->name)
+                    ->line('course registration is opened for Level'.$this->level.' semester '.$this->semester.' year '.$this->year .' from '.$this->start.' to '.$this->end)
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
     }
@@ -56,7 +59,7 @@ class CourseRegistrationOpened extends Notification
     {
         return [
             'data' => 'Course Registration is Opened for Level'.$this->level.' semester '.$this->semester.' year '.$this->year .' from '.$this->start.' to '.$this->end,
-            'link' => '/course-registration',
+            'link' => 'course-registration.index',
         ];
     }
 }

@@ -48,8 +48,8 @@ Route::middleware(['auth'])->group(function () {
             $notification->markAsRead();
             error_log('Marked as read');
         }
-
-        return redirect()->back();
+        return 0;
+        //return redirect()->back();
     })->name('markAsRead');
 
     Route::get('/timetables/{semester}/pdf', [TimeTableController::class, 'generatePdf'])->name('timetables.pdf');
