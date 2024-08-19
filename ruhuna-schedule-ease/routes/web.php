@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('timetables/modify/add', [TimeTableController::class, 'storeSingle'])->name('timetables.storeSingle');
     Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::resource('timetables', TimeTableController::class);
+    Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::resource('courses', CourseController::class);
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
@@ -95,10 +96,24 @@ Route::middleware(['auth'])->group(function () {
     //Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
 
     //TimeTable table  into Events table
+
    Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable'])->name('generateEvents');
     Route::get('/Notifications',[ NotificationController::class,'index'])->name('notifications.index');
 
 
+    Route::get('/events/{id}/generate-attendance-records', [EventController::class, 'generateAttendanceRecords'])
+    ->name('events.generateAttendanceRecords');
+    Route::get('/generate-attendance-records', [EventController::class, 'generateAttendanceRecordsForAllEvents'])
+    ->name('events.generateAllAttendanceRecords');
+
+    Route::get('/events/{eventid}/attendance', [EventController::class, 'getAttendance'])->name('events.getAttendance');
+
+    //Route::get('/attendance/{eventId}/{studentId}', [EventController::class, 'viewAttendance'])->name('attendance.view');
+    Route::get('/attendance/{courseType}/{eventId}/{studentId}', [EventController::class, 'viewAttendance'])->name('attendance.view');
+
+    Route::put('/attendance/{courseType}/{eventId}/{studentId}/update', [EventController::class, 'updateAttendance'])->name('attendance.update');
+
+    Route::get('/events/attendance', [EventController::class, 'showAttendancePage'])->name('events.attendance');
 });
 
 

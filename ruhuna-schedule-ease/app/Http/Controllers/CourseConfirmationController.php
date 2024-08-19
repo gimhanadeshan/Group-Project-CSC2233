@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseRegistration;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Semester;
 
 class CourseConfirmationController extends Controller
 {
@@ -14,9 +15,11 @@ class CourseConfirmationController extends Controller
         $this->authorize('read_course_confirmation', $request->user());
         $userCourses = CourseRegistration::with('course')->with('user')
             ->get();
-
+        $semesters = Semester::With('degreeProgram')->orderBy('created_at', 'desc') ->get();
+        
         return Inertia::render('CourseConfirmation/Index', [
             'userCourses' => $userCourses,
+            'semesters'=> $semesters,
         ]);
     }
 

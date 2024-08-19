@@ -51,8 +51,6 @@ class SemesterController extends Controller
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
             'description' => 'nullable|string',
-            'course_capacity' => 'nullable|integer|min:0',
-            'enrollment_count' => 'nullable|integer|min:0',
             'degree_program_id' => 'required|exists:degree_programs,id',
         ]);
 
@@ -66,8 +64,6 @@ class SemesterController extends Controller
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
                 'description' => $request->description,
-                'course_capacity' => $request->course_capacity,
-                'enrollment_count' => $request->enrollment_count,
                 'degree_program_id' => $request->degree_program_id,
             ]);
 
@@ -104,8 +100,6 @@ class SemesterController extends Controller
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
             'description' => 'nullable|string',
-            'course_capacity' => 'nullable|integer|min:0',
-            'enrollment_count' => 'nullable|integer|min:0',
             'degree_program_id' => 'required|exists:degree_programs,id',
         ]);
 
@@ -121,8 +115,6 @@ class SemesterController extends Controller
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
                 'description' => $request->description,
-                'course_capacity' => $request->course_capacity,
-                'enrollment_count' => $request->enrollment_count,
                 'degree_program_id' => $request->degree_program_id,
             ]);
             // Check if the registration start or end dates have changed

@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useForm, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 const Index = ({ auth, degreePrograms }) => {
     const { delete: destroy } = useForm();
+    const [searchTerm, setSearchTerm] = useState("");
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this degree program?")) {
             destroy(route("degree-programs.destroy", id));
         }
     };
+
+    const filteredPrograms = degreePrograms.filter((program) =>
+        program.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const canCreate = auth.permissions.includes("create_degree_program");
     const canEdit = auth.permissions.includes("update_degree_program");
@@ -29,72 +34,57 @@ const Index = ({ auth, degreePrograms }) => {
                         Create New Degree Program
                     </Link>
                 )}
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                    Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                    Description
-                                </th>
-                                {(canEdit || canDelete) && (
-                                    <th
-                                        scope="col"
-                                        className="relative px-6 py-3"
+                
+                {/* Search Bar */}
+                <div className="mb-6">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search degree programs..."
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    />
+                </div>
+
+                <div className="space-y-4">
+                    {filteredPrograms.map((degreeProgram) => (
+                        <div
+                            key={degreeProgram.id}
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow"
+                        >
+                            <div>
+                                <p className="text-sm font-medium text-gray-700">
+                                    {degreeProgram.name}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    {degreeProgram.description}
+                                </p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                {canEdit && (
+                                    <Link
+                                        href={route(
+                                            "degree-programs.edit",
+                                            degreeProgram.id
+                                        )}
+                                        className=" text-indigo-600 hover:text-indigo-900"
                                     >
-                                        <span className="sr-only">Actions</span>
-                                    </th>
+                                        Edit
+                                    </Link>
                                 )}
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {degreePrograms.map((degreeProgram) => (
-                                <tr key={degreeProgram.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {degreeProgram.name}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {degreeProgram.description}
-                                    </td>
-                                    {(canEdit || canDelete) && (
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            {canEdit && (
-                                                <Link
-                                                    href={route(
-                                                        "degree-programs.edit",
-                                                        degreeProgram.id
-                                                    )}
-                                                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                                                >
-                                                    Edit
-                                                </Link>
-                                            )}
-                                            {canDelete && (
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(
-                                                            degreeProgram.id
-                                                        )
-                                                    }
-                                                    className="text-red-600 hover:text-red-900"
-                                                >
-                                                    Delete
-                                                </button>
-                                            )}
-                                        </td>
-                                    )}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                {canDelete && (
+                                    <button
+                                        onClick={() =>
+                                            handleDelete(degreeProgram.id)
+                                        }
+                                        className=" text-red-600 hover:text-red-900"
+                                    >
+                                        Delete
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </AuthenticatedLayout>

@@ -7,11 +7,16 @@ use App\Models\TimeTable;
 use App\Models\Semester;
 use App\Models\LectureHall;
 use App\Models\Course;
+use App\Models\Attendance;
+use App\Models\CourseRegistration; 
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
-use App\Models\CourseRegistration; 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class EventController extends Controller
 {
@@ -29,7 +34,7 @@ class EventController extends Controller
 
 
     //For Students 
-    if ($semesterId || $request->user()->role_id==2) {
+    if ($semesterId || $request->user()->role->role_type==='student') {
         // Fetch events that match the user's semester_id
         $allevents = Event::where('semester_id', $semesterId)//->get();
                       ->orWhereNull('semester_id')
@@ -39,7 +44,7 @@ class EventController extends Controller
        
     //For Lecturer     
     }else{
-        if($request->user()->role_id==3){
+        if($request->user()->role->role_type==='lecturer'){
 
             $allevents = Event::where('lec_id',$UId)//->get();
                                 ->orWhereNull('semester_id')
@@ -85,7 +90,30 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
             $endDateTime = $dayOfWeek->copy()->setTimeFrom($endTime)->toDateTimeString();
 
             $eventTitle= $slot->course->code . ' (' . $slot->type . ')';
+
+            //$courseType=0;
+            //dd($slot->type);
+            switch ($slot->type) {
+                case 'Theory':
+                    $courseType = 1;
+                    break;
             
+                case 'Tutorial':
+                    $courseType = 2;
+                    break;
+            
+                case 'Practical':
+                    $courseType = 3;
+                    break;
+            
+                default:
+                    // Handle unexpected values if necessary
+                    $courseType = null; // or some default value
+                    break;
+            }
+            
+            //dd($courseType);
+
             // Check if an event already exists for this time slot and day
             $existingEvent = Event::where('event_title',$eventTitle )
                 ->where('location', $slot->hall->name)
@@ -100,12 +128,12 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'user_id' => $user->id,
-
                     'semester_id' => $semesterId,
                     'course_id' => $slot->course->id,
                     'hall_id' => $slot->hall_id,
                     'lec_id' => $slot->lecturer,
-                    'course_id' => $slot->course->id
+                    'course_id' => $slot->course->id,
+                    'course_type' => $courseType,
 
                 ]);
             }
@@ -146,36 +174,101 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         return redirect()->back()->with('success', 'Event created successfully');
     }
 
-    public function update(Request $request, $id)
-    {
-        $event = Event::findOrFail($id);
-        $user = $request->user();
-        $data = $request->validate([
-            'event_title' => 'required',
-            'location' => 'required',
-            'start' => 'required|date',
-            'end' => 'required|date',
-            'daily' => 'sometimes|boolean',
-            'weekly' => 'sometimes|boolean',
-            'monthly' => 'sometimes|boolean',
-        ]);
+    // public function update(Request $request, $id)
+    // {
+    //     $event = Event::findOrFail($id);
+    //     $user = $request->user();
+    //     $data = $request->validate([
+    //     'event_title' => 'required',
+    //     'location' => 'required',
+    //     'start' => 'required|date',
+    //     'end' => 'required|date',
+    //     'Lec_attended' => 'nullable|boolean',
+    //     'daily' => 'sometimes|boolean',
+    //     'weekly' => 'sometimes|boolean',
+    //     'monthly' => 'sometimes|boolean',
+    //     'user_id' => 'nullable|sometimes|exists:users,id',
+    //     'course_id' => 'nullable|sometimes|exists:courses,id',
+    //     'semester_id' => 'nullable|sometimes|exists:semesters,id',
+    //     'lec_id' => 'nullable|sometimes|exists:users,id',
+    //     'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
+    //     ]);
 
-        // Delete existing event if recurrence options are updated
+    //     // Delete existing event if recurrence options are updated
+    //     $event->delete();
+    //     $data['user_id'] = $user->id;
+    //     // Handle recurrence update
+    //     if ($request->daily) {
+    //         $this->createRecurringEvents($data, 'day');
+    //     } elseif ($request->weekly) {
+    //         $this->createRecurringEvents($data, 'week');
+    //     } elseif ($request->monthly) {
+    //         $this->createRecurringEvents($data, 'month');
+    //     } else {
+    //         Event::create($data);
+    //     }
+
+    //     return redirect()->back()->with('success', 'Event updated successfully');
+    // }
+
+    public function update(Request $request, $id)
+{
+    //dd("Update function");
+    // Validate the request data
+    $validatedData = $request->validate([
+        'event_title' => 'required',
+        'location' => 'required',
+        'start' => 'required|date',
+        'end' => 'required|date',
+        'Lec_attended' => 'nullable|boolean',
+        'daily' => 'sometimes|boolean',
+        'weekly' => 'sometimes|boolean',
+        'monthly' => 'sometimes|boolean',
+        'user_id' => 'nullable|sometimes|exists:users,id',
+        'course_id' => 'nullable|sometimes|exists:courses,id',
+        'semester_id' => 'nullable|sometimes|exists:semesters,id',
+        'lec_id' => 'nullable|sometimes|exists:users,id',
+        'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
+        //'course_type' => 'nullable|sometimes|exists:course_types,type', // Validate course_type
+
+    ]);
+    //dd("Update function");
+    // Find the event by its ID
+    $event = Event::findOrFail($id);
+    $user = $request->user();
+
+    // Only update fields if they are present in the request
+    $updateData = $validatedData;
+    $updateData['user_id'] = $user->id;
+
+    // Prevent fields from being set to NULL if not present in the request
+    $updateData['course_id'] = $request->has('course_id') ? $validatedData['course_id'] : $event->course_id;
+    $updateData['semester_id'] = $request->has('semester_id') ? $validatedData['semester_id'] : $event->semester_id;
+    $updateData['lec_id'] = $request->has('lec_id') ? $validatedData['lec_id'] : $event->lec_id;
+    $updateData['hall_id'] = $request->has('hall_id') ? $validatedData['hall_id'] : $event->hall_id;
+    //$updateData['course_type'] = $request->has('course_type') ? $validatedData['course_type'] : $event->course_type;
+
+
+    // Delete existing event if recurrence options are updated
+    if ($request->daily || $request->weekly || $request->monthly) {
         $event->delete();
-        $data['user_id'] = $user->id;
+
         // Handle recurrence update
         if ($request->daily) {
-            $this->createRecurringEvents($data, 'day');
+            $this->createRecurringEvents($updateData, 'day');
         } elseif ($request->weekly) {
-            $this->createRecurringEvents($data, 'week');
+            $this->createRecurringEvents($updateData, 'week');
         } elseif ($request->monthly) {
-            $this->createRecurringEvents($data, 'month');
-        } else {
-            Event::create($data);
+            $this->createRecurringEvents($updateData, 'month');
         }
-
-        return redirect()->back()->with('success', 'Event updated successfully');
+    } else {
+        // Update the existing event without deleting
+        $event->update($updateData);
     }
+
+    return redirect()->back()->with('success', 'Event updated successfully');
+}
+
 
     public function destroy($id)
     {
@@ -281,6 +374,413 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
     return redirect()->back();
 }
 
+
+
+
+//Attendance 
+
+// public function generateAttendanceRecordsForAllEvents()
+// {
+//     // Fetch all events that have a course_id
+//     $events = Event::whereNotNull('course_id')->get();
+
+//     foreach ($events as $event) {
+//         $courseId = $event->course_id;
+
+//         // Fetch all students registered for the course
+//         $studentIds = DB::table('course_registrations')
+//                         ->where('course_id', $courseId)
+//                         ->pluck('user_id'); // Assuming 'user_id' in 'course_registrations' is the student ID
+
+//         // Prepare data for bulk insert
+//         $attendanceRecords = [];
+//         foreach ($studentIds as $studentId) {
+//             // Check if the record already exists
+//             $exists = DB::table('event_student')
+//                         ->where('event_id', $event->id)
+//                         ->where('student_id', $studentId)
+//                         ->exists();
+
+//             if (!$exists) {
+//                 $attendanceRecords[] = [
+//                     'event_id' => $event->id,
+//                     'student_id' => $studentId,
+//                     'attended' => null, // Default value
+//                     'created_at' => now(),
+//                     'updated_at' => now(),
+//                 ];
+//             }
+//         }
+
+//         // Insert only the records that don't exist
+//         if (!empty($attendanceRecords)) {
+//             DB::table('event_student')->insert($attendanceRecords);
+//         }
+//     }
+// }
+public function generateAttendanceRecordsForAllEvents()
+{
+    // Fetch all events that have a course_id and course_type
+    $events = Event::whereNotNull('course_id')
+                   ->whereNotNull('course_type') // Ensure that course_type is present
+                   ->get();
+
+    foreach ($events as $event) {
+        $courseId = $event->course_id;
+        $courseType = $event->course_type; // Fetch the course_type as an integer ID
+
+        // Fetch all students registered for the course
+        $studentIds = DB::table('course_registrations')
+                        ->where('course_id', $courseId)
+                        ->pluck('user_id'); // 'user_id' in 'course_registrations' is the student ID
+
+        // Prepare data for bulk insert
+        $attendanceRecords = [];
+        foreach ($studentIds as $studentId) {
+            // Check if the record already exists for the specific course type
+            $exists = DB::table('event_student')
+                        ->where('event_id', $event->id)
+                        ->where('student_id', $studentId)
+                        ->where('course_type', $courseType) // Compare using the integer ID
+                        ->exists();
+
+            if (!$exists) {
+                $attendanceRecords[] = [
+                    'event_id' => $event->id,
+                    'student_id' => $studentId,
+                    'course_type' => $courseType, // 'course_type' as integer (foreign key ID)
+                    'attended' => null, // Default value
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        // Insert only the records that don't exist
+        if (!empty($attendanceRecords)) {
+            DB::table('event_student')->insert($attendanceRecords);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+    public function generateAttendanceRecords($eventId)
+{
+    // Get the event to fetch the associated course_id
+    $event = Event::findOrFail($eventId);
+    $courseId = $event->course_id;
+
+    // Fetch all students registered for the course
+    $studentIds = DB::table('course_registrations')
+                    ->where('course_id', $courseId)
+                    ->pluck('user_id'); // Assuming 'user_id' in 'course_registrations' is the student ID
+
+    // Prepare data for bulk insert
+    $attendanceRecords = [];
+    foreach ($studentIds as $studentId) {
+        $attendanceRecords[] = [
+            'event_id' => $eventId,
+            'student_id' => $studentId,
+            'attended' => null, // Default value
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+    }
+
+    // Insert all attendance records into the event_student table
+    DB::table('event_student')->insert($attendanceRecords);
+}
+
+
+public function attendanceUpdate(Request $request, $eventid)
+{
+    $user = $request->user();
+
+    // Validate the incoming request
+    $data = $request->validate([
+        'attended' => 'nullable|boolean',
+    ]);
+
+    // Find the attendance record using event_id and student_id
+    $record = DB::table('event_student')
+                ->where('event_id', $eventid)
+                ->where('student_id', $user->id)
+                ->first();
+
+    // If the record exists, update it
+    if ($record) {
+        DB::table('event_student')
+            ->where('event_id', $eventid)
+            ->where('student_id', $user->id)
+            ->update([
+                'attended' => $data['attended'],
+                'updated_at' => now(),
+            ]);
+    }
+
+    return redirect()->back();
+}
+
+public function getAttendance(Request $request, $eventid)
+{
+    $user = $request->user();
+
+    // Find the attendance record using event_id and student_id
+    $attendance = DB::table('event_student')
+                    ->where('event_id', $eventid)
+                    ->where('student_id', $user->id)
+                    ->first();
+
+    // Check if the record exists and get the attendance status
+    $attended = $attendance ? $attendance->attended : false;
+
+    // Return the data using Inertia
+    return Inertia::render('Events/EventCalendar', [
+        'attendance' => $attended,
+    ]);
+}
+
+
+
+// public function viewAttendance($eventId, $studentId)
+// {
+//     $attendance = DB::table('event_student')
+//         ->where('event_id', $eventId)
+//         ->where('student_id', $studentId)
+//         ->first(['attended']);
+        
+//     return Inertia::render('Events/Attendance', [
+//     //return Inertia::render('Events/EventCalendar', [
+//         'attendance' => $attendance,
+//         'eventId' => $eventId,
+//         'studentId' => $studentId,
+//     ]);
+// }
+public function viewAttendance($courseType,$eventId, $studentId)
+
+{
+    $attendance = DB::table('event_student')
+        ->where('event_id', $eventId)
+        ->where('student_id', $studentId)
+        ->where('course_type',$courseType)
+        ->first(['attended','course_type' ]);
+        //dd($attendance);
+    return Inertia::render('Events/Attendance', [
+        'attendance' => $attendance,
+        'eventId' => $eventId,
+        'studentId' => $studentId,
+    ]);
+
+}
+
+
+
+
+// public function updateAttendance(Request $request, $eventId, $studentId)
+// {
+//     $data = $request->validate([
+//         'attended' => 'nullable|boolean',
+//     ]);
+
+//     DB::table('event_student')
+//         ->where('event_id', $eventId)
+//         ->where('student_id', $studentId)
+//         ->update(['attended' => $data['attended']]);
+
+//     return redirect()->back()->with('success', 'Attendance updated successfully.');
+// }
+
+
+public function updateAttendance(Request $request,$courseType, $eventId, $studentId)
+{
+    //dd('ok');
+    //error_log($eventId);
+    // Validate the request data
+    $data = $request->validate([
+        'attended' => 'nullable|boolean',
+        //'course_type' => 'required|integer|in:1,2,3', // Validate course_type as integer
+    ]);
+    //error_log($data['attended']);
+    //dd("ok");
+    //dd($data['attended']);
+    // Update the attendance record
+    DB::table('event_student')
+        ->where('event_id', $eventId)
+        ->where('student_id', $studentId)
+        ->where('course_type', $courseType) // Include course_type in the WHERE clause
+        ->update(['attended' => $data['attended']]);
+
+    return redirect()->back()->with('success', 'Attendance updated successfully.');
+}
+
+
+// public function showAttendancePage(Request $request)
+// {
+//     // Get the logged-in student
+//     //$studentId = Auth::id();
+//     $user=$request->user();
+//     $studentId = $user->id;
+//     // Fetch attendance records grouped by course and event
+//     $attendanceRecords = Attendance::where('student_id', $studentId)
+//         ->join('events', 'event_student.event_id', '=', 'events.id')
+//         ->join('courses', 'events.course_id', '=', 'courses.id')
+//         ->select(
+//             'courses.code as course_code',
+//             DB::raw('SUM(IF(event_student.attended = 1, 1, 0)) as total_attended'),
+//             DB::raw('COUNT(events.id) as total_events')
+//         )
+//         ->groupBy('courses.id', 'courses.code')
+//         ->get();
+
+//     return inertia('Events/AttendancePage', [
+//         'attendanceRecords' => $attendanceRecords,
+//     ]);
+// }
+// public function showAttendancePage()
+// {
+//     // Get the logged-in user's role and ID
+//     $userId = Auth::id();
+//     $roleId = Auth::user()->role_id;
+
+//     if ($roleId == 2) {
+//         // If the user is a student
+//         $attendanceRecords = DB::table('event_student')
+//             ->join('events', 'event_student.event_id', '=', 'events.id')
+//             ->join('courses', 'events.course_id', '=', 'courses.id')
+//             ->where('event_student.student_id', $userId)
+//             ->select(
+//                 'courses.code as course_code',
+//                 DB::raw('SUM(IF(event_student.attended = 1, 1, 0)) as total_attended'),
+//                 DB::raw('COUNT(events.id) as total_events')
+//             )
+//             ->groupBy('courses.id', 'courses.code')
+//             ->get();
+//     } elseif ($roleId == 3) {
+//         // If the user is a lecturer
+//         $attendanceRecords = DB::table('events')
+//             ->join('courses', 'events.course_id', '=', 'courses.id')
+//             ->where('events.lec_id', $userId)
+//             ->select(
+//                 'courses.code as course_code',
+//                 DB::raw('SUM(IF(events.Lec_attended = 1, 1, 0)) as total_attended'),
+//                 DB::raw('COUNT(events.id) as total_events')
+//             )
+//             ->groupBy('courses.id', 'courses.code')
+//             ->get();
+//     } else {
+//         // Handle other roles or redirect
+//         return redirect()->back()->withErrors('Unauthorized access');
+//     }
+
+//     return inertia('Events/AttendancePage', [
+//         'attendanceRecords' => $attendanceRecords,
+//         'roleId' => $roleId,
+//     ]);
+// }
+
+// public function showAttendancePage()
+// {
+//     // Get the logged-in user's role and ID
+//     $userId = Auth::id();
+//     $roleId = Auth::user()->role_id;
+
+//     if ($roleId == 2) {
+//         // If the user is a student
+//         $attendanceRecords = DB::table('event_student')
+//             ->join('events', 'event_student.event_id', '=', 'events.id')
+//             ->join('courses', 'events.course_id', '=', 'courses.id')
+//             ->join('time_tables', function($join) {
+//                 $join->on('events.course_id', '=', 'time_tables.course_id')
+//                      ->on('events.semester_id', '=', 'time_tables.semester_id');
+//             })
+//             ->where('event_student.student_id', $userId)
+//             ->select(
+//                 'courses.code as course_code',
+//                 'time_tables.type as course_type',
+//                 DB::raw('SUM(IF(event_student.attended = 1, 1, 0)) as total_attended'),
+//                 DB::raw('COUNT(events.id) as total_events')
+//             )
+//             ->groupBy('courses.id', 'courses.code', 'time_tables.type')
+//             ->get();
+//     } elseif ($roleId == 3) {
+//         // If the user is a lecturer
+//         $attendanceRecords = DB::table('events')
+//             ->join('courses', 'events.course_id', '=', 'courses.id')
+//             ->join('time_tables', function($join) {
+//                 $join->on('events.course_id', '=', 'time_tables.course_id')
+//                      ->on('events.semester_id', '=', 'time_tables.semester_id');
+//             })
+//             ->where('events.lec_id', $userId)
+//             ->select(
+//                 'courses.code as course_code',
+//                 'time_tables.type as course_type',
+//                 DB::raw('SUM(IF(events.Lec_attended = 1, 1, 0)) as total_attended'),
+//                 DB::raw('COUNT(events.id) as total_events')
+//             )
+//             ->groupBy('courses.id', 'courses.code', 'time_tables.type')
+//             ->get();
+//     } else {
+//         // Handle other roles or redirect
+//         return redirect()->back()->withErrors('Unauthorized access');
+//     }
+
+//     return inertia('Events/AttendancePage', [
+//         'attendanceRecords' => $attendanceRecords,
+//         'roleId' => $roleId,
+//     ]);
+// }
+
+public function showAttendancePage()
+{
+    $userId = Auth::id();
+    $roleId = Auth::user()->role_id;
+
+    if ($roleId == 2) {
+        // If the user is a student
+        $attendanceRecords = DB::table('event_student')
+            ->join('events', 'event_student.event_id', '=', 'events.id')
+            ->join('courses', 'events.course_id', '=', 'courses.id')
+            ->where('event_student.student_id', $userId)
+            ->select(
+                'courses.code as course_code',
+                'event_student.course_type as course_type',
+                DB::raw('SUM(CASE WHEN event_student.attended = 1 THEN 1 ELSE 0 END) as total_attended'),
+                DB::raw('COUNT(event_student.id) as total_events') // Count records in event_student to get total events per course_type
+            )
+            ->groupBy('courses.code', 'event_student.course_type')
+            //->toSql();
+            ->get();
+            //dd($attendanceRecords);
+    } elseif ($roleId == 3) {
+        // If the user is a lecturer
+        $attendanceRecords = DB::table('event_student')
+            ->join('events', 'event_student.event_id', '=', 'events.id')
+            ->join('courses', 'events.course_id', '=', 'courses.id')
+            ->where('events.lec_id', $userId)
+            ->select(
+                'courses.code as course_code',
+                'event_student.course_type as course_type',
+                DB::raw('SUM(CASE WHEN events.Lec_attended = 1 THEN 1 ELSE 0 END) as total_attended'),
+                DB::raw('COUNT(event_student.id) as total_events') // Count records in event_student to get total events per course_type
+            )
+            ->groupBy('courses.code', 'event_student.course_type')
+            ->get();
+    } else {
+        return redirect()->back()->withErrors('Unauthorized access');
+    }
+
+    return inertia('Events/AttendancePage', [
+        'attendanceRecords' => $attendanceRecords,
+        'roleId' => $roleId,
+    ]);
+}
 
 
 

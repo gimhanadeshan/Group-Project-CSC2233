@@ -18,8 +18,6 @@ class Semester extends Model
         'registration_start_date',
         'registration_end_date',
         'description',
-        'course_capacity',
-        'enrollment_count',
         'status',
         'degree_program_id', // Add this line
     ];
@@ -38,5 +36,10 @@ class Semester extends Model
     public function degreeProgram()
     {
         return $this->belongsTo(DegreeProgram::class, 'degree_program_id','id');
+    }
+
+    public function courseRegistrations()
+    {
+        return $this->hasMany(CourseRegistration::class, 'semester_id');
     }
 }

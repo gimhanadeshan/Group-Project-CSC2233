@@ -85,22 +85,6 @@ const Show = ({ auth, semester }) => {
                                 </div>
                                 <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
-                                        Course Capacity
-                                    </dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.course_capacity}
-                                    </dd>
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <dt className="text-sm font-medium text-gray-500">
-                                        Enrollment Count
-                                    </dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.enrollment_count}
-                                    </dd>
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <dt className="text-sm font-medium text-gray-500">
                                         Status
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900">

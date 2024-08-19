@@ -32,8 +32,10 @@ return new class extends Migration
             
             $table->unsignedBigInteger('lec_id')->nullable();// Add semester_id column
             $table->foreign('lec_id')->references('lecturer')->on('time_tables')->onDelete('cascade');
+
+            $table->unsignedBigInteger('course_type')->nullable(); // Add course_type_id column
+            $table->foreign('course_type')->references('id')->on('course_types')->onDelete('set null'); // Foreign key constraint
             
-            $table->boolean('Stu_attended')->nullable();
             $table->boolean('Lec_attended')->nullable();
 
 

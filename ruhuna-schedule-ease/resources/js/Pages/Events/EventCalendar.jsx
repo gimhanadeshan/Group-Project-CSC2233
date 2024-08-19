@@ -48,6 +48,8 @@ const EventCalendar = ({ allevents, auth }) => {
         location: "",
         start: "",
         end: "",
+        course_type:"",
+        Lec_attended:false,
         daily: false,
         weekly: false,
         monthly: false,
@@ -68,10 +70,13 @@ const EventCalendar = ({ allevents, auth }) => {
         if (event) {
             setCurrentEvent(event);
             setData({
+                id:event.id,
                 event_title: event.event_title,
                 location: event.location,
                 start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
                 end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
+                Lec_attended:event.Lec_attended,
+                course_type:event.course_type,
                 daily: event.daily,
                 weekly: event.weekly,
                 monthly: event.monthly,
@@ -86,21 +91,6 @@ const EventCalendar = ({ allevents, auth }) => {
     const closeModal = () => {
         setModalIsOpen(false);
     };
-
-    useEffect(() => {
-        if (allevents) {
-            //console.log('Events Fetched!')
-            const parsedEvents = allevents.map((event) => ({
-                ...event,
-                start: new Date(event.start),
-                end: new Date(event.end),
-            }));
-
-            setEvents(parsedEvents);
-        } else {
-            // console.log('No Allevents')
-        }
-    }, [allevents]);
 
     const handleSelectSlot = ({ start, end }) => {
         setData({
@@ -163,34 +153,26 @@ const EventCalendar = ({ allevents, auth }) => {
     };
 
     const eventPropGetter = (event) => {
-        let backgroundColor;
-        // Get the role ID from the auth object
         const roleID = auth.user.role_id;
-        
-        // Determine the role value based on the role ID
-        const role = roleID === 2 ? event.Stu_attended : event.Lec_attended;
-    
-        // Determine the background color based on the role and semester_id
-        if(roleID==1){
+        let backgroundColor;
+
+        if(event.semester_id===null){
             backgroundColor = '#800080'; // Purple
         }
-    
-        else if (role) {
-            // If the role is true, set color to green
-            backgroundColor = '#00ff00'; // Green
-        } else if (event.semester_id === null) {
-            // If semester_id is NULL, set color to purple
-            backgroundColor = '#800080'; // Purple
-        } else {
-            // Default color
+        else if(roleID==3 && event.Lec_attended){
+            backgroundColor = '#0e6e28'; // Green
+        }
+        else if(roleID==2 ){
+            //backgroundColor = '#00ff00'; // Green
+            backgroundColor = '#007bff'; // Blue
+        }
+        else{
             backgroundColor = '#007bff'; // Blue
         }
     
         return { style: { backgroundColor } };
     };
     
-    
-
     const CustomEvent = ({ event }) => {
         const startTime = new Date(event.start).toLocaleTimeString('en-US', {
             hour: '2-digit',
@@ -205,7 +187,7 @@ const EventCalendar = ({ allevents, auth }) => {
         });
     
         return (
-            <Link href={`/events/view/${event.id}`}>
+           
                 <span>
                     <strong>{event.event_title}</strong>
                     <br />
@@ -214,14 +196,14 @@ const EventCalendar = ({ allevents, auth }) => {
                     <br />
                     <em>{startTime} - {endTime}</em>
                 </span>
-            </Link>
+           
         );
     };
     
 
 
     const s = 1;
-
+    
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
@@ -240,7 +222,7 @@ const EventCalendar = ({ allevents, auth }) => {
                     endAccessor="end"
                     style={{ margin: '50px' }}
                     selectable
-                    //onSelectEvent={openModal}
+                    onSelectEvent={openModal}
                     onSelectSlot={handleSelectSlot}
                     components={{
                         event: CustomEvent,
@@ -395,7 +377,36 @@ const EventCalendar = ({ allevents, auth }) => {
                             </div>
                             }
                             {/* Attentedance Checkboxes */}
+                            {auth.user.role.role_type==='student' &&
+                            <div className="mb-4">
+                                   <Link href={`/attendance/${data.course_type}/${data.id}/${auth.user.id}`} className="text-blue-500">View Attendance</Link>
+           
+                            
+                            </div>
+                        
+                        }
+                         {auth.user.role.role_type==='lecturer' &&
+                            <div>
+                                <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
+                                    <input
+                                    type="checkbox"
+                                    id="attended"
+                                    name="attended"
+                                    checked={data.Lec_attended} // Convert null to false for the checkbox
+                                    onChange={(e) =>
+                    
+                                        setData((prevData) => ({
+                                            ...prevData,
+                                            Lec_attended: e.target.checked || null, // If unchecked, set to null
+                                        }))
+                    
+                                }
+                                className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            
+                            </div>
 
+                            }
 
 
                             <div className="flex justify-end">

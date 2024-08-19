@@ -30,34 +30,34 @@ export default function UpcomingEvents({ allevents, now }) {
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                         Upcoming Events
                     </h3>
-                    <div className="mb-4 flex space-x-4">
+                    <div className="mb-4 flex flex-wrap gap-2">
                         <button
                             onClick={() => setFilter("all")}
-                            className={`px-4 py-2 rounded-lg text-white ${
+                            className={`px-3 py-1.5 rounded-lg text-white ${
                                 filter === "all"
                                     ? "bg-blue-500"
                                     : "bg-blue-300 dark:bg-blue-700"
-                            }`}
+                            } text-xs sm:text-sm`}
                         >
                             All Events
                         </button>
                         <button
                             onClick={() => setFilter("nextWeek")}
-                            className={`px-4 py-2 rounded-lg text-white ${
+                            className={`px-3 py-1.5 rounded-lg text-white ${
                                 filter === "nextWeek"
                                     ? "bg-gray-500"
                                     : "bg-gray-300 dark:bg-gray-700"
-                            }`}
+                            } text-xs sm:text-sm`}
                         >
                             Next Week
                         </button>
                         <button
                             onClick={() => setFilter("tomorrow")}
-                            className={`px-4 py-2 rounded-lg text-white ${
+                            className={`px-3 py-1.5 rounded-lg text-white ${
                                 filter === "tomorrow"
                                     ? "bg-yellow-500"
                                     : "bg-yellow-300 dark:bg-yellow-700"
-                            }`}
+                            } text-xs sm:text-sm`}
                         >
                             Tomorrow
                         </button>

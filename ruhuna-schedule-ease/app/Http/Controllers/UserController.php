@@ -118,7 +118,7 @@ class UserController extends Controller
 
     public function export(Request $request)
 {
-    $this->authorize('export_user', $request->user());
+    $this->authorize('export_users', $request->user());
     $query = User::query();
 
     if ($request->has('searchQuery')) {

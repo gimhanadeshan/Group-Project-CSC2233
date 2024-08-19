@@ -6,6 +6,7 @@ export default function Edit({ auth }) {
     const { role, permissions, rolePermissions } = usePage().props;
     const { data, setData, put, processing, errors } = useForm({
         name: role.name,
+        role_type: role.role_type || '', // Initialize role_type
         permissions: rolePermissions,
     });
 
@@ -58,6 +59,35 @@ export default function Edit({ auth }) {
                             </div>
                         )}
                     </div>
+
+                    {/* Role Type Selection */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="role_type"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Role Type
+                        </label>
+                        <select
+                            id="role_type"
+                            name="role_type"
+                            value={data.role_type}
+                            onChange={(e) => setData("role_type", e.target.value)}
+                            required
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option value="">Select a role type</option>
+                            <option value="administrator">Administrator</option>
+                            <option value="lecturer">Lecturer</option>
+                            <option value="student">Student</option>
+                        </select>
+                        {errors.role_type && (
+                            <div className="text-red-600 text-sm mt-2">
+                                {errors.role_type}
+                            </div>
+                        )}
+                    </div>
+
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">
                             Permissions

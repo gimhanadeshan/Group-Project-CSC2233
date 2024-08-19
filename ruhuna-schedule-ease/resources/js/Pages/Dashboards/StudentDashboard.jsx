@@ -101,7 +101,7 @@ export default function Dashboard({
             {currentSemester ? (
                 <div className="p-8 m-6  dark:bg-gray-900 dark:text-gray-200">
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        Welcome Your Semester !
+                        Welcome, {auth.user.name}!
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -192,11 +192,19 @@ export default function Dashboard({
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
                     Events
                 </h3>
-                {/* Display daily events */}
-                <DailyEvents allevents={allevents} now={now} />
 
-                {/* Display upcoming events with filter buttons */}
-                <UpcomingEvents allevents={allevents} now={now} />
+                {allevents.length > 0 ? (
+                    <>
+                        {/* Display daily events */}
+                        <DailyEvents allevents={allevents} now={now} />
+                        {/* Display upcoming events with filter buttons */}
+                        <UpcomingEvents allevents={allevents} now={now} />
+                    </>
+                ) : (
+                    <div className="text-gray-500 dark:text-gray-400">
+                        No events available.
+                    </div>
+                )}
             </div>
 
             <div className="p-8 m-6 dark:bg-gray-900 dark:text-gray-200">
@@ -204,7 +212,13 @@ export default function Dashboard({
                     Weekly Timetable
                 </h3>
                 {/* Weekly Timetable */}
-                <WeeklyTimetable allevents={allevents} />
+                {allevents.length > 0 ? (
+                    <WeeklyTimetable allevents={allevents} />
+                ) : (
+                    <div className="text-gray-500 dark:text-gray-400">
+                        No timetable available.
+                    </div>
+                )}
                 {/* <EventCalendar eventlist={allevents} defaultView="week" height="800px" views={['week']} /> */}
             </div>
         </AuthenticatedLayout>
