@@ -18,8 +18,6 @@ class Semester extends Model
         'registration_start_date',
         'registration_end_date',
         'description',
-        'course_capacity',
-        'enrollment_count',
         'status',
         'degree_program_id', // Add this line
     ];

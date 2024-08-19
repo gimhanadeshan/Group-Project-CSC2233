@@ -34,7 +34,7 @@ class EventController extends Controller
 
 
     //For Students 
-    if ($semesterId || $request->user()->role_id==2) {
+    if ($semesterId || $request->user()->role->role_type==='student') {
         // Fetch events that match the user's semester_id
         $allevents = Event::where('semester_id', $semesterId)//->get();
                       ->orWhereNull('semester_id')
@@ -44,7 +44,7 @@ class EventController extends Controller
        
     //For Lecturer     
     }else{
-        if($request->user()->role_id==3){
+        if($request->user()->role->role_type==='lecturer'){
 
             $allevents = Event::where('lec_id',$UId)//->get();
                                 ->orWhereNull('semester_id')

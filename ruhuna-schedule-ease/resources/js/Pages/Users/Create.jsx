@@ -40,7 +40,11 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
 
         // Check if selected role requires academic info
         if (name === "role_id") {
-            if (value === "2") {
+            // Find the role type based on the selected role_id
+            const selectedRole = roles.find(
+                (role) => role.id === parseInt(value)
+            );
+            if (selectedRole && selectedRole.role_type === "student") {
                 setRoleRequiresAcademicInfo(true); // Set to true for Student role
             } else {
                 setRoleRequiresAcademicInfo(false); // Set to false for other roles
