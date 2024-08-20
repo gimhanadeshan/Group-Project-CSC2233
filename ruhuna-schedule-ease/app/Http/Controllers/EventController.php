@@ -28,6 +28,7 @@ class EventController extends Controller
     // Fetch the semester_id from the course_registrations table for the logged-in user
     $semesterId = CourseRegistration::
                     where('user_id', $request->user()->id)
+                    ->where('status', 'confirmed')
                     ->orderBy('created_at', 'desc') // Adjust ordering as necessary
                     ->value('semester_id');
     $UId=$request->user()->id;
@@ -432,6 +433,7 @@ public function generateAttendanceRecordsForAllEvents()
         // Fetch all students registered for the course
         $studentIds = DB::table('course_registrations')
                         ->where('course_id', $courseId)
+                        ->where('status', 'confirmed')
                         ->pluck('user_id'); // 'user_id' in 'course_registrations' is the student ID
 
         // Prepare data for bulk insert
