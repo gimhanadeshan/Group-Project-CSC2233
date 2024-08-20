@@ -37,7 +37,7 @@ class TimeTableController extends Controller
         })
         ->orderBy('id')
         ->get();
-        
+
 
     $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
         ->whereNotIn('id', function($query) {
@@ -423,14 +423,14 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     public function notify($semester)
     {
             $level = Semester::where('id', $semester)->pluck('level')->first();
-            $semester = Semester::where('id', $semester)->pluck('semester')->first();
+            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
             $year = Semester::where('id', $semester)->pluck('academic_year')->first();
             $users = User::where('academic_year',$year)->get();
 
             //each user is notified
         try{
             foreach($users as $user){
-                $user->notify(new TimeTableInitialized(['level'=>$level,'semester'=>$semester,'year'=>$year]));
+                $user->notify(new TimeTableInitialized($level,$semester_number,$year,$user->name));
             }
         }catch(Exception){
 

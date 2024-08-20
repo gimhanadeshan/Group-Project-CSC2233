@@ -44,10 +44,11 @@ class CourseRegistrationOpened extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('Hello'.$this->name)
+                    ->greeting('Dear  '.$this->name)
                     ->line('course registration is opened for Level'.$this->level.' semester '.$this->semester.' year '.$this->year .' from '.$this->start.' to '.$this->end)
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->action('Check Out', url('/course_registration'))
+                    ->salutation('Thank you for using Academic Schedule Ease!');
+
     }
 
     /**
