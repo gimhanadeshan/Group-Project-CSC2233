@@ -75,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
 
-    Route::get('events', [EventController::class, 'index'])->name('events');
+    Route::get('/events', [EventController::class, 'index'])->name('events');
 
     Route::put('/events', [EventController::class, 'store'])->name('event.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');

@@ -183,28 +183,9 @@ const canDelete = auth.permissions.includes("delete_event");
                         }
                         
                         <br></br>
-                        <select name='semID' onChange={(e) => setSem(e.target.value)}>
-                             <option value=''>SELECT SEMESTER</option>
-                             {semesters.map((semester)=>(
+                        
 
-                                <option key={semester.id} value={semester.id}>Level {semester.level} - Semester {semester.semester} - {semester.academic_year} </option>
-                             ))}
-                            </select>
-
-                        <Link href={route("generateEvents",semID)}>
-                        <button
-                            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Generate TimeTable
-                        </button>
-                        </Link><br/>
-                        <Link href={route("events.generateAllAttendanceRecords")}>
-                        <button
-                            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Generate Attendance Records
-                        </button>
-                        </Link>
+                        
                        
                     </div>
                     <div className="px-4 py-5 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">

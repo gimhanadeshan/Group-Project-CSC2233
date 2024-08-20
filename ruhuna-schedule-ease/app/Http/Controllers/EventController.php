@@ -74,11 +74,9 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
     $user = $request->user();
     $semester = Semester::findOrFail($semesterId);
     $timeTables = TimeTable::where('semester_id', $semesterId)->get();
-    //$timeTables = TimeTable::with('course', 'hall')->get();
 
     foreach ($timeTables as $slot) {
-        //dd($slot);
-        //$slots = TimeTable::with('course', 'hall')->get(); // Ensure 'course' is included in the eager loading
+        
 
         // Get the day of the week for the timetable slot
         $dayOfWeek = Carbon::parse($semester->start_date)->subDay()->next($slot->day_of_week);
@@ -92,8 +90,6 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
 
             $eventTitle= $slot->course->code . ' (' . $slot->type . ')';
 
-            //$courseType=0;
-            //dd($slot->type);
             switch ($slot->type) {
                 case 'Theory':
                     $courseType = 1;
@@ -113,8 +109,6 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
                     break;
             }
             
-            //dd($courseType);
-
             // Check if an event already exists for this time slot and day
             $existingEvent = Event::where('event_title',$eventTitle )
                 ->where('location', $slot->hall->name)
@@ -175,47 +169,10 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         return redirect()->back()->with('success', 'Event created successfully');
     }
 
-    // public function update(Request $request, $id)
-    // {
-    //     $event = Event::findOrFail($id);
-    //     $user = $request->user();
-    //     $data = $request->validate([
-    //     'event_title' => 'required',
-    //     'location' => 'required',
-    //     'start' => 'required|date',
-    //     'end' => 'required|date',
-    //     'Lec_attended' => 'nullable|boolean',
-    //     'daily' => 'sometimes|boolean',
-    //     'weekly' => 'sometimes|boolean',
-    //     'monthly' => 'sometimes|boolean',
-    //     'user_id' => 'nullable|sometimes|exists:users,id',
-    //     'course_id' => 'nullable|sometimes|exists:courses,id',
-    //     'semester_id' => 'nullable|sometimes|exists:semesters,id',
-    //     'lec_id' => 'nullable|sometimes|exists:users,id',
-    //     'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
-    //     ]);
-
-    //     // Delete existing event if recurrence options are updated
-    //     $event->delete();
-    //     $data['user_id'] = $user->id;
-    //     // Handle recurrence update
-    //     if ($request->daily) {
-    //         $this->createRecurringEvents($data, 'day');
-    //     } elseif ($request->weekly) {
-    //         $this->createRecurringEvents($data, 'week');
-    //     } elseif ($request->monthly) {
-    //         $this->createRecurringEvents($data, 'month');
-    //     } else {
-    //         Event::create($data);
-    //     }
-
-    //     return redirect()->back()->with('success', 'Event updated successfully');
-    // }
-
+   
     public function update(Request $request, $id)
 {
-    //dd("Update function");
-    // Validate the request data
+    
     $validatedData = $request->validate([
         'event_title' => 'required',
         'location' => 'required',
@@ -233,7 +190,7 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         //'course_type' => 'nullable|sometimes|exists:course_types,type', // Validate course_type
 
     ]);
-    //dd("Update function");
+    
     // Find the event by its ID
     $event = Event::findOrFail($id);
     $user = $request->user();
@@ -619,8 +576,8 @@ public function updateAttendance(Request $request,$courseType, $eventId, $studen
         ->where('course_type', $courseType) // Include course_type in the WHERE clause
         ->update(['attended' => $data['attended']]);
 
-    return redirect()->back()->with('success', 'Attendance updated successfully.');
-}
+        return redirect('dashboard')->with('success', 'Attendance updated successfully.');
+    }
 
 
 // public function showAttendancePage(Request $request)
@@ -760,7 +717,7 @@ public function showAttendancePage()
             //->toSql();
             ->get();
             //dd($attendanceRecords);
-    } elseif ($roleId == 3) {
+    } else if ($roleId == 3) {
         // If the user is a lecturer
         $attendanceRecords = DB::table('event_student')
             ->join('events', 'event_student.event_id', '=', 'events.id')
@@ -784,6 +741,22 @@ public function showAttendancePage()
     ]);
 }
 
+
+public function showCalendarAttendance($courseType,$eventId, $studentId)
+{
+    $attendance = DB::table('event_student')
+        ->where('event_id', $eventId)
+        ->where('student_id', $studentId)
+        ->where('course_type',$courseType)
+        ->first(['attended','course_type' ]);
+        //dd($attendance);
+    return Inertia::render('Events/EventCalendar', [
+        'attendance' => $attendance,
+        'eventId' => $eventId,
+        'studentId' => $studentId,
+    ]);
+
+}
 
 
 

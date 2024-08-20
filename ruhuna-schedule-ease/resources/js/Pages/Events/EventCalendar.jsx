@@ -202,7 +202,7 @@ const EventCalendar = ({ allevents, auth }) => {
     
 
 
-    const s = 1;
+    const show = 1;
     
 
     return (
@@ -231,7 +231,7 @@ const EventCalendar = ({ allevents, auth }) => {
                 />
             </div>
 
-            {s &&
+            {show &&
                 <Modal
                     isOpen={modalIsOpen}
                     onRequestClose={closeModal}
@@ -379,37 +379,38 @@ const EventCalendar = ({ allevents, auth }) => {
                             {/* Attentedance Checkboxes */}
                             {auth.user.role.role_type==='student' &&
                             <div className="mb-4">
-                                   <Link href={`/attendance/${data.course_type}/${data.id}/${auth.user.id}`} className="text-blue-500">View Attendance</Link>
-           
-                            
+                                   <Link href={`/attendance/${data.course_type}/${data.id}/${auth.user.id}`} className="text-blue-500">Update Attendance</Link>
+                                     
                             </div>
                         
                         }
                          {auth.user.role.role_type==='lecturer' &&
-                            <div>
-                                <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
-                                    <input
+                            <div className="mb-1">
+                            <label htmlFor="attended" className="block text-lg font-medium text-black dark:text-black-300 mb-1 text-center">
+                                Mark as Completed
+                            </label>
+                            <div className="flex items-center justify-center">
+                                <input
                                     type="checkbox"
                                     id="attended"
                                     name="attended"
-                                    checked={data.Lec_attended} // Convert null to false for the checkbox
+                                    checked={data.Lec_attended || false} // Convert null to false for the checkbox
                                     onChange={(e) =>
-                    
                                         setData((prevData) => ({
                                             ...prevData,
                                             Lec_attended: e.target.checked || null, // If unchecked, set to null
                                         }))
-                    
-                                }
-                                className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    }
+                                    className="form-checkbox h-6 w-6 text-indigo-800 dark:text-indigo-800 rounded focus:ring-indigo-800 focus:border-indigo-800 transition duration-150 ease-in-out"
                                 />
-                            
                             </div>
+                        </div>
+                        
 
                             }
 
 
-                            <div className="flex justify-end">
+                            <div className="flex justify-center mt-2">
                                 {currentEvent && canDelete && (
                                     <button
                                         type="button"

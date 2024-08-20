@@ -6,7 +6,6 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
     const roleId = auth.user.role_id;
     const isStudent = roleId === 2;
 
-    console.log(attendanceRecords[2]);
     const getCourseTypeName = (type) => {
         switch (type) {
             case 1:
@@ -25,19 +24,29 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
             <Head title="Attendance" />
             <AuthenticatedLayout
                 user={auth.user}
-                header={<h2 className="font-semibold text-xl text-black leading-tight">Attendance</h2>}
+                // header={
+                //     <h2 className="font-semibold text-3xl text-gray-800 dark:text-gray-800 leading-tight text-center">
+                //         Attendance
+                //     </h2>
+                // }
                 permissions={auth.permissions}
-            >  
+            >
                 <div className="container mx-auto p-4">
-                    <h1 className="text-2xl font-bold text-clack mb-4">
-                        {isStudent ? 'Student Attendance Records' : 'Lecturer Attendance Records'}
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-800 mb-6 text-center">
+                        {isStudent ? 'Student Attendance Records' : 'Lecturer Progress'}
                     </h1>
-                    <table className="min-w-full bg-gray-800 border border-gray-700 rounded-lg">
+                    <table className="min-w-28 mx-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
                         <thead>
-                            <tr className="text-white">
-                                <th className="py-2 px-4 border-b border-gray-700">Course Code</th>
-                                <th className="py-2 px-4 border-b border-gray-700">Course Type</th>
-                                <th className="py-2 px-4 border-b border-gray-700">Total Attended / Total Events</th>
+                            <tr className="text-gray-700 dark:text-gray-300">
+                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
+                                    Course Code
+                                </th>
+                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
+                                    Course Type
+                                </th>
+                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
+                                    Total Attended / Total Events
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -45,15 +54,19 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
                                 const percentage = (record.total_attended / record.total_events) * 100;
 
                                 return (
-                                    <tr key={index} className="text-gray-300">
-                                        <td className="py-2 px-4 border-b border-gray-700">{record.course_code}</td>
-                                        <td className="py-2 px-4 border-b border-gray-700">{getCourseTypeName(record.course_type)}</td>
-                                        <td className="py-2 px-4 border-b border-gray-700">
+                                    <tr key={index} className="text-gray-800 dark:text-gray-300">
+                                        <td className="py-3 px-4 border-b border-gray-300 dark:border-gray-700">
+                                            {record.course_code}
+                                        </td>
+                                        <td className="py-3 px-4 border-b border-gray-300 dark:border-gray-700">
+                                            {getCourseTypeName(record.course_type)}
+                                        </td>
+                                        <td className="py-3 px-4 border-b border-gray-300 dark:border-gray-700">
                                             <div className="flex items-center">
                                                 <span className="mr-2">
                                                     {record.total_attended} / {record.total_events}
                                                 </span>
-                                                <div className="w-full bg-gray-700 rounded-full h-2">
+                                                <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2">
                                                     <div
                                                         className="bg-green-500 h-2 rounded-full"
                                                         style={{ width: `${percentage}%` }}
