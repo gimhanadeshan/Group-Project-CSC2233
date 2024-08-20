@@ -49,6 +49,7 @@ const EventCalendar = ({ allevents, auth }) => {
         start: "",
         end: "",
         course_type:"",
+        
         Lec_attended:false,
         daily: false,
         weekly: false,
