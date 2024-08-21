@@ -219,12 +219,14 @@ const canDelete = auth.permissions.includes("delete_event");
                         />
                     </div>
                     <div className="px-4 py-5 sm:px-6 flex items-center space-x-4">
-                        <input
+                    {canEdit &&  <> <input
                             type="checkbox"
                             checked={selectAll}
                             onChange={handleSelectAll}
                             className="mr-2"
                         />
+                        
+                       
                         <span>Select All</span>
                         <button
                             onClick={handleDeleteSelected}
@@ -232,6 +234,7 @@ const canDelete = auth.permissions.includes("delete_event");
                         >
                             Delete All Selected
                         </button>
+                        </>}
                     </div>
                     <div className="flex border border-gray-300 rounded-md">
                         <div className="w-1/3 p-4 border-r border-gray-300">
@@ -241,6 +244,7 @@ const canDelete = auth.permissions.includes("delete_event");
                                     className="flex items-center cursor-pointer hover:bg-gray-200 p-2"
                                     onClick={() => handleEventClick(event)}
                                 >
+                                    {canEdit &&
                                     <input
                                         type="checkbox"
                                         checked={selectedEvents.includes(
@@ -250,7 +254,7 @@ const canDelete = auth.permissions.includes("delete_event");
                                             handleSelectEvent(event.id)
                                         }
                                         className="mr-2"
-                                    />
+                                    />}
                                     {event.event_title}
                                 </div>
                             ))}
@@ -343,6 +347,7 @@ const canDelete = auth.permissions.includes("delete_event");
                                         )}
                                     </div>
                                     <div className="mt-4 flex space-x-4">
+                                        {canEdit &&
                                         <button
                                             type="submit"
                                             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -350,7 +355,7 @@ const canDelete = auth.permissions.includes("delete_event");
                                             {isCreating
                                                 ? "Create Event"
                                                 : "Update Event"}
-                                        </button>
+                                        </button>}
                                         {!isCreating && (
                                             <Link
                                                 href={route(
@@ -360,7 +365,7 @@ const canDelete = auth.permissions.includes("delete_event");
                                                 method="delete"
                                                 as="button"
                                                 className="ml-4 text-red-600 hover:text-red-900"
-                                            >
+                                            >{canEdit && 
                                                 <button
                                                     type="button"
                                                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -368,6 +373,7 @@ const canDelete = auth.permissions.includes("delete_event");
                                                 >
                                                     Delete
                                                 </button>
+                                            }
                                             </Link>
                                         )}
                                     </div>

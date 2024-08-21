@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { Head } from '@inertiajs/react';
+import { Head,Link } from '@inertiajs/react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 const AttendancePage = ({ auth, eventId, studentId, attendance }) => {
@@ -76,6 +76,12 @@ const AttendancePage = ({ auth, eventId, studentId, attendance }) => {
                             Update Attendance
                         </button>
                     </form>
+                    <Link
+                    href={route("events.attendance")}
+                    className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Back to Attendance
+                </Link>
                 </div>
             </AuthenticatedLayout>
         </>

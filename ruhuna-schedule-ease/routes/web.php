@@ -59,8 +59,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('timetables/modify/add', [TimeTableController::class, 'storeSingle'])->name('timetables.storeSingle');
     Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::resource('timetables', TimeTableController::class);
-    Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
+   // 
     Route::resource('courses', CourseController::class);
+    Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
     Route::resource('course-registrations', CourseRegistrationController::class);

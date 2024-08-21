@@ -149,12 +149,26 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
             'location' => 'required',
             'start' => 'required|date',
             'end' => 'required|date',
-            
+            'Lec_attended' => 'nullable|boolean',
             'daily' => 'sometimes|boolean',
             'weekly' => 'sometimes|boolean',
             'monthly' => 'sometimes|boolean',
+            'user_id' => 'nullable|sometimes|exists:users,id',
+            'course_id' => 'nullable|sometimes|exists:courses,id',
+            'semester_id' => 'nullable|sometimes|exists:semesters,id',
+            'lec_id' => 'nullable|sometimes|exists:users,id',
+            'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
         ]);
-        $data['user_id'] = $user->id;
+        //$data['user_id'] = $user->id;
+
+        $updateData = $validatedData;
+        $updateData['user_id'] = $user->id;
+
+        // Prevent fields from being set to NULL if not present in the request
+        $updateData['course_id'] = $request->has('course_id') ? $validatedData['course_id'] : $event->course_id;
+        $updateData['semester_id'] = $request->has('semester_id') ? $validatedData['semester_id'] : $event->semester_id;
+        $updateData['lec_id'] = $request->has('lec_id') ? $validatedData['lec_id'] : $event->lec_id;
+        $updateData['hall_id'] = $request->has('hall_id') ? $validatedData['hall_id'] : $event->hall_id;
 
         // Determine the number of events to create based on recurrence
         if ($request->daily) {
@@ -173,7 +187,11 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
    
     public function update(Request $request, $id)
 {
+    //error_log("1");
+    //error_log(print_r($request->all(), true));
+
     
+//try {
     $validatedData = $request->validate([
         'event_title' => 'required',
         'location' => 'required',
@@ -188,10 +206,18 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
         'semester_id' => 'nullable|sometimes|exists:semesters,id',
         'lec_id' => 'nullable|sometimes|exists:users,id',
         'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
-        //'course_type' => 'nullable|sometimes|exists:course_types,type', // Validate course_type
-
+        'course_type' => 'nullable|sometimes|exists:course_types,id', // Validate course_type
     ]);
-    
+//     error_log("2");
+// } catch (\Illuminate\Validation\ValidationException $e) {
+//     // Log the validation errors
+//     error_log("Validation failed");
+//     error_log(print_r($e->errors(), true));
+//     // Optionally rethrow the exception to let Laravel handle it
+//     throw $e;
+// }
+
+    //("2");
     // Find the event by its ID
     $event = Event::findOrFail($id);
     $user = $request->user();
@@ -205,7 +231,7 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
     $updateData['semester_id'] = $request->has('semester_id') ? $validatedData['semester_id'] : $event->semester_id;
     $updateData['lec_id'] = $request->has('lec_id') ? $validatedData['lec_id'] : $event->lec_id;
     $updateData['hall_id'] = $request->has('hall_id') ? $validatedData['hall_id'] : $event->hall_id;
-    //$updateData['course_type'] = $request->has('course_type') ? $validatedData['course_type'] : $event->course_type;
+    $updateData['course_type'] = $request->has('course_type') ? $validatedData['course_type'] : $event->course_type;
 
 
     // Delete existing event if recurrence options are updated
@@ -505,7 +531,8 @@ public function updateAttendance(Request $request,$courseType, $eventId, $studen
         ->where('course_type', $courseType) // Include course_type in the WHERE clause
         ->update(['attended' => $data['attended']]);
 
-        return redirect('dashboard')->with('success', 'Attendance updated successfully.');
+        return redirect()->route('events.attendance')->with('success', 'Attendance updated successfully.');
+       // return redirect()->route('courses.index')->with('success', 'Course created successfully.');
     }
 
 

@@ -45,7 +45,7 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
                                     Course Type
                                 </th>
                                 <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
-                                    Total Attended / Total Events
+                                   Progress
                                 </th>
                             </tr>
                         </thead>
