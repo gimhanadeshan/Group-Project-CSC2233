@@ -32,6 +32,7 @@ const EventCalendar = ({ allevents, auth }) => {
     const [events, setEvents] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
+    const [isAdding,setIsAdding]=useState(false);
 
 
 
@@ -49,6 +50,11 @@ const EventCalendar = ({ allevents, auth }) => {
         start: "",
         end: "",
         course_type:"",
+        semester_id:"",
+        user_id:"",
+        course_id:"",
+        hall_id:"",
+        lec_id:"",
         Lec_attended:false,
         daily: false,
         weekly: false,
@@ -68,6 +74,7 @@ const EventCalendar = ({ allevents, auth }) => {
 
     const openModal = (event = null) => {
         if (event) {
+            //console.log(event);
             setCurrentEvent(event);
             setData({
                 id:event.id,
@@ -75,12 +82,18 @@ const EventCalendar = ({ allevents, auth }) => {
                 location: event.location,
                 start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
                 end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
-                Lec_attended:event.Lec_attended,
                 course_type:event.course_type,
+                semester_id:event.semester_id,
+                user_id:event.user_id,
+                course_id:event.course_id,
+                hall_id:event.hall_id,
+                lec_id:event.lec_id,
+                Lec_attended:event.Lec_attended,
                 daily: event.daily,
                 weekly: event.weekly,
                 monthly: event.monthly,
             });
+            console.log(data);
         } else {
             setCurrentEvent(null);
             reset();
@@ -90,6 +103,7 @@ const EventCalendar = ({ allevents, auth }) => {
 
     const closeModal = () => {
         setModalIsOpen(false);
+        setIsAdding(false);
     };
 
     const handleSelectSlot = ({ start, end }) => {
@@ -104,9 +118,11 @@ const EventCalendar = ({ allevents, auth }) => {
         });
         setCurrentEvent(null);
         setModalIsOpen(true);
+        setIsAdding(true);
     };
 
     const handleSubmit = () => {
+        console.log(currentEvent);
         if (currentEvent) {
             put(`/events/${currentEvent.id}`, {
                 onSuccess: () => {
@@ -202,7 +218,7 @@ const EventCalendar = ({ allevents, auth }) => {
     
 
 
-    const s = 1;
+    const show = 1;
     
 
     return (
@@ -231,7 +247,7 @@ const EventCalendar = ({ allevents, auth }) => {
                 />
             </div>
 
-            {s &&
+            {show &&
                 <Modal
                     isOpen={modalIsOpen}
                     onRequestClose={closeModal}
@@ -239,6 +255,7 @@ const EventCalendar = ({ allevents, auth }) => {
                     className="fixed inset-0 flex items-center justify-center z-50"
                     overlayClassName="fixed inset-0 bg-gray-800 bg-opacity-75 z-40"
                 >
+                    
                     <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold">
@@ -336,7 +353,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                 )}
                             </div>
 
-                            {/* Recurrence Checkboxes */}
+                            {/* Recurrence Checkboxes 
                             {canEdit && <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700">
                                     Recurrence:
@@ -376,40 +393,44 @@ const EventCalendar = ({ allevents, auth }) => {
                                 </div>
                             </div>
                             }
+                            */}
+
+
                             {/* Attentedance Checkboxes */}
-                            {auth.user.role.role_type==='student' &&
+                            {auth.user.role.role_type==='student' && data.course_type!=null &&
                             <div className="mb-4">
-                                   <Link href={`/attendance/${data.course_type}/${data.id}/${auth.user.id}`} className="text-blue-500">View Attendance</Link>
-           
-                            
+                                   <Link href={`/attendance/${data.course_type}/${data.id}/${auth.user.id}`} className="text-blue-500">Update Attendance</Link>
+                                     
                             </div>
                         
                         }
-                         {auth.user.role.role_type==='lecturer' &&
-                            <div>
-                                <label htmlFor="attended" className="block text-sm font-medium text-gray-700">Mark as Completed</label>
-                                    <input
+                         {auth.user.role.role_type==='lecturer' && !isAdding &&
+                            <div className="mb-1">
+                            <label htmlFor="attended" className="block text-lg font-medium text-black dark:text-black-300 mb-1 text-center">
+                                Mark as Completed
+                            </label>
+                            <div className="flex items-center justify-center">
+                                <input
                                     type="checkbox"
                                     id="attended"
                                     name="attended"
-                                    checked={data.Lec_attended} // Convert null to false for the checkbox
+                                    checked={data.Lec_attended || false} // Convert null to false for the checkbox
                                     onChange={(e) =>
-                    
                                         setData((prevData) => ({
                                             ...prevData,
                                             Lec_attended: e.target.checked || null, // If unchecked, set to null
                                         }))
-                    
-                                }
-                                className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    }
+                                    className="form-checkbox h-6 w-6 text-indigo-800 dark:text-indigo-800 rounded focus:ring-indigo-800 focus:border-indigo-800 transition duration-150 ease-in-out"
                                 />
-                            
                             </div>
+                        </div>
+                        
 
                             }
 
 
-                            <div className="flex justify-end">
+                            <div className="flex justify-center mt-2">
                                 {currentEvent && canDelete && (
                                     <button
                                         type="button"
