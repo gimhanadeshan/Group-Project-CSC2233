@@ -10,7 +10,7 @@ const NotificationDropdown = ({ unreadNotifications, readNotifications }) => {
     const markAsRead = (id, link) => {
         Inertia.post(route('markAsRead', { id: id }), {
             onSuccess: () => {
-                Inertia.visit(link);
+                Inertia.get(link);
             }
         });
     };
@@ -36,10 +36,10 @@ const NotificationDropdown = ({ unreadNotifications, readNotifications }) => {
                     {unreadNotifications.map((notification, index) => (
                         <li key={index} className="bg-green-500 p-3 rounded-md shadow-md transition-all duration-300 hover:bg-green-600">
                             <Link
-                                href={notification.link}
+
                                 onClick={(e) => {
                                     e.preventDefault(); // Prevent the default behavior of the link
-                                    markAsRead(notification.id, notification.link);
+                                    markAsRead(notification.id, notification.data.link);
                                 }}
                             >
                                 {notification.data.data}

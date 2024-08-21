@@ -193,7 +193,7 @@ class SemesterController extends Controller
         try{
             foreach($users as $user){
 
-                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end));
+                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end,$user->name));
             }
         }catch(Exception){
 
