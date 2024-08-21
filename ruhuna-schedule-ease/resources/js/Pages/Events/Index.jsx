@@ -60,10 +60,46 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
         reset();
     };
 
+    // const handleChange = (e) => {
+    //     setData(e.target.name, e.target.value);
+    // };
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    
+    //     if (name === 'hall_id') {
+    //         const selectedHall = halls.find(hall => hall.id === parseInt(value));
+    //         setData({
+    //             ...data,
+    //             hall_id: selectedHall ? selectedHall.id : '',
+    //             // If location is empty, update it with hall name
+    //             location: data.location ? data.location : (selectedHall ? selectedHall.name : ''),
+    //         });
+    //     } else {
+    //         setData({
+    //             ...data,
+    //             [name]: value,
+    //         });
+    //     }
+    // };
     const handleChange = (e) => {
-        setData(e.target.name, e.target.value);
+        const { name, value } = e.target;
+    
+        if (name === 'hall_id') {
+            const selectedHall = halls.find(hall => hall.id === parseInt(value));
+            setData({
+                ...data,
+                hall_id: selectedHall ? selectedHall.id : '',
+                location: selectedHall ? selectedHall.name : '', // Update location with hall name
+            });
+        } else {
+            setData({
+                ...data,
+                [name]: value,
+            });
+        }
     };
-
+    
+    
     const handleSubmit = (e) => {
         e.preventDefault();
         const submitAction = isCreating ? post : put;
@@ -271,6 +307,30 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                             <span className="text-red-500 text-sm">{errors.location}</span>
                                         )}
                                     </div>
+                                    <div>
+                                        <label
+                                            htmlFor="hall_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Hall
+                                        </label>
+                                        <select
+                                            name="hall_id"
+                                            value={data.hall_id}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select Hall</option>
+                                            {halls.map((hall) => (
+                                                <option key={hall.id} value={hall.id}>
+                                                    {hall.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.hall_id && (
+                                            <span className="text-red-500 text-sm">{errors.hall_id}</span>
+                                        )}
+                                    </div>
 
                                     <div>
                                         <label
@@ -359,7 +419,7 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                             <span className="text-red-500 text-sm">{errors.course_id}</span>
                                         )}
                                     </div>
-
+{/* 
                                     <div>
                                         <label
                                             htmlFor="hall_id"
@@ -383,7 +443,7 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                         {errors.hall_id && (
                                             <span className="text-red-500 text-sm">{errors.hall_id}</span>
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <div>
                                         <label
