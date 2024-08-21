@@ -55,6 +55,27 @@ export default function Authenticated({ user, header, children, permissions }) {
                             </div>
                             <div className="relative flex items-center">
                                 <div className="flex items-center ms-3">
+                                     {/* Notification Bell Icon */}
+                                     <Link
+                                        href={route("notifications.index")}
+                                        className="relative p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:focus:ring-gray-600"
+                                    >
+                                        <span className="sr-only">
+                                            View notifications
+                                        </span>
+                                        <svg
+                                            className="w-6 h-6"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a2 2 0 002-2H8a2 2 0 002 2zm6-6V9c0-3.07-1.64-5.64-4.5-6.32V2a1.5 1.5 0 10-3 0v.68C5.64 3.36 4 5.92 4 9v3l-1 1v1h14v-1l-1-1zM4 13h12v.73l-.297.296A8.001 8.001 0 0112 18.931V17h-4v1.931a8.001 8.001 0 01-3.703-4.905L4 13.73V13z"
+                                                clipRule="evenodd"
+                                            ></path>
+                                        </svg>
+                                    </Link>
                                     <Dropdown>
                                         <Dropdown.Trigger>
                                             <div>

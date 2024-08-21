@@ -68,7 +68,7 @@ class SemesterController extends Controller
                 'description' => $request->description,
                 'degree_program_id' => $request->degree_program_id,
             ]);
-
+                $this->notify($semester->id);
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
         } catch (QueryException $e) {
             $errorMessage = $this->handleQueryException($e);
@@ -122,9 +122,29 @@ class SemesterController extends Controller
             'degree_program_id' => $request->degree_program_id,
         ]);
 
+
+       $originalStartDate = $semester->registration_start_date;
+       $originalEndDate = $semester->registration_end_date;
+        try {
+            $semester->update([
+                'academic_year' => $request->academic_year,
+                'level' => $request->level,
+                'semester' => $request->semester,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'registration_start_date' => $request->registration_start_date,
+                'registration_end_date' => $request->registration_end_date,
+                'description' => $request->description,
+                'degree_program_id' => $request->degree_program_id,
+            ]);
+            // Check if the registration start or end dates have changed
+
+    
+
         // Check if the registration start or end dates have changed
         if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
             $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
+
         }
 
         //DB::commit();
@@ -190,20 +210,20 @@ class SemesterController extends Controller
             $semester->save();
         }
     }
-    public function notify($semester,$start,$end)
+    public function notify($semester_id)
     {
-            $level = Semester::where('id', $semester)->pluck('level')->first();
-            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
-            $year = Semester::where('id', $semester)->pluck('academic_year')->first();
-            $users = User::where('academic_year',$year)->get();
+            $semester = Semester::where('id', $semester_id);
+            $degree=DegreePrograme::where('id',$semester->degree_program_id);
+            $users = User::where('academic_year',$year)->where('degree_program_id',$degree->id)->get();
             //each user is notified
-       
-            foreach($users as $user){
 
-                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end,$user->name));
-            }
-       
+
+            foreach($users as $user){
+                $user->notify(new CourseRegistrationOpened($semester->level,$semester->semester,$semester->year,$semester->registration_start_date,$semester->registration_end_date,$user->name));
         }
+    }
+
+       
 
         public function getSemesterProgressReport($semesterId)
         {
@@ -242,4 +262,5 @@ class SemesterController extends Controller
             ]);
         }
         
+
 }
