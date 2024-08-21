@@ -4,20 +4,17 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Inertia } from "@inertiajs/inertia";
 import moment from "moment";
-import { Calendar, momentLocalizer } from "react-big-calendar";
 
-const localizer = momentLocalizer(moment);
-
-const Index = ({ auth, permissions,allevents,semesters }) => {
+const Index = ({ auth, permissions, allevents, semesters, courses, halls, lecturers, users, courseTypes }) => {
     const [searchTitle, setSearchTitle] = useState("");
     const [searchLocation, setSearchLocation] = useState("");
     const [startFilter, setStartFilter] = useState("");
     const [endFilter, setEndFilter] = useState("");
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
-    const [events, setEvents] = useState(allevents); // State for the list of events
-    const [selectedEvents, setSelectedEvents] = useState([]); // State for selected events
-    const [selectAll, setSelectAll] = useState(false); // State for "Select All" checkbox
+    const [events, setEvents] = useState(allevents);
+    const [selectedEvents, setSelectedEvents] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     const {
         data,
@@ -32,6 +29,12 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
         location: "",
         start: "",
         end: "",
+        semester_id: "",
+        course_id: "",
+        hall_id: "",
+        lec_id: "",
+        user_id: "",
+        course_type: "",
     });
 
     const handleEventClick = (event) => {
@@ -42,6 +45,12 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
             location: event.location,
             start: moment(event.start).format("YYYY-MM-DDTHH:mm"),
             end: moment(event.end).format("YYYY-MM-DDTHH:mm"),
+            semester_id: event.semester_id,
+            course_id: event.course_id,
+            hall_id: event.hall_id,
+            lec_id: event.lec_id,
+            user_id: event.user_id,
+            course_type: event.course_type,
         });
     };
 
@@ -57,33 +66,29 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isCreating) {
-            put(route("events.store"), {
-                onSuccess: () => {
+        const submitAction = isCreating ? post : put;
+        const routePath = isCreating ? route("events.store") : route("events.update", selectedEvent.id);
+
+        submitAction(routePath, {
+            data,
+            onSuccess: () => {
+                if (isCreating) {
                     setEvents([...events, data]);
-                    reset();
-                },
-            });
-        } else {
-            put(route("events.update", selectedEvent.id), {
-                onSuccess: () => {
-                    const updatedEvents = events.map((event) =>
+                } else {
+                    setEvents(events.map((event) =>
                         event.id === selectedEvent.id ? data : event
-                    );
-                    setEvents(updatedEvents);
-                    reset();
-                },
-            });
-        }
+                    ));
+                }
+                isCreating ?  console.log('') : reset();
+            },
+        });
     };
 
     const handleDelete = () => {
         if (confirm("Are you sure you want to delete this event?")) {
             destroy(route("events.destroy", selectedEvent.id), {
                 onSuccess: () => {
-                    setEvents(
-                        events.filter((event) => event.id !== selectedEvent.id)
-                    );
+                    setEvents(events.filter((event) => event.id !== selectedEvent.id));
                     setSelectedEvent(null);
                 },
             });
@@ -92,15 +97,9 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
     };
 
     const handleSelectEvent = (id) => {
-        setSelectedEvents((prev) => {
-            const isSelected = prev.includes(id);
-            if (isSelected) {
-                return prev.filter((eventId) => eventId !== id);
-            } else {
-                return [...prev, id];
-            }
-        });
-        console.log(selectedEvents);
+        setSelectedEvents((prev) =>
+            prev.includes(id) ? prev.filter((eventId) => eventId !== id) : [...prev, id]
+        );
     };
 
     const handleSelectAll = () => {
@@ -114,35 +113,15 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
 
     const handleDeleteSelected = () => {
         if (confirm("Are you sure you want to delete all selected events?")) {
-            // selectedEvents.forEach((id) => {
-            //     Inertia.delete(route("events.destroy", id), {
-            //         onSuccess: () => {
-            //             setEvents(events.filter((event) => event.id !== id));
-            //         },
-            //     });
-                
-
-            // });
-            Inertia.delete(route('events.destroy', selectedEvents));
-
-            setSelectedEvents([]);
-            setSelectAll(false);
+            Inertia.delete(route('events.destroy', selectedEvents), {
+                onSuccess: () => {
+                    setEvents(events.filter((event) => !selectedEvents.includes(event.id)));
+                    setSelectedEvents([]);
+                    setSelectAll(false);
+                },
+            });
         }
     };
-    // const handleDeleteSelected = () => {
-    //     if (confirm("Are you sure you want to delete all selected events?")) {
-    //         const deletePromises = selectedEvents.map((id) =>
-    //             Inertia.delete(route("events.destroy", id))
-    //         );
-    
-    //         Promise.all(deletePromises).then(() => {
-    //             setEvents(events.filter((event) => !selectedEvents.includes(event.id)));
-    //             setSelectedEvents([]);
-    //             setSelectAll(false);
-    //         });
-    //     }
-    // };
-    
 
     const filteredEvents = allevents.filter((event) => {
         return (
@@ -152,17 +131,14 @@ const Index = ({ auth, permissions,allevents,semesters }) => {
             event.location
                 .toLowerCase()
                 .includes(searchLocation.toLowerCase()) &&
-            (startFilter === "" ||
-                new Date(event.start) >= new Date(startFilter)) &&
+            (startFilter === "" || new Date(event.start) >= new Date(startFilter)) &&
             (endFilter === "" || new Date(event.end) <= new Date(endFilter))
         );
     });
 
-const [semID,setSem]=useState(0);  
-
-const canCreate = auth.permissions.includes("create_event");
-const canEdit = auth.permissions.includes("update_event");
-const canDelete = auth.permissions.includes("delete_event");
+    const canCreate = auth.permissions.includes("create_event");
+    const canEdit = auth.permissions.includes("update_event");
+    const canDelete = auth.permissions.includes("delete_event");
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
@@ -173,20 +149,18 @@ const canDelete = auth.permissions.includes("delete_event");
                         <h1 className="text-lg font-bold leading-6 text-gray-900">
                             Events
                         </h1>
-                        {canCreate &&
+                        {canCreate && (
+                            <>
                             <button
-                            onClick={handleCreateNewEvent}
-                            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Create New Event
-                        </button>
-                        }
-                        
-                        <br></br>
-                        
-
-                        
-                       
+                                onClick={handleCreateNewEvent}
+                                className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Create New Event
+                            </button>
+                            {selectedEvent && <Link href={route("events.generateAttendanceRecords",selectedEvent.id)}>Generate Attendace Records</Link>}
+                            </>
+                        )}
+                        <br />
                     </div>
                     <div className="px-4 py-5 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <input
@@ -219,22 +193,23 @@ const canDelete = auth.permissions.includes("delete_event");
                         />
                     </div>
                     <div className="px-4 py-5 sm:px-6 flex items-center space-x-4">
-                    {canEdit &&  <> <input
-                            type="checkbox"
-                            checked={selectAll}
-                            onChange={handleSelectAll}
-                            className="mr-2"
-                        />
-                        
-                       
-                        <span>Select All</span>
-                        <button
-                            onClick={handleDeleteSelected}
-                            className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                            Delete All Selected
-                        </button>
-                        </>}
+                        {canEdit && (
+                            <>
+                                <input
+                                    type="checkbox"
+                                    checked={selectAll}
+                                    onChange={handleSelectAll}
+                                    className="mr-2"
+                                />
+                                <span>Select All</span>
+                                <button
+                                    onClick={handleDeleteSelected}
+                                    className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                >
+                                    Delete All Selected
+                                </button>
+                            </>
+                        )}
                     </div>
                     <div className="flex border border-gray-300 rounded-md">
                         <div className="w-1/3 p-4 border-r border-gray-300">
@@ -244,17 +219,14 @@ const canDelete = auth.permissions.includes("delete_event");
                                     className="flex items-center cursor-pointer hover:bg-gray-200 p-2"
                                     onClick={() => handleEventClick(event)}
                                 >
-                                    {canEdit &&
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedEvents.includes(
-                                            event.id
-                                        )}
-                                        onChange={() =>
-                                            handleSelectEvent(event.id)
-                                        }
-                                        className="mr-2"
-                                    />}
+                                    {canEdit && (
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedEvents.includes(event.id)}
+                                            onChange={() => handleSelectEvent(event.id)}
+                                            className="mr-2"
+                                        />
+                                    )}
                                     {event.event_title}
                                 </div>
                             ))}
@@ -277,12 +249,11 @@ const canDelete = auth.permissions.includes("delete_event");
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
                                         {errors.event_title && (
-                                            <div className="text-red-500 text-xs">
-                                                {errors.event_title}
-                                            </div>
+                                            <span className="text-red-500 text-sm">{errors.event_title}</span>
                                         )}
                                     </div>
-                                    <div className="mt-4">
+
+                                    <div>
                                         <label
                                             htmlFor="location"
                                             className="block text-sm font-medium text-gray-700"
@@ -297,87 +268,217 @@ const canDelete = auth.permissions.includes("delete_event");
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
                                         {errors.location && (
-                                            <div className="text-red-500 text-xs">
-                                                {errors.location}
-                                            </div>
+                                            <span className="text-red-500 text-sm">{errors.location}</span>
                                         )}
                                     </div>
-                                    <div className="mt-4">
+
+                                    <div>
                                         <label
                                             htmlFor="start"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            Start
+                                            Start Time
                                         </label>
                                         <input
                                             type="datetime-local"
                                             name="start"
-                                            value={moment(data.start).format(
-                                                "YYYY-MM-DDTHH:mm"
-                                            )}
+                                            value={data.start}
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
                                         {errors.start && (
-                                            <div className="text-red-500 text-xs">
-                                                {errors.start}
-                                            </div>
+                                            <span className="text-red-500 text-sm">{errors.start}</span>
                                         )}
                                     </div>
-                                    <div className="mt-4">
+
+                                    <div>
                                         <label
                                             htmlFor="end"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            End
+                                            End Time
                                         </label>
                                         <input
                                             type="datetime-local"
                                             name="end"
-                                            value={moment(data.end).format(
-                                                "YYYY-MM-DDTHH:mm"
-                                            )}
+                                            value={data.end}
                                             onChange={handleChange}
                                             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
                                         {errors.end && (
-                                            <div className="text-red-500 text-xs">
-                                                {errors.end}
-                                            </div>
+                                            <span className="text-red-500 text-sm">{errors.end}</span>
                                         )}
                                     </div>
-                                    <div className="mt-4 flex space-x-4">
-                                        {canEdit &&
+
+                                    <div>
+                                        <label
+                                            htmlFor="semester_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Semester
+                                        </label>
+                                        <select
+                                            name="semester_id"
+                                            value={data.semester_id}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select Semester</option>
+                                            {semesters.map((semester) => (
+                                                <option key={semester.id} value={semester.id}>
+                                                    {semester.id}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.semester_id && (
+                                            <span className="text-red-500 text-sm">{errors.semester_id}</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            htmlFor="course_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Course
+                                        </label>
+                                        <select
+                                            name="course_id"
+                                            value={data.course_id}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select Course</option>
+                                            {courses.map((course) => (
+                                                <option key={course.id} value={course.id}>
+                                                    {course.code}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.course_id && (
+                                            <span className="text-red-500 text-sm">{errors.course_id}</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            htmlFor="hall_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Hall
+                                        </label>
+                                        <select
+                                            name="hall_id"
+                                            value={data.hall_id}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select Hall</option>
+                                            {halls.map((hall) => (
+                                                <option key={hall.id} value={hall.id}>
+                                                    {hall.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.hall_id && (
+                                            <span className="text-red-500 text-sm">{errors.hall_id}</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            htmlFor="lec_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Lecturer
+                                        </label>
+                                        <select
+                                            name="lec_id"
+                                            value={data.lec_id}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select Lecturer</option>
+                                            {lecturers.map((lecturer) => (
+                                                <option key={lecturer.id} value={lecturer.id}>
+                                                    {lecturer.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.lec_id && (
+                                            <span className="text-red-500 text-sm">{errors.lec_id}</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            htmlFor="user_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            User
+                                        </label>
+                                        <select
+                                            name="user_id"
+                                            value={data.user_id}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select User</option>
+                                            {users.map((user) => (
+                                                <option key={user.id} value={user.id}>
+                                                    {user.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.user_id && (
+                                            <span className="text-red-500 text-sm">{errors.user_id}</span>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            htmlFor="course_type"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Course Type
+                                        </label>
+                                        <select
+                                            name="course_type"
+                                            value={data.course_type}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        >
+                                            <option value="">Select Course Type</option>
+                                            {courseTypes.map((type) => (
+                                                <option key={type.id} value={type.id}>
+                                                    {type.type}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.course_type && (
+                                            <span className="text-red-500 text-sm">{errors.course_type}</span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex space-x-4 mt-4">
                                         <button
                                             type="submit"
                                             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         >
-                                            {isCreating
-                                                ? "Create Event"
-                                                : "Update Event"}
-                                        </button>}
+                                            {isCreating ? "Create Event" : "Update Event"}
+                                        </button>
                                         {!isCreating && (
-                                            <Link
-                                                href={route(
-                                                    "events.destroy",
-                                                    selectedEvent.id
-                                                )}
-                                                method="delete"
-                                                as="button"
-                                                className="ml-4 text-red-600 hover:text-red-900"
-                                            >{canEdit && 
-                                                <button
-                                                    type="button"
-                                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                                    onClick={handleDelete}
-                                                >
-                                                    Delete
-                                                </button>
-                                            }
-                                            </Link>
+                                            <button
+                                                type="button"
+                                                onClick={handleDelete}
+                                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                            >
+                                                Delete Event
+                                            </button>
                                         )}
                                     </div>
                                 </form>
+                                
                             )}
                         </div>
                     </div>

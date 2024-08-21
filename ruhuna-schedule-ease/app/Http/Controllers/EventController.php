@@ -424,22 +424,34 @@ public function generateAttendanceRecordsForAllEvents()
     // Get the event to fetch the associated course_id
     $event = Event::findOrFail($eventId);
     $courseId = $event->course_id;
+    $courseType = $event->course_type;
 
     // Fetch all students registered for the course
     $studentIds = DB::table('course_registrations')
                     ->where('course_id', $courseId)
+                    ->where('status', 'confirmed')
                     ->pluck('user_id'); // Assuming 'user_id' in 'course_registrations' is the student ID
 
     // Prepare data for bulk insert
     $attendanceRecords = [];
     foreach ($studentIds as $studentId) {
-        $attendanceRecords[] = [
-            'event_id' => $eventId,
-            'student_id' => $studentId,
-            'attended' => null, // Default value
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
+        // Check if the record already exists for the specific course type
+        $exists = DB::table('event_student')
+                    ->where('event_id', $event->id)
+                    ->where('student_id', $studentId)
+                    ->where('course_type', $courseType) // Compare using the integer ID
+                    ->exists();
+
+        if (!$exists) {
+            $attendanceRecords[] = [
+                'event_id' => $event->id,
+                'student_id' => $studentId,
+                'course_type' => $courseType, // 'course_type' as integer (foreign key ID)
+                'attended' => null, // Default value
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
     }
 
     // Insert all attendance records into the event_student table
