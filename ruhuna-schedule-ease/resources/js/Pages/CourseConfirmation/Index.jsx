@@ -20,7 +20,7 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
             preserveScroll: true,
         });
     };
-
+    
     const handleCancelCourse = (courseCode) => {
         setData("course_id", courseCode);
         post(route("course-confirmation.cancel", { courseCode }), {
