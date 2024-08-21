@@ -66,7 +66,7 @@ class SemesterController extends Controller
                 'description' => $request->description,
                 'degree_program_id' => $request->degree_program_id,
             ]);
-
+                $this->notify($semester->id);
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
         } catch (QueryException $e) {
             $errorMessage = $this->handleQueryException($e);
@@ -120,7 +120,7 @@ class SemesterController extends Controller
             // Check if the registration start or end dates have changed
 
     if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
-        $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
+        $this->notify($semester->id);
     }
             return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
         } catch (QueryException $e) {
@@ -183,20 +183,15 @@ class SemesterController extends Controller
             $semester->save();
         }
     }
-    public function notify($semester,$start,$end)
+    public function notify($semester_id)
     {
-            $level = Semester::where('id', $semester)->pluck('level')->first();
-            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
-            $year = Semester::where('id', $semester)->pluck('academic_year')->first();
-            $users = User::where('academic_year',$year)->get();
+            $semester = Semester::where('id', $semester_id);
+            $degree=DegreePrograme::where('id',$semester->degree_program_id);
+            $users = User::where('academic_year',$year)->where('degree_program_id',$degree->id)->get();
             //each user is notified
-        try{
+
             foreach($users as $user){
-
-                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end,$user->name));
-            }
-        }catch(Exception){
-
+                $user->notify(new CourseRegistrationOpened($semester->level,$semester->semester,$semester->year,$semester->registration_start_date,$semester->registration_end_date,$user->name));
         }
-        }
+    }
 }
