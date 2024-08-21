@@ -183,7 +183,7 @@ export default function Authenticated({ user, header, children, permissions }) {
                     } bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
                     aria-label="Sidebar"
                 >
-                    <Sidebar permissions={permissions} />
+                    <Sidebar permissions={permissions} user={user} />
                 </aside>
 
                 <div className="p-4 sm:ml-64 mt-16">
