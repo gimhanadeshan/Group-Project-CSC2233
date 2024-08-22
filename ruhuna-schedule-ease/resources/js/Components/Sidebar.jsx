@@ -21,6 +21,8 @@ export default function Sidebar({ user, permissions }) {
         "read_course_confirmation"
     );
     const canReadRegistation = permissions.includes("read_course_registration");
+    const canReadAnnouncement = permissions.includes("read_announcement");
+
 
     return (
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
@@ -375,14 +377,14 @@ export default function Sidebar({ user, permissions }) {
                             </Link>
                         </li>
                     )}
-                    {canReadLectureHall && (
+                    {canReadAnnouncement && (
                         <li>
                             <Link
                                 href={route("announcements.index")}
                                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                             >
                                 <svg
-                                    class="w-6 h-6 text-gray-800 dark:text-white"
+                                    className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                     aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
