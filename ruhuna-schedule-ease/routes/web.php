@@ -17,8 +17,11 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\CourseConfirmationController;
+use App\Http\Controllers\AnnouncementController;
+
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -64,7 +67,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('courses', CourseController::class);
     Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
+    Route::resource('announcements', AnnouncementController::class);
+    
     Route::resource('course-registrations', CourseRegistrationController::class);
 
     Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
