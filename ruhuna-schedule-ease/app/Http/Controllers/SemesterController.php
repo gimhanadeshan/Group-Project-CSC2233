@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Semester;
-use App\Models\DegreeProgram; // Import DegreeProgram model
+use App\Models\DegreeProgram;
+use App\Models\Event; // Import DegreeProgram model
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use App\Notifications\CourseRegistrationOpened;
@@ -88,46 +90,51 @@ class SemesterController extends Controller
     }
 
     public function update(Request $request, Semester $semester)
-    {
-        $this->authorize('update_semester', $request->user());
+{
+    $this->authorize('update_semester', $request->user());
 
-        $request->validate([
-            'academic_year' => 'required|string|max:255',
-            'level' => 'required|in:1,2,3,4',
-            'semester' => 'required|in:1,2',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'registration_start_date' => 'nullable|date',
-            'registration_end_date' => 'nullable|date',
-            'description' => 'nullable|string',
-            'degree_program_id' => 'required|exists:degree_programs,id',
+    $request->validate([
+        'academic_year' => 'required|string|max:255',
+        'level' => 'required|in:1,2,3,4',
+        'semester' => 'required|in:1,2',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date',
+        'registration_start_date' => 'nullable|date',
+        'registration_end_date' => 'nullable|date',
+        'description' => 'nullable|string',
+        'degree_program_id' => 'required|exists:degree_programs,id',
+    ]);
+
+    $originalStartDate = $semester->registration_start_date;
+    $originalEndDate = $semester->registration_end_date;
+
+   // DB::beginTransaction();
+    try {
+        $semester->update([
+            'academic_year' => $request->academic_year,
+            'level' => $request->level,
+            'semester' => $request->semester,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'registration_start_date' => $request->registration_start_date,
+            'registration_end_date' => $request->registration_end_date,
+            'description' => $request->description,
+            'degree_program_id' => $request->degree_program_id,
         ]);
 
-       $originalStartDate = $semester->registration_start_date;
-       $originalEndDate = $semester->registration_end_date;
-        try {
-            $semester->update([
-                'academic_year' => $request->academic_year,
-                'level' => $request->level,
-                'semester' => $request->semester,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'registration_start_date' => $request->registration_start_date,
-                'registration_end_date' => $request->registration_end_date,
-                'description' => $request->description,
-                'degree_program_id' => $request->degree_program_id,
-            ]);
-            // Check if the registration start or end dates have changed
-
-    if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
-        $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
-    }
-            return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
-        } catch (QueryException $e) {
-            $errorMessage = $this->handleQueryException($e);
-            return back()->withErrors(['msg' => $errorMessage])->withInput();
+        // Check if the registration start or end dates have changed
+        if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
+            $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
         }
+
+        //DB::commit();
+        return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
+    } catch (QueryException $e) {
+        //DB::rollBack();
+        $errorMessage = $this->handleQueryException($e);
+        return back()->withErrors(['msg' => $errorMessage])->withInput();
     }
+}
 
     public function show(Request $request, Semester $semester)
     {
@@ -190,13 +197,49 @@ class SemesterController extends Controller
             $year = Semester::where('id', $semester)->pluck('academic_year')->first();
             $users = User::where('academic_year',$year)->get();
             //each user is notified
-        try{
+       
             foreach($users as $user){
 
-                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end));
+                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end,$user->name));
             }
-        }catch(Exception){
+       
+        }
 
+        public function getSemesterProgressReport($semesterId)
+        {
+            // Retrieve semester information along with related data
+            $semester = Semester::with(['timetables', 'courseRegistrations.course', 'courseRegistrations.user', 'degreeProgram'])
+                ->findOrFail($semesterId);
+        
+            // Fetch all courses for the semester
+            $courses = $semester->courseRegistrations->groupBy('course_id')->map(function ($registrations, $courseId) use ($semesterId) {
+                // Total events for this course
+                $totalEvents = Event::where('semester_id', $semesterId)
+                                    ->where('course_id', $courseId)
+                                    ->count();
+        
+                // Attended events for this course
+                $attendedEvents = Event::where('semester_id', $semesterId)
+                                    ->where('course_id', $courseId)
+                                    ->where('Lec_attended', true)  // Assuming this field tracks attendance
+                                    ->count();
+        
+                $progressPercentage = $totalEvents ? ($attendedEvents / $totalEvents) * 100 : 0;
+        
+                // Return course data with progress
+                return [
+                    'course' => $registrations->first()->course->name,
+                    'totalEvents' => $totalEvents,
+                    'attendedEvents' => $attendedEvents,
+                    'progressPercentage' => round($progressPercentage, 2),
+                ];
+            });
+        
+            // Pass the data to Inertia
+            return inertia('Semesters/SemesterProgressReport', [
+                'semester' => $semester,
+                'courses' => $courses->values(), // convert to an array of course data
+            ]);
         }
-        }
+        
 }

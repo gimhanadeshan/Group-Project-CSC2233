@@ -9,17 +9,19 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DegreeProgramController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LectureHallController;
-use App\Http\Controllers\ResourceAllocationController;
 use App\Http\Controllers\TimeTableController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\EventController1;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\CourseConfirmationController;
+use App\Http\Controllers\AnnouncementController;
+
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -36,6 +38,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('degree-programs', DegreeProgramController::class);
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('lecture-halls', LectureHallController::class);
+    Route::get('/semesters/{id}/progress-report', [SemesterController::class, 'getSemesterProgressReport'])
+    ->name('semesters.progressReport');
     Route::resource('semesters', SemesterController::class);
     Route::post('/mark-as-read', function () {
         Auth::user()->unreadNotifications->markAsRead();
@@ -48,8 +52,8 @@ Route::middleware(['auth'])->group(function () {
             $notification->markAsRead();
             error_log('Marked as read');
         }
-
-        return redirect()->back();
+        return 0;
+        //return redirect()->back();
     })->name('markAsRead');
 
     Route::get('/timetables/{semester}/pdf', [TimeTableController::class, 'generatePdf'])->name('timetables.pdf');
@@ -63,7 +67,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('courses', CourseController::class);
     Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
+    Route::resource('announcements', AnnouncementController::class);
+    
     Route::resource('course-registrations', CourseRegistrationController::class);
 
     Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
