@@ -17,8 +17,11 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseRegistrationController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\CourseConfirmationController;
+use App\Http\Controllers\AnnouncementController;
+
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -60,10 +63,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('timetables/modify/add', [TimeTableController::class, 'storeSingle'])->name('timetables.storeSingle');
     Route::get('/timetables/{timetable}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::resource('timetables', TimeTableController::class);
-    Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
+   // 
     Route::resource('courses', CourseController::class);
+    Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
+    Route::resource('announcements', AnnouncementController::class);
+    
     Route::resource('course-registrations', CourseRegistrationController::class);
 
     Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
@@ -76,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/events-registration', [EventRegistrationController::class, 'store'])->name('events.store');
     Route::put('/events-registration/{id}', [EventRegistrationController::class, 'update'])->name('events.update');
 
-    Route::get('events', [EventController::class, 'index'])->name('events');
+    Route::get('/events', [EventController::class, 'index'])->name('events');
 
     Route::put('/events', [EventController::class, 'store'])->name('event.store');
     Route::put('/events/{id}', [EventController::class, 'update'])->name('event.update');
