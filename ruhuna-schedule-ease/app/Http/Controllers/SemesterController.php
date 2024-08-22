@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Semester;
+use App\Models\DegreeProgram;
+use App\Models\Event; // Import DegreeProgram model
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use App\Notifications\CourseRegistrationOpened;
 
 class SemesterController extends Controller
 {
@@ -17,15 +22,22 @@ class SemesterController extends Controller
         // Update semester statuses
         $this->updateSemestersStatus();
 
-        $semesters = Semester::all();
-        return Inertia::render('Semesters/Index', ['semesters' => $semesters]);
+        // Fetch semesters with their associated degree programs
+        $semesters = Semester::with('degreeProgram')->get();
+        $degreePrograms = DegreeProgram::all();
+
+        return Inertia::render('Semesters/Index', ['semesters' => $semesters,'degreePrograms' => $degreePrograms]);
     }
+
 
     public function create(Request $request)
     {
         $this->authorize('create_semester', $request->user());
 
-        return Inertia::render('Semesters/Create');
+        // Fetch degree programs for the form
+        $degreePrograms = DegreeProgram::all();
+
+        return Inertia::render('Semesters/Create', ['degreePrograms' => $degreePrograms]);
     }
 
     public function store(Request $request)
@@ -41,13 +53,8 @@ class SemesterController extends Controller
             'registration_start_date' => 'nullable|date',
             'registration_end_date' => 'nullable|date',
             'description' => 'nullable|string',
-            'course_capacity' => 'nullable|integer|min:0',
-            'enrollment_count' => 'nullable|integer|min:0',
-            'status' => 'required|in:Upcoming,In Progress,Completed',
+            'degree_program_id' => 'required|exists:degree_programs,id',
         ]);
-
-        // Assuming generateReferenceNumber is a method that generates a unique reference number
-//$reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
 
         try {
             Semester::create([
@@ -59,9 +66,7 @@ class SemesterController extends Controller
                 'registration_start_date' => $request->registration_start_date,
                 'registration_end_date' => $request->registration_end_date,
                 'description' => $request->description,
-                'course_capacity' => $request->course_capacity,
-                'enrollment_count' => $request->enrollment_count,
-                'status' => $request->status,
+                'degree_program_id' => $request->degree_program_id,
             ]);
 
             return redirect()->route('semesters.index')->with('success', 'Semester created successfully.');
@@ -75,58 +80,72 @@ class SemesterController extends Controller
     {
         $this->authorize('update_semester', $request->user());
 
-        return Inertia::render('Semesters/Edit', ['semester' => $semester]);
+        // Fetch degree programs for the form
+        $degreePrograms = DegreeProgram::all();
+
+        return Inertia::render('Semesters/Edit', [
+            'semester' => $semester,
+            'degreePrograms' => $degreePrograms
+        ]);
     }
 
     public function update(Request $request, Semester $semester)
-    {
-        $this->authorize('update_semester', $request->user());
+{
+    $this->authorize('update_semester', $request->user());
 
-        $request->validate([
-            'academic_year' => 'required|string|max:255',
-            'level' => 'required|in:1,2,3,4',
-            'semester' => 'required|in:1,2',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'registration_start_date' => 'nullable|date',
-            'registration_end_date' => 'nullable|date',
-            'description' => 'nullable|string',
-            'course_capacity' => 'nullable|integer|min:0',
-            'enrollment_count' => 'nullable|integer|min:0',
-            'status' => 'required|in:Upcoming,In Progress,Completed',
+    $request->validate([
+        'academic_year' => 'required|string|max:255',
+        'level' => 'required|in:1,2,3,4',
+        'semester' => 'required|in:1,2',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date',
+        'registration_start_date' => 'nullable|date',
+        'registration_end_date' => 'nullable|date',
+        'description' => 'nullable|string',
+        'degree_program_id' => 'required|exists:degree_programs,id',
+    ]);
+
+    $originalStartDate = $semester->registration_start_date;
+    $originalEndDate = $semester->registration_end_date;
+
+   // DB::beginTransaction();
+    try {
+        $semester->update([
+            'academic_year' => $request->academic_year,
+            'level' => $request->level,
+            'semester' => $request->semester,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'registration_start_date' => $request->registration_start_date,
+            'registration_end_date' => $request->registration_end_date,
+            'description' => $request->description,
+            'degree_program_id' => $request->degree_program_id,
         ]);
 
-        // Generate reference number if needed, or use the existing one
-       // $reference_number = Semester::generateReferenceNumber($request->level, $request->semester, $request->academic_year);
-
-        try {
-            $semester->update([
-                'academic_year' => $request->academic_year,
-                'level' => $request->level,
-                'semester' => $request->semester,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'registration_start_date' => $request->registration_start_date,
-                'registration_end_date' => $request->registration_end_date,
-                'description' => $request->description,
-                'course_capacity' => $request->course_capacity,
-                'enrollment_count' => $request->enrollment_count,
-                'status' => $request->status,
-            ]);
-
-            return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
-        } catch (QueryException $e) {
-            $errorMessage = $this->handleQueryException($e);
-            return back()->withErrors(['msg' => $errorMessage])->withInput();
+        // Check if the registration start or end dates have changed
+        if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
+            $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
         }
+
+        //DB::commit();
+        return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
+    } catch (QueryException $e) {
+        //DB::rollBack();
+        $errorMessage = $this->handleQueryException($e);
+        return back()->withErrors(['msg' => $errorMessage])->withInput();
     }
+}
 
     public function show(Request $request, Semester $semester)
     {
         $this->authorize('read_semester', $request->user());
 
+        // Eager load the degree program relationship
+        $semester = $semester->load('degreeProgram');
+
         return Inertia::render('Semesters/Show', ['semester' => $semester]);
     }
+
 
     public function destroy(Request $request, Semester $semester)
     {
@@ -171,4 +190,56 @@ class SemesterController extends Controller
             $semester->save();
         }
     }
+    public function notify($semester,$start,$end)
+    {
+            $level = Semester::where('id', $semester)->pluck('level')->first();
+            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
+            $year = Semester::where('id', $semester)->pluck('academic_year')->first();
+            $users = User::where('academic_year',$year)->get();
+            //each user is notified
+       
+            foreach($users as $user){
+
+                $user->notify(new CourseRegistrationOpened($level,$semester_number,$year,$start,$end,$user->name));
+            }
+       
+        }
+
+        public function getSemesterProgressReport($semesterId)
+        {
+            // Retrieve semester information along with related data
+            $semester = Semester::with(['timetables', 'courseRegistrations.course', 'courseRegistrations.user', 'degreeProgram'])
+                ->findOrFail($semesterId);
+        
+            // Fetch all courses for the semester
+            $courses = $semester->courseRegistrations->groupBy('course_id')->map(function ($registrations, $courseId) use ($semesterId) {
+                // Total events for this course
+                $totalEvents = Event::where('semester_id', $semesterId)
+                                    ->where('course_id', $courseId)
+                                    ->count();
+        
+                // Attended events for this course
+                $attendedEvents = Event::where('semester_id', $semesterId)
+                                    ->where('course_id', $courseId)
+                                    ->where('Lec_attended', true)  // Assuming this field tracks attendance
+                                    ->count();
+        
+                $progressPercentage = $totalEvents ? ($attendedEvents / $totalEvents) * 100 : 0;
+        
+                // Return course data with progress
+                return [
+                    'course' => $registrations->first()->course->name,
+                    'totalEvents' => $totalEvents,
+                    'attendedEvents' => $attendedEvents,
+                    'progressPercentage' => round($progressPercentage, 2),
+                ];
+            });
+        
+            // Pass the data to Inertia
+            return inertia('Semesters/SemesterProgressReport', [
+                'semester' => $semester,
+                'courses' => $courses->values(), // convert to an array of course data
+            ]);
+        }
+        
 }

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('semesters', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('degree_program_id')->nullable(); // Make nullable for foreign key constraint
             $table->string('academic_year');
             $table->enum('level', ['1', '2', '3', '4']);
             $table->enum('semester', ['1', '2']);
@@ -21,14 +22,20 @@ return new class extends Migration
             $table->date('registration_start_date')->nullable();
             $table->date('registration_end_date')->nullable();
             $table->text('description')->nullable();
-            $table->integer('course_capacity')->default(0);
-            $table->integer('enrollment_count')->default(0);
             $table->enum('status', ['Upcoming', 'In Progress', 'Completed'])->default('Upcoming');
+            
+            // Foreign key constraint
+            $table->foreign('degree_program_id')
+                  ->references('id')
+                  ->on('degree_programs')
+                  ->onDelete('cascade');
+            
             $table->softDeletes();
             $table->timestamps();
-            $table->index(['academic_year', 'level', 'semester']);
+            
+            // Unique constraint
+            $table->unique(['academic_year', 'level', 'semester', 'degree_program_id'], 'unique_semester_combinations');
         });
-        
     }
 
     /**
@@ -36,6 +43,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('semesters', function (Blueprint $table) {
+            $table->dropForeign(['degree_program_id']);
+            $table->dropUnique('unique_semester_combinations');
+        });
+        
         Schema::dropIfExists('semesters');
     }
 };

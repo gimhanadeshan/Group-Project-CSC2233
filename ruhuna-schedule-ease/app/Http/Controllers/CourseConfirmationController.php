@@ -6,56 +6,47 @@ use App\Models\Course;
 use App\Models\CourseRegistration;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Semester;
 
 class CourseConfirmationController extends Controller
 {
     public function index(Request $request)
     {
-        // Fetch all courses that the user has registered for
-        $userCourses = CourseRegistration::where('user_id', auth()->id())->with('course')->get();
-
+        $this->authorize('read_course_confirmation', $request->user());
+        $userCourses = CourseRegistration::with('course')->with('user')
+            ->get();
+        $semesters = Semester::With('degreeProgram')->orderBy('created_at', 'desc') ->get();
+        
         return Inertia::render('CourseConfirmation/Index', [
             'userCourses' => $userCourses,
+            'semesters'=> $semesters,
         ]);
     }
 
     public function confirmCourse(Request $request, $courseCode)
-    {
-        try {
-            // Find the course by its code
-            $course = Course::where('code', $courseCode)->firstOrFail();
+{
+    $this->authorize('read_course_confirmation', $request->user());
 
-            // Find the course registration
-            $registration = CourseRegistration::where('course_id', $course->id)
-                                               ->where('user_id', auth()->id())
-                                               ->firstOrFail();
+    $course = Course::where('code', $courseCode)->firstOrFail();
+    $registration = CourseRegistration::where('course_id', $course->id)
+                                      ->firstOrFail();
 
-            // Confirm the course
-            $registration->update(['status' => 'confirmed']);
+    $registration->update(['status' => 'confirmed']);
 
-            return response()->json(['message' => 'Course confirmed successfully']);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
-    }
+    return redirect()->back()->with('success', 'Course confirmed successfully.');
+}
 
-    public function cancelCourse(Request $request, $courseCode)
-    {
-        try {
-            // Find the course by its code
-            $course = Course::where('code', $courseCode)->firstOrFail();
+public function cancelCourse(Request $request, $courseCode)
+{
+    $this->authorize('read_course_confirmation', $request->user());
 
-            // Find the course registration
-            $registration = CourseRegistration::where('course_id', $course->id)
-                                               ->where('user_id', auth()->id())
-                                               ->firstOrFail();
+    $course = Course::where('code', $courseCode)->firstOrFail();
+    $registration = CourseRegistration::where('course_id', $course->id)
+                                      ->firstOrFail();
 
-            // Cancel the course
-            $registration->delete();
+    $registration->delete();
 
-            return response()->json(['message' => 'Course canceled successfully']);
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()], 500);
-        }
-    }
+    return redirect()->back()->with('success', 'Course registration canceled successfully.');
+}
+
 }

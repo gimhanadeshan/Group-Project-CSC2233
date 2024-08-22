@@ -20,6 +20,13 @@ class Event extends Model
         'recurrence',
         'user_id',
         'semester_id',
+        'course_id', // Add course_id to fillable attributes
+        'lec_id',
+        'hall_id',
+        'Lec_attended',
+        'course_type',
+        
+
     ];
 
     // Define constants for recurrence patterns
@@ -69,4 +76,17 @@ class Event extends Model
             get: fn() => ucfirst($this->event_title),
         );
     }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+    
+    public function students()
+{
+    return $this->belongsToMany(User::class, 'event_student')
+                ->withPivot('attended')
+                ->withTimestamps();
+}
+
 }

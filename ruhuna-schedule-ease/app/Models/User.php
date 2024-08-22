@@ -70,7 +70,15 @@ class User extends Authenticatable
     {
         return $this->permissions()->where('name', $permission)->exists();
     }
+    public function attendedEvents()
+    {
+    return $this->belongsToMany(Event::class, 'event_student')
+                ->withPivot('attended')
+                ->withTimestamps();
+    }
 
-    
+
+
+
 }
 

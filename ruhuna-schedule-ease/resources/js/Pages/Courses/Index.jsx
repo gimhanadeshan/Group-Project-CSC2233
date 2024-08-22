@@ -165,6 +165,20 @@ const Index = ({ auth, courses }) => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 {auth.permissions.includes(
+                                                    "read_course"
+                                                ) && (
+                                                    <Link
+                                                        href={route(
+                                                            "courses.show",
+                                                            course.id
+                                                        )}
+                                                        className="text-green-600 hover:text-green-900 pr-4"
+                                                    >
+                                                        View
+                                                    </Link>
+                                                )}
+
+                                                {auth.permissions.includes(
                                                     "update_course"
                                                 ) && (
                                                     <Link

@@ -44,7 +44,7 @@ class UserController extends Controller
 
     public function createFromImport(Request $request)
     {
-        $this->authorize('import_user', $request->user());
+        $this->authorize('import_users', $request->user());
         $roles = Role::all();
         $degreePrograms = DegreeProgram::all();
 
@@ -118,7 +118,7 @@ class UserController extends Controller
 
     public function export(Request $request)
 {
-    $this->authorize('export_user', $request->user());
+    $this->authorize('export_users', $request->user());
     $query = User::query();
 
     if ($request->has('searchQuery')) {
@@ -226,7 +226,7 @@ public function storeMany(Request $request)
 
 public function import(Request $request)
 {
-    $this->authorize('import_user', $request->user());
+    $this->authorize('import_users', $request->user());
     $request->validate([
         'file' => 'required|mimes:xlsx,xls|max:2048',
         'academic_year' => 'nullable|string',
