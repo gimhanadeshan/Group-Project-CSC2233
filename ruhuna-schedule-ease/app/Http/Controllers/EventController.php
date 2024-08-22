@@ -158,17 +158,19 @@ public function generateEventsFromTimetable(Request $request,$semesterId)
             'semester_id' => 'nullable|sometimes|exists:semesters,id',
             'lec_id' => 'nullable|sometimes|exists:users,id',
             'hall_id' => 'nullable|sometimes|exists:lecture_halls,id',
+            'course_type' => 'nullable|exists:course_types,id',
+
         ]);
-        //$data['user_id'] = $user->id;
+        $data['user_id'] = $user->id;
 
-        $updateData = $validatedData;
-        $updateData['user_id'] = $user->id;
+        // $updateData = $validatedData;
+        // $updateData['user_id'] = $user->id;
 
-        // Prevent fields from being set to NULL if not present in the request
-        $updateData['course_id'] = $request->has('course_id') ? $validatedData['course_id'] : $event->course_id;
-        $updateData['semester_id'] = $request->has('semester_id') ? $validatedData['semester_id'] : $event->semester_id;
-        $updateData['lec_id'] = $request->has('lec_id') ? $validatedData['lec_id'] : $event->lec_id;
-        $updateData['hall_id'] = $request->has('hall_id') ? $validatedData['hall_id'] : $event->hall_id;
+        // // Prevent fields from being set to NULL if not present in the request
+        // $updateData['course_id'] = $request->has('course_id') ? $validatedData['course_id'] : $event->course_id;
+        // $updateData['semester_id'] = $request->has('semester_id') ? $validatedData['semester_id'] : $event->semester_id;
+        // $updateData['lec_id'] = $request->has('lec_id') ? $validatedData['lec_id'] : $event->lec_id;
+        // $updateData['hall_id'] = $request->has('hall_id') ? $validatedData['hall_id'] : $event->hall_id;
 
         // Determine the number of events to create based on recurrence
         if ($request->daily) {
