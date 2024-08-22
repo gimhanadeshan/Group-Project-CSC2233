@@ -53,129 +53,135 @@ export default function Authenticated({ user, header, children, permissions }) {
                         <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
                     </Link>
                 </div>
-                <div className="relative flex items-center ">
-                    <div className="flex items-center ms-3">
-                        <Dropdown>
-                            <Dropdown.Trigger>
-                                <div>
-                                    <button
-                                        type="button"
-                                        className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-transform transform hover:scale-105"
-                                        aria-expanded={userDropdownOpen}
-                                        onClick={toggleUserDropdown}
-                                    >
-                                        <span className="sr-only">Open user menu</span>
-                                        <img
-                                            className="w-8 h-8 rounded-full"
-                                            src={
-                                                user.profile_img
-                                                    ? "/profile_photos/" + user.profile_img
-                                                    : "/profile_photos/default-profile-image.png"
-                                            }
-                                            alt="userPhoto"
-                                        />
-                                    </button>
-                                </div>
-                            </Dropdown.Trigger>
-
-                            <Dropdown.Content>
-    <div
-        className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg dark:bg-gray-700 z-50 flex flex-col"
-        id="dropdown-user"
-    >
-        <div className="px-4 py-4 flex flex-col items-center justify-center">
+                <div className="relative flex items-center">
+  <div className="flex items-center ms-3">
+    <Dropdown>
+      <Dropdown.Trigger>
+        <div>
+          <button
+            type="button"
+            className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-transform transform hover:scale-105"
+            aria-expanded={userDropdownOpen}
+            onClick={toggleUserDropdown}
+          >
+            <span className="sr-only">Open user menu</span>
             <img
-                className="w-12 h-12 rounded-full shadow-md ring-4 ring-gray-300 dark:ring-gray-600 transition-transform transform hover:scale-105"
-                src={
-                    user.profile_img
-                        ? "/profile_photos/" + user.profile_img
-                        : "/profile_photos/default-profile-image.png"
-                }
-                alt="userPhoto"
+              className="w-8 h-8 rounded-full"
+              src={
+                user.profile_img
+                  ? "/profile_photos/" + user.profile_img
+                  : "/profile_photos/default-profile-image.png"
+              }
+              alt="userPhoto"
+            />
+          </button>
+        </div>
+      </Dropdown.Trigger>
+
+      <Dropdown.Content>
+        <div
+          className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg dark:bg-gray-700 z-50 flex flex-col"
+          id="dropdown-user"
+        >
+          <div className="px-4 py-4 flex flex-col items-center justify-center">
+            <img
+              className="w-12 h-12 rounded-full shadow-md ring-4 ring-gray-300 dark:ring-gray-600 transition-transform transform hover:scale-105"
+              src={
+                user.profile_img
+                  ? "/profile_photos/" + user.profile_img
+                  : "/profile_photos/default-profile-image.png"
+              }
+              alt="userPhoto"
             />
             <p className="mt-3 text-lg font-semibold text-gray-900 dark:text-white">
-                {user.name}
+              {user.name}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-300">
-                {user.email}
+              {user.email}
             </p>
-        </div>
-        <ul className="py-2 flex flex-col">
+          </div>
+          <ul className="py-2 flex flex-col">
             <li>
-                <Dropdown.Link
-                    href={route("dashboard")}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-colors flex items-center"
-                >
-                    <svg
-                        className="w-5 h-5 mr-2 opacity-70"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m-4-4v4h4m6 0v-4m0 4h4m-4-4v4"
-                        ></path>
-                    </svg>
-                    Dashboard
-                </Dropdown.Link>
-            </li>
-            <li>
-                <Dropdown.Link
-                    href={route("profile.edit")}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-colors flex items-center"
-                >
-                    <svg
-                        className="w-5 h-5 mr-2 opacity-70"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 1c2.761 0 5 2.239 5 5 0 .873-.227 1.696-.626 2.418l1.26 1.26C17.786 10.696 18 9.873 18 9c0-2.761-2.239-5-5-5-.873 0-1.696.227-2.418.626l1.26 1.26A4.992 4.992 0 0112 1zM12 23c-2.761 0-5-2.239-5-5 0-.873.227-1.696.626-2.418l-1.26-1.26C6.214 14.304 6 15.127 6 16c0 2.761 2.239 5 5 5 .873 0 1.696-.227 2.418-.626l-1.26-1.26A4.992 4.992 0 0112 23zM1 12c0-2.761 2.239-5 5-5 .873 0 1.696.227 2.418.626l1.26-1.26C7.786 5.304 7 6.127 7 7c0 2.761 2.239 5 5 5 .873 0 1.696-.227 2.418-.626l-1.26-1.26C14.304 10.214 15.127 10 16 10c2.761 0 5 2.239 5 5 0 .873-.227 1.696-.626 2.418l1.26 1.26C22.696 17.786 23 16.873 23 16c0-2.761-2.239-5-5-5-.873 0-1.696.227-2.418.626l-1.26-1.26C15.696 8.227 16 7.304 16 6c0-2.761-2.239-5-5-5-.873 0-1.696.227-2.418.626l-1.26-1.26C8.304 1.786 7.873 1 7 1c-2.761 0-5 2.239-5 5 0 .873.227 1.696.626 2.418l-1.26 1.26C1.786 7.696 1 6.873 1 6c0-2.761 2.239-5 5-5 .873 0 1.696.227 2.418.626l1.26 1.26C7.304 1.786 7 1.873 7 1 2.239 1 1 3.239 1 6c0 .873.227 1.696.626 2.418l-1.26 1.26C1.786 7.696 1 6.873 1 6z"
-                        ></path>
-                    </svg>
-                    Settings
-                </Dropdown.Link>
-            </li>
-            <li>
-                <Dropdown.Link
-                    href={route("logout")}
-                    method="post"
-                    as="button"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-colors flex items-center"
-                >
-                    <svg
-                        className="w-5 h-5 mr-2 opacity-70"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 3l9 9m0 0l-9 9m9-9H3m3 9H3m6-12H3"
-                        ></path>
-                    </svg>
-                    Sign out
-                </Dropdown.Link>
-            </li>
-        </ul>
-    </div>
-</Dropdown.Content>
+              <Dropdown.Link
+                href={route("dashboard")}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-colors flex items-center"
+              >
+                 <svg
+                     class="w-5 h-5 mr-2 opacity-70" 
+                     fill="none" 
+                     stroke="currentColor" 
+                     viewBox="0 0 22 21" 
+                     xmlns="http://www.w3.org/2000/svg">
+                
+                <path
+                    d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
+                <path 
+                    d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
+            </svg>
 
-                        </Dropdown>
-                    </div>
-                </div>
+                Dashboard
+              </Dropdown.Link>
+            </li>
+            <li>
+              <Dropdown.Link
+                href={route("profile.edit")}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-colors flex items-center"
+              >
+             <svg 
+                class="w-5 h-5 mr-2 opacity-70" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24" 
+                xmlns="http://www.w3.org/2000/svg">
+            <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>
+    
+            <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+            </svg>
+
+
+                Settings
+              </Dropdown.Link>
+            </li>
+            <li>
+              <Dropdown.Link
+                href={route("logout")}
+                method="post"
+                as="button"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-colors flex items-center"
+              >
+              <svg
+                class="w-5 h-5 mr-2 opacity-70"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+>
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"
+             />
+            </svg>
+
+                Sign out
+              </Dropdown.Link>
+            </li>
+          </ul>
+        </div>
+      </Dropdown.Content>
+    </Dropdown>
+  </div>
+</div>
+
             </div>
         </div>
     </nav>
