@@ -47,39 +47,47 @@ export default function Show({
                         >
                             Back
                         </Link>
-                        <Link
-                            href={route("timetables.modify", {
-                                timetable: semester,
-                            })}
-                            className="ml-4 px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        >
-                            Modify
-                        </Link>
-                        <Link
-                            href={route("generateEvents", semester)}
-                            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Generate Events
-                        </Link>
-                        <Link
-                            href={route("events.generateAllAttendanceRecords")}
-                            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Generate Attendance Records
-                        </Link>
-                        {confirmation == 0 ? (
-                            <div>
-                                <button
-                                    onClick={handleConfirm}
-                                    className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        {auth.permissions.includes("update_timetable") && (
+                            <Link
+                                href={route("timetables.modify", {
+                                    timetable: semester,
+                                })}
+                                className="ml-4 px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            >
+                                Modify
+                            </Link>
+                        )}
+                        {auth.permissions.includes("create_timetable") && (
+                            <>
+                                <Link
+                                    href={route("generateEvents", semester)}
+                                    className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                    Confirm and Push
-                                </button>
-                            </div>
-                        ) : (
-                            <p className="text-center text-gray-600">
-                                This TimeTable is already Confirmed
-                            </p>
+                                    Generate Events
+                                </Link>
+                                <Link
+                                    href={route(
+                                        "events.generateAllAttendanceRecords"
+                                    )}
+                                    className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    Generate Attendance Records
+                                </Link>
+                                {confirmation == 0 ? (
+                                    <div>
+                                        <button
+                                            onClick={handleConfirm}
+                                            className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        >
+                                            Confirm and Push
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <p className="text-center text-gray-600">
+                                        This TimeTable is already Confirmed
+                                    </p>
+                                )}
+                            </>
                         )}
                         <button
                             onClick={handleDownloadPDF}
@@ -87,12 +95,15 @@ export default function Show({
                         >
                             Download PDF
                         </button>
-                        <button
-                            onClick={handleDelete}
-                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-                        >
-                            Drop TimeTable
-                        </button>
+
+                        {auth.permissions.includes("delete_timetable") && (
+                            <button
+                                onClick={handleDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                            >
+                                Drop TimeTable
+                            </button>
+                        )}
                     </div>
 
                     <ShowTimeTable
