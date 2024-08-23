@@ -307,6 +307,8 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                             <span className="text-red-500 text-sm">{errors.location}</span>
                                         )}
                                     </div>
+                                    {auth.user.role.role_type!=='student' && 
+                                    <>
                                     <div>
                                         <label
                                             htmlFor="hall_id"
@@ -331,7 +333,7 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                             <span className="text-red-500 text-sm">{errors.hall_id}</span>
                                         )}
                                     </div>
-
+                                    </>}
                                     <div>
                                         <label
                                             htmlFor="start"
@@ -369,7 +371,8 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                             <span className="text-red-500 text-sm">{errors.end}</span>
                                         )}
                                     </div>
-
+                                    {auth.user.role.role_type!=='student' && 
+                                    <>
                                     <div>
                                         <label
                                             htmlFor="semester_id"
@@ -537,6 +540,7 @@ const Index = ({ auth, permissions, allevents, semesters, courses, halls, lectur
                                             </button>
                                         )}
                                     </div>
+                                    </>}
                                 </form>
                                 
                             )}

@@ -3,7 +3,7 @@ import { Inertia } from '@inertiajs/inertia';
 import { Head,Link } from '@inertiajs/react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-const AttendancePage = ({ auth, eventId, studentId, attendance }) => {
+const AttendancePage = ({ auth,event, eventId, studentId, attendance }) => {
     const [attended, setAttended] = useState(attendance?.attended || false);
     const courseType = attendance.course_type;
 
@@ -40,13 +40,13 @@ const AttendancePage = ({ auth, eventId, studentId, attendance }) => {
                     <form onSubmit={handleSubmit} className="text-center">
                         <div className="mb-6">
                             <label htmlFor="course_type" className="block text-lg font-medium text-gray-700 dark:text-gray-300">
-                                Course Type
+                                Course
                             </label>
                             <input
                                 type="text"
                                 id="course_type"
                                 name="course_type"
-                                value={getCourseTypeName(courseType)}
+                                value={event.event_title}
                                 readOnly
                                 className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-lg text-center text-gray-800 dark:text-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             />
@@ -80,7 +80,7 @@ const AttendancePage = ({ auth, eventId, studentId, attendance }) => {
                     href={route("events.attendance")}
                     className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                    Back to Attendance
+                    Go to Attendance
                 </Link>
                 </div>
             </AuthenticatedLayout>

@@ -10,7 +10,7 @@ use App\Models\Course;
 use App\Models\LectureHall;
 use App\Models\User;
 use App\Models\CourseType;
-
+use App\Models\CourseRegistration;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,13 +20,49 @@ class EventRegistrationController extends Controller
 {
     $this->authorize('read_event', $request->user());
 
-    $allevents = Event::all();
+    $allevents = [];
     $semesters = Semester::all();
     $courses = Course::all();
     $halls = LectureHall::all();
     $lecturers = User::where('role_id', 3)->get(); // Assuming role_id 3 is for lecturers
     $users = User::where('id', $request->user()->id)->get();
     $courseTypes = CourseType::all();
+
+
+    $UId=$request->user()->id;
+    // Fetch the semester_id from the course_registrations table for the logged-in user
+    $semesterId = CourseRegistration::
+                    where('user_id', $UId)
+                    ->where('status', 'confirmed')
+                    ->orderBy('created_at', 'desc') // Adjust ordering as necessary
+                    ->value('semester_id');
+    
+
+
+    //For Students 
+    if ($semesterId || $request->user()->role->role_type==='student') {
+        // Fetch events that match the user's semester_id
+        $allevents = Event::where('semester_id', $semesterId)//->get();
+                      ->orWhereNull('semester_id')
+                      ->get();
+
+     //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+       
+    //For Lecturer     
+    }else if($request->user()->role->role_type==='lecturer') {
+        
+
+            $allevents = Event::where('lec_id',$UId)//->get();
+                                ->orWhereNull('semester_id')
+                                ->get();
+            //return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+        
+    }
+    else{
+        $allevents = Event::whereNull('semester_id', $semesterId)->get();
+    }
+
+
 
     return Inertia::render('Events/Index', [
         'allevents' => $allevents,

@@ -9,6 +9,8 @@ use App\Models\LectureHall;
 use App\Models\Course;
 use App\Models\Attendance;
 use App\Models\CourseRegistration; 
+use App\Models\User;
+
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -24,28 +26,39 @@ class EventController extends Controller
 {
     $this->authorize('read_event', $request->user());
 
-
+    $UId=$request->user()->id;
+    $Role=$request->user()->role->role_type;
     // Fetch the semester_id from the course_registrations table for the logged-in user
     $semesterId = CourseRegistration::
-                    where('user_id', $request->user()->id)
+                    where('user_id', $UId)
                     ->where('status', 'confirmed')
                     ->orderBy('created_at', 'desc') // Adjust ordering as necessary
                     ->value('semester_id');
-    $UId=$request->user()->id;
+    
 
 
     //For Students 
-    if ($semesterId || $request->user()->role->role_type==='student') {
+    if ($semesterId || $Role==='student') {
         // Fetch events that match the user's semester_id
-        $allevents = Event::where('semester_id', $semesterId)//->get();
+        $allevents = Event::where('semester_id', $semesterId) //->get();
+                      ->orWhere('user_id',$UId)
                       ->orWhereNull('semester_id')
                       ->get();
+
+        //To get only user created events 
+        // $allevents = Event::where('semester_id', $semesterId)
+        //           ->whereHas('user', function ($query) {
+        //               $query->whereIn('role_id', [1,3]);
+        //           })
+        //           ->get();
+
+
 
      return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
        
     //For Lecturer     
     }else{
-        if($request->user()->role->role_type==='lecturer'){
+        if($Role==='lecturer'){
 
             $allevents = Event::where('lec_id',$UId)//->get();
                                 ->orWhereNull('semester_id')
@@ -514,6 +527,8 @@ public function getAttendance(Request $request, $eventid)
 public function viewAttendance($courseType,$eventId, $studentId)
 
 {
+    $event = Event::findOrFail($eventId);
+
     $attendance = DB::table('event_student')
         ->where('event_id', $eventId)
         ->where('student_id', $studentId)
@@ -521,6 +536,7 @@ public function viewAttendance($courseType,$eventId, $studentId)
         ->first(['attended','course_type' ]);
         //dd($attendance);
     return Inertia::render('Events/Attendance', [
+        'event'=>$event,
         'attendance' => $attendance,
         'eventId' => $eventId,
         'studentId' => $studentId,
@@ -545,8 +561,7 @@ public function updateAttendance(Request $request,$courseType, $eventId, $studen
         ->where('course_type', $courseType) // Include course_type in the WHERE clause
         ->update(['attended' => $data['attended']]);
 
-        return redirect()->route('events.attendance')->with('success', 'Attendance updated successfully.');
-       // return redirect()->route('courses.index')->with('success', 'Course created successfully.');
+        return redirect()->route('events')->with('success', 'Attendance updated successfully.');
     }
 
 
@@ -589,7 +604,7 @@ public function showAttendancePage()
         return redirect()->back()->withErrors('Unauthorized access');
     }
 
-    return inertia('Events/AttendancePage', [
+    return Inertia::render('Events/AttendancePage', [
         'attendanceRecords' => $attendanceRecords,
         'roleId' => $roleId,
     ]);
