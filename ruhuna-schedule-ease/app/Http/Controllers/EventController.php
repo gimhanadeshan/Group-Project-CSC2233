@@ -53,7 +53,7 @@ class EventController extends Controller
 
         $allevents = Event::where('semester_id', $semesterId)
                   
-                            ->WhereIn('user_id', $adminLecsIds)
+                            ->orWhereIn('user_id', $adminLecsIds)
                   
                             ->get();  
         
