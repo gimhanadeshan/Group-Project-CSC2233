@@ -215,6 +215,30 @@ const EventCalendar = ({ allevents, auth }) => {
            
         );
     };
+
+
+    
+
+    const [calendarView, setCalendarView] = useState(window.innerWidth < 768 ? 'day' : 'week');
+
+    useEffect(() => {
+        // Function to check the screen width and set the view
+        const updateView = () => {
+            if (window.innerWidth < 768) {
+                setCalendarView('day');
+            } else if (calendarView === 'day') {
+                // Reset view to 'week' only if it was set to 'day' by the mobile condition
+                setCalendarView('week');
+            }
+        };
+
+        // Add event listener for window resize
+        window.addEventListener('resize', updateView);
+
+        // Clean up event listener on component unmount
+        return () => window.removeEventListener('resize', updateView);
+    }, [calendarView]); // Add calendarView as a dependency to ensure it only resets when appropriate
+
     
 
 
@@ -223,11 +247,15 @@ const EventCalendar = ({ allevents, auth }) => {
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
-            <div style={{ height: '850px' }}>
+            <div style={{ height: '850px'}}>
                 <Calendar
                     localizer={localizer}
                     events={events}
-                    defaultView={'week'}
+                    //defaultView={calendarView}
+                    view={calendarView}
+
+                    //views={['month', 'week', 'day', 'agenda']}
+                    onView={(view) => setCalendarView(view)}  // Allow user to change the view
                     views={['month', 'week', 'day', 'agenda']}
                     formats={{
                         weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dddd', culture),
@@ -236,7 +264,7 @@ const EventCalendar = ({ allevents, auth }) => {
                     min={minTime}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{ margin: '50px' }}
+                    style={{ margin: '10px' }}
                     selectable
                     onSelectEvent={openModal}
                     onSelectSlot={handleSelectSlot}
