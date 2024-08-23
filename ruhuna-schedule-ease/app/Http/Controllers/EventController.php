@@ -28,6 +28,10 @@ class EventController extends Controller
 
     $UId=$request->user()->id;
     $Role=$request->user()->role->role_type;
+    $adminLecsIds = User::whereIn('role_id', [1, 3])->pluck('id');
+
+      // Add the specific user ID to the collection
+    $adminLecsIds->push($UId);
     // Fetch the semester_id from the course_registrations table for the logged-in user
     $semesterId = CourseRegistration::
                     where('user_id', $UId)
@@ -39,28 +43,13 @@ class EventController extends Controller
 
     //For Students 
     if ($semesterId || $Role==='student') {
-        // Fetch events that match the user's semester_id
-        // $allevents = Event::where('semester_id', $semesterId) //->get();
-        //               ->orWhere('user_id',$UId)
-        //               ->orWhereNull('semester_id')
-        //               ->get();
-
-        
-        //To get only user created events 
-        $adminLecsIds = User::whereIn('role_id', [1, 3])->pluck('id');
-        $adminLecsIds->push($UId);
-        error_log($adminLecsIds);
-
+             
         $allevents = Event::where('semester_id', $semesterId)
-                  
-                            ->WhereIn('user_id', $adminLecsIds)
-                  
-                            ->get();  
-        
-
-
-
-
+        ->orWhere(function($query) use ($adminLecsIds) {
+            $query->whereNull('semester_id')
+                ->whereIn('user_id', $adminLecsIds);
+        })
+        ->get();           
 
      return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
        
@@ -68,16 +57,21 @@ class EventController extends Controller
     }else{
         if($Role==='lecturer'){
 
-            $allevents = Event::where('lec_id',$UId)//->get();
-                                ->orWhereNull('semester_id')
-                                ->get();
+            $allevents = Event::where('lec_id',$UId)
+                                ->orWhere(function($query) use ($adminLecsIds) {
+                                            $query->whereNull('semester_id')
+                                                    ->whereIn('user_id', $adminLecsIds);
+                                                    })
+                                ->get(); 
+
+
             return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
         }
     }
     
     
     
-    $allevents = Event::whereNull('semester_id', $semesterId)->get();
+    $allevents = Event::whereNull('semester_id')->whereIn('user_id', $adminLecsIds)->get();
     return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
 
                
