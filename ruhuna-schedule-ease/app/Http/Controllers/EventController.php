@@ -42,7 +42,7 @@ class EventController extends Controller
 
 
     //For Students 
-    if ($semesterId || $Role==='student') {
+    if ($semesterId && $Role==='student') {
              
         $allevents = Event::where('semester_id', $semesterId)
         ->orWhere(function($query) use ($adminLecsIds) {
