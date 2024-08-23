@@ -24,11 +24,6 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
             <Head title="Attendance" />
             <AuthenticatedLayout
                 user={auth.user}
-                // header={
-                //     <h2 className="font-semibold text-3xl text-gray-800 dark:text-gray-800 leading-tight text-center">
-                //         Attendance
-                //     </h2>
-                // }
                 permissions={auth.permissions}
             >
                 <div className="container mx-auto p-4">
@@ -38,14 +33,14 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
                     <table className="min-w-28 mx-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
                         <thead>
                             <tr className="text-gray-700 dark:text-gray-300">
-                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
+                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 w-1/4">
                                     Course Code
                                 </th>
-                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
+                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 w-1/4">
                                     Course Type
                                 </th>
-                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg">
-                                   Progress
+                                <th className="py-3 px-4 border-b border-gray-300 dark:border-gray-700 text-lg font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 w-1/2">
+                                    Progress
                                 </th>
                             </tr>
                         </thead>
@@ -62,15 +57,22 @@ const AttendancePage = ({ auth, attendanceRecords }) => {
                                             {getCourseTypeName(record.course_type)}
                                         </td>
                                         <td className="py-3 px-4 border-b border-gray-300 dark:border-gray-700">
-                                            <div className="flex items-center">
+                                            <div className="relative flex items-center">
                                                 <span className="mr-2">
                                                     {record.total_attended} / {record.total_events}
                                                 </span>
-                                                <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2">
+                                                <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2 relative">
                                                     <div
-                                                        className="bg-green-500 h-2 rounded-full"
+                                                        className="bg-green-500 h-2 rounded-full relative"
                                                         style={{ width: `${percentage}%` }}
-                                                    ></div>
+                                                    >
+                                                        <span
+                                                            className="absolute top-[-1.5rem] right-0 transform translate-x-1/2 text-xs font-semibold inline-block py-1 px-2 rounded-full text-teal-600 bg-teal-200 dark:bg-teal-800 dark:text-teal-200"
+                                                            style={{ whiteSpace: 'nowrap' }}
+                                                        >
+                                                            {percentage.toFixed(2)}%
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
