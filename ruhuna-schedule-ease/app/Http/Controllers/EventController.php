@@ -40,17 +40,25 @@ class EventController extends Controller
     //For Students 
     if ($semesterId || $Role==='student') {
         // Fetch events that match the user's semester_id
-        $allevents = Event::where('semester_id', $semesterId) //->get();
-                      ->orWhere('user_id',$UId)
-                      ->orWhereNull('semester_id')
-                      ->get();
+        // $allevents = Event::where('semester_id', $semesterId) //->get();
+        //               ->orWhere('user_id',$UId)
+        //               ->orWhereNull('semester_id')
+        //               ->get();
 
+        
         //To get only user created events 
-        // $allevents = Event::where('semester_id', $semesterId)
-        //           ->whereHas('user', function ($query) {
-        //               $query->whereIn('role_id', [1,3]);
-        //           })
-        //           ->get();
+        $adminLecsIds = User::whereIn('role_id', [1, 3])->pluck('id');
+        $adminLecsIds->push($UId);
+        error_log($adminLecsIds);
+
+        $allevents = Event::where('semester_id', $semesterId)
+                  
+                            ->WhereIn('user_id', $adminLecsIds)
+                  
+                            ->get();  
+        
+
+
 
 
 

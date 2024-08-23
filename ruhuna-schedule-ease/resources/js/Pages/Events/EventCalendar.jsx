@@ -312,7 +312,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                     }
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     required
-                                    disabled={!canEdit}
+                                    //disabled={!canEdit}
 
                                 />
 
@@ -336,7 +336,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                     }
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     required
-                                    disabled={!canEdit}
+                                    //disabled={!canEdit}
                                 />
                                 {errors.location && (
                                     <div className="text-red-600">
@@ -356,7 +356,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                     }
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     required
-                                    disabled={!canEdit}
+                                    //disabled={!canEdit}
                                 />
                                 {errors.start && (
                                     <div className="text-red-600">
@@ -374,7 +374,7 @@ const EventCalendar = ({ allevents, auth }) => {
                                     onChange={(e) => setData("end", e.target.value)}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     required
-                                    disabled={!canEdit}
+                                    //disabled={!canEdit}
                                 />
                                 {errors.end && (
                                     <div className="text-red-600">{errors.end}</div>
