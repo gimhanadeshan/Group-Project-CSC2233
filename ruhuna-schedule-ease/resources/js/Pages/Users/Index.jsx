@@ -134,12 +134,12 @@ export default function Index({ users, auth, roles, degreePrograms }) {
                     <div className="px-4 py-4 sm:p-6">
                         <div className="flex justify-between mb-4">
                             {auth.permissions.includes("create_user") && (
-                                <Link
+                                <a
                                     href={route("users.create")}
                                     className="inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
                                     Create New User
-                                </Link>
+                                </a>
                             )}
                             {auth.permissions.includes("export_users") && (
                                 <button

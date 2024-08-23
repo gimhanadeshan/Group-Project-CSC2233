@@ -108,7 +108,7 @@ export default function AdminDashboard({
                 permissions={auth.permissions}
             >
                 <div className="py-6">
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-6">
                         {/* Additional Section for Role Count Cards */}
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm ">
                             <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100">
