@@ -1,54 +1,82 @@
 import React, { useState } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { debounce } from "lodash";
 
 const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
     const [filters, setFilters] = useState({
         courseCode: "",
         courseName: "",
-        studentRegistrationNo: "",
+        studentName: "",
         semesterId: "",
         status: "",
     });
-    const { data, setData, post, processing } = useForm({
-        course_id: "",
+
+    const { data, setData, put, post, delete: destroy, processing } = useForm({
+        course_ids: [],
     });
 
-    const handleConfirmCourse = (courseCode) => {
-        setData("course_id", courseCode);
-        post(route("course-confirmation.confirm", { courseCode }), {
+    const handleConfirmAllCourses = () => {
+        const courseIds = filteredCourses.map((course) => course.course.code);
+        setData("course_ids", courseIds);
+        post(route("course-confirmation.confirmAll"), {
             preserveScroll: true,
         });
     };
 
-    const handleCancelCourse = (courseCode) => {
-        setData("course_id", courseCode);
-        post(route("course-confirmation.cancel", { courseCode }), {
+    const handleCancelAllCourses = () => {
+        const courseIds = filteredCourses.map((course) => course.course.code);
+        setData("course_ids", courseIds);
+        destroy(route("course-confirmation.cancelAll"), {
             preserveScroll: true,
         });
     };
 
-    // Apply filters
+    const handleConfirmCourse = (courseId,studentId) => {
+        put(`/course-confirmation/confirm/${courseId}/${studentId}`, {
+            preserveScroll: true,
+        });
+        //console.log(studentId);
+    };
+
+    const handleCancelCourse = (courseId,studentId) => {
+        put(`/course-confirmation/cancel/${courseId}/${studentId}`, {
+            preserveScroll: true,
+        });
+        //console.log(studentId);
+    };
+
+    const debouncedFilterChange = debounce((name, value) => {
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [name]: value,
+        }));
+    }, 300);
+
+    const handleFilterChange = (e) => {
+        debouncedFilterChange(e.target.name, e.target.value);
+    };
+
     const filteredCourses = userCourses.filter((course) => {
         const semesterIdMatch = filters.semesterId
             ? course.semester_id === Number(filters.semesterId)
             : true;
-            
+
         return (
-            (filters.courseCode === "" || course.course.code.includes(filters.courseCode)) &&
-            (filters.courseName === "" || course.course.name.toLowerCase().includes(filters.courseName.toLowerCase())) &&
-            (filters.studentRegistrationNo === "" || course.user.registration_no.includes(filters.studentRegistrationNo)) &&
+            (filters.courseCode === "" ||
+                course.course.code.includes(filters.courseCode)) &&
+            (filters.courseName === "" ||
+                course.course.name
+                    .toLowerCase()
+                    .includes(filters.courseName.toLowerCase())) &&
+            (filters.studentName === "" ||
+                course.user.name
+                    .toLowerCase()
+                    .includes(filters.studentName.toLowerCase())) &&
             semesterIdMatch &&
             (filters.status === "" || course.status === filters.status)
         );
     });
-
-    const handleFilterChange = (e) => {
-        setFilters({
-            ...filters,
-            [e.target.name]: e.target.value,
-        });
-    };
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
@@ -63,7 +91,7 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
 
                     <div className="px-4 py-5 sm:px-6">
                         <div className="flex flex-wrap gap-4 mb-4">
-                        <select
+                            <select
                                 name="semesterId"
                                 value={filters.semesterId}
                                 onChange={handleFilterChange}
@@ -72,7 +100,9 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
                                 <option value="">Select Semester</option>
                                 {semesters.map((semester) => (
                                     <option key={semester.id} value={semester.id}>
-                                        {`Level ${semester.level} - Semester ${semester.semester} - ${semester.academic_year} - ${semester.degree_program.name || 'No Degree Program'}`}
+                                        {`Level ${semester.level} - Semester ${semester.semester} - ${semester.academic_year} - ${
+                                            semester.degree_program.name || "No Degree Program"
+                                        }`}
                                     </option>
                                 ))}
                             </select>
@@ -80,12 +110,11 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
                                 name="status"
                                 value={filters.status}
                                 onChange={handleFilterChange}
-                               className="px-3 py-2 border border-gray-300 rounded-md w-full sm:w-auto lg:w-1/5"
+                                className="px-3 py-2 border border-gray-300 rounded-md w-full sm:w-auto lg:w-1/5"
                             >
                                 <option value="">Select Status</option>
                                 <option value="confirmed">Confirmed</option>
                                 <option value="pending">Pending</option>
-                                {/* Add more status options as needed */}
                             </select>
                             <input
                                 type="text"
@@ -105,57 +134,55 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
                             />
                             <input
                                 type="text"
-                                name="studentRegistrationNo"
-                                value={filters.studentRegistrationNo}
+                                name="studentName"
+                                value={filters.studentName}
                                 onChange={handleFilterChange}
-                                placeholder="Filter by Student No"
+                                placeholder="Filter by Student Name"
                                 className="px-3 py-2 border border-gray-300 rounded-md w-full sm:w-auto"
                             />
-                           
                         </div>
-                    </div>
-
-                    <div className="overflow-x-auto">
+                        <div className="flex gap-4 mb-4">
+                            <button
+                                onClick={() => handleConfirmAllCourses()}
+                                className="px-4 py-2 bg-green-500 text-white rounded-md"
+                                disabled={processing}
+                            >
+                                Confirm All
+                            </button>
+                            <button
+                                onClick={() => handleCancelAllCourses()}
+                                className="px-4 py-2 bg-red-500 text-white rounded-md"
+                                disabled={processing}
+                            >
+                                Cancel All
+                            </button>
+                        </div>
                         <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                            <thead>
                                 <tr>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Student
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Student Code
                                     </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Course Code
                                     </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Course Name
                                     </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Action
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {filteredCourses.map((course) => (
-                                    <tr key={course.course.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <tr key={course.course.code}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {course.user.registration_no}
+                                            {console.log(course.user.id)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {course.course.code}
@@ -167,39 +194,20 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
                                             {course.status}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {course.status === "confirmed" ? (
-                                                <button
-                                                    className={`bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ${
-                                                        processing
-                                                            ? "opacity-50 cursor-not-allowed"
-                                                            : ""
-                                                    }`}
-                                                    onClick={() =>
-                                                        handleCancelCourse(
-                                                            course.course.code
-                                                        )
-                                                    }
-                                                    disabled={processing}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2 ${
-                                                        processing
-                                                            ? "opacity-50 cursor-not-allowed"
-                                                            : ""
-                                                    }`}
-                                                    onClick={() =>
-                                                        handleConfirmCourse(
-                                                            course.course.code
-                                                        )
-                                                    }
-                                                    disabled={processing}
-                                                >
-                                                    Confirm
-                                                </button>
-                                            )}
+                                            <button
+                                                onClick={() => handleConfirmCourse(course.course.code,course.user.id)}
+                                                className="px-4 py-2 bg-green-500 text-white rounded-md mr-2"
+                                                disabled={processing}
+                                            >
+                                                Confirm
+                                            </button>
+                                            <button
+                                                onClick={() => handleCancelCourse(course.course.code,course.user.id)}
+                                                className="px-4 py-2 bg-red-500 text-white rounded-md"
+                                                disabled={processing}
+                                            >
+                                                Cancel
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
