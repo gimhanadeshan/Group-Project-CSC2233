@@ -27,9 +27,9 @@ class TimeTableController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
 {
-
+    $this->authorize('read_timetable', $request->user());
     $this->updateAvailability();
     $semestersInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
         ->whereIn('id', function($query) {
@@ -37,7 +37,7 @@ class TimeTableController extends Controller
         })
         ->orderBy('id')
         ->get();
-        
+
 
     $semestersNotInTimeTable = Semester::with('degreeProgram') // Eager load the degreeProgram relationship
         ->whereNotIn('id', function($query) {
@@ -67,8 +67,9 @@ class TimeTableController extends Controller
             return $pdf->stream('timetable.pdf');
         }
 
-    public function modify($semester)
+    public function modify($semester,Request $request)
     {
+        $this->authorize('update_timetable', $request->user());
                         $semesterDetails = Semester::find($semester);
                         $level=$semesterDetails->level;
                         $semesterNumber=$semesterDetails->semester;
@@ -90,6 +91,7 @@ class TimeTableController extends Controller
      */
     public function create(Request $request)
     {
+        $this->authorize('create_timetable', $request->user());
                         $level = $request->query('level');
                         $semester = $request->query('semester');
                         $semester_id = $request->query('semester_id');
@@ -125,6 +127,7 @@ class TimeTableController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create_timetable', $request->user());
                         $tableData = $request->input('timetable');
                         $semester = $request->input('semester_id');
                         $condition = $request->input('conditions');
@@ -225,7 +228,7 @@ class TimeTableController extends Controller
                                     'semester_id' => $semester,
                                 ]);
                                 DB::commit();
-    return $this->show($semester);
+    return $this->show($semester,$request);
 
                         } catch (\Exception $e) {
                             DB::rollBack();
@@ -302,9 +305,9 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     /**
      * Display the specified resource.
      */
-    public function show($semester)
+    public function show($semester,Request $request)
     {
-
+        $this->authorize('read_timetable', $request->user());
 
         $lunchTime['start'] = Condition::where('semester_id', $semester)->pluck('lunchtime_start');
         $lunchTime['end'] = Condition::where('semester_id', $semester)->pluck('lunchtime_end');
@@ -335,8 +338,10 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $semester)
+    public function destroy(int $semester,Request $request)
     {
+        $this->authorize('delete_timetable', $request->user());
+
         $timetables = TimeTable::where('semester_id', $semester)->get();
         foreach ($timetables as $timetable) {
            try{$timetable->delete();}
@@ -355,6 +360,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     }
     public function storeSingle(Request $request)
     {
+        $this->authorize('create_timetable', $request->user());
 
         $course = $request->input('course')['id'];
         $lecturer = $request->input('lecturer')['id'];
@@ -423,14 +429,14 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
     public function notify($semester)
     {
             $level = Semester::where('id', $semester)->pluck('level')->first();
-            $semester = Semester::where('id', $semester)->pluck('semester')->first();
+            $semester_number = Semester::where('id', $semester)->pluck('semester')->first();
             $year = Semester::where('id', $semester)->pluck('academic_year')->first();
             $users = User::where('academic_year',$year)->get();
 
             //each user is notified
         try{
             foreach($users as $user){
-                $user->notify(new TimeTableInitialized(['level'=>$level,'semester'=>$semester,'year'=>$year]));
+                $user->notify(new TimeTableInitialized($level,$semester_number,$year,$user->name));
             }
         }catch(Exception){
 

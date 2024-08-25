@@ -48,7 +48,9 @@ const Show = ({ auth, semester }) => {
                                         Degree Program
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.degree_program ? semester.degree_program.name : "No degree program assigned"}
+                                        {semester.degree_program
+                                            ? semester.degree_program.name
+                                            : "No degree program assigned"}
                                     </dd>
                                 </div>
                                 <div className="sm:col-span-1">
@@ -85,22 +87,6 @@ const Show = ({ auth, semester }) => {
                                 </div>
                                 <div className="sm:col-span-1">
                                     <dt className="text-sm font-medium text-gray-500">
-                                        Course Capacity
-                                    </dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.course_capacity}
-                                    </dd>
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <dt className="text-sm font-medium text-gray-500">
-                                        Enrollment Count
-                                    </dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.enrollment_count}
-                                    </dd>
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <dt className="text-sm font-medium text-gray-500">
                                         Status
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900">
@@ -112,7 +98,8 @@ const Show = ({ auth, semester }) => {
                                         Description
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900">
-                                        {semester.description || "No description available"}
+                                        {semester.description ||
+                                            "No description available"}
                                     </dd>
                                 </div>
                             </div>
@@ -125,10 +112,22 @@ const Show = ({ auth, semester }) => {
                                 Back to Semesters
                             </Link>
                             <Link
-                                href={route("semesters.edit", semester.id)}
+                                href={route(
+                                    "semesters.edit",
+                                    semester.id
+                                )}
                                 className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Edit Semester
+                            </Link>
+                            <Link
+                                href={route(
+                                    "semesters.progressReport",
+                                    semester.id
+                                )}
+                                className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            >
+                                Progress Report
                             </Link>
                         </div>
                     </div>

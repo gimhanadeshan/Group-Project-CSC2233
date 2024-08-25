@@ -23,8 +23,8 @@ class Event extends Model
         'course_id', // Add course_id to fillable attributes
         'lec_id',
         'hall_id',
-        'Stu_attended',
         'Lec_attended',
+        'course_type',
         
 
     ];
@@ -81,4 +81,12 @@ class Event extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    
+    public function students()
+{
+    return $this->belongsToMany(User::class, 'event_student')
+                ->withPivot('attended')
+                ->withTimestamps();
+}
+
 }

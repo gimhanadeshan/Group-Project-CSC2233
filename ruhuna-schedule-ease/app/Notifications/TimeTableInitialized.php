@@ -13,13 +13,15 @@ class TimeTableInitialized extends Notification
     protected $level;
     protected $semester;
     protected $year;
+    protected $name;
     /**
      * Create a new notification instance.
      */
-    public function __construct($level, $semester, $year)   {
+    public function __construct($level, $semester, $year,$name)   {
         $this->level = $level;
         $this->semester = $semester;
         $this->year = $year;
+        $this->name = $name;
     }
 
     /**
@@ -38,11 +40,10 @@ class TimeTableInitialized extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject('Time Table Initialized')
-                    ->greeting('Hello,')
-                    ->line('Time Table Initialized for Level'.$this->level.' semester '.$this->semester.' year '.$this->year)
-                    ->action('Notification Action', url('/dashboard'))
-                    ->line('Thank you for using our application!');
+                    ->greeting('Dear  '.$this->name)
+                    ->line('TimeTable is published for Level '.$this->level.' semester '.$this->semester.' year '.$this->year)
+                    ->action('Check Out', url('/'))
+                    ->salutation('Thank you for using Academic Schedule Ease!');
     }
 
     /**

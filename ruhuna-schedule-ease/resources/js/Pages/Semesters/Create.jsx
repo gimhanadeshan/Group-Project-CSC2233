@@ -13,8 +13,6 @@ const Create = ({ auth, degreePrograms }) => {
         end_date: "",
         registration_start_date: "",
         registration_end_date: "",
-        course_capacity: 0,
-        enrollment_count: 0,
         description: "",
         degree_program_id: "", 
     });
@@ -306,51 +304,7 @@ const Create = ({ auth, degreePrograms }) => {
                                         )}
                                     </div>
 
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="course_capacity"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            Course Capacity
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="course_capacity"
-                                            name="course_capacity"
-                                            value={data.course_capacity}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                           
-                                        />
-                                        {errors.course_capacity && (
-                                            <div className="text-red-600 text-sm mt-2">
-                                                {errors.course_capacity}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="enrollment_count"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            Enrollment Count
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="enrollment_count"
-                                            name="enrollment_count"
-                                            value={data.enrollment_count}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                           
-                                        />
-                                        {errors.enrollment_count && (
-                                            <div className="text-red-600 text-sm mt-2">
-                                                {errors.enrollment_count}
-                                            </div>
-                                        )}
-                                    </div>
+                                   
 
                                     <div className="col-span-6">
                                         <label
@@ -382,7 +336,7 @@ const Create = ({ auth, degreePrograms }) => {
                                     disabled={processing}
                                     className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Save
+                                    {processing ? "Creating..." : "Create Semester"}
                                 </button>
                                 <Link
                                     href={route("semesters.index")}

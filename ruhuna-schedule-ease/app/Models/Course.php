@@ -37,4 +37,19 @@ public function events()
     return $this->hasMany(Event::class);
 }
 
+public function registrationsCountBySemesterAndYear($semesterId, $academicYear)
+{
+    return $this->hasMany(CourseRegistration::class)
+                ->where('semester_id', $semesterId)
+                ->whereHas('semester', function ($query) use ($academicYear) {
+                    $query->where('academic_year', $academicYear);
+                })
+                ->count();
+}
+
+public function timeTable()
+{
+    return $this->hasMany(TimeTable::class);
+}
+
 }

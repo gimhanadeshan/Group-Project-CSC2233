@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "dompdf/dompdf": "^3.0",
+        "guzzlehttp/guzzle": "^7.8",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
@@ -14,7 +15,13 @@
         "maatwebsite/excel": "^3.1",
         "phpoffice/phpspreadsheet": "^1.18",
         "spatie/laravel-permission": "^6.9",
+<<<<<<< HEAD
         "tightenco/ziggy": "^2.3"
+=======
+        "symfony/http-client": "^7.1",
+        "symfony/mailgun-mailer": "^7.1",
+        "tightenco/ziggy": "^2.0"
+>>>>>>> main
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

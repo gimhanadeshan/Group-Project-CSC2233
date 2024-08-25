@@ -12,8 +12,6 @@ const Edit = ({ auth, semester, degreePrograms}) => {
         end_date: semester.end_date || "",
         registration_start_date: semester.registration_start_date || "",
         registration_end_date: semester.registration_end_date || "",
-        course_capacity: semester.course_capacity || 0,
-        enrollment_count: semester.enrollment_count || 0,
         description: semester.description || "",
         degree_program_id: semester.degree_program_id || "",
     });
@@ -301,53 +299,7 @@ const Edit = ({ auth, semester, degreePrograms}) => {
                                                 {errors.registration_end_date}
                                             </div>
                                         )}
-                                    </div>
-
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="course_capacity"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            Course Capacity
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="course_capacity"
-                                            name="course_capacity"
-                                            value={data.course_capacity}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
-                                        />
-                                        {errors.course_capacity && (
-                                            <div className="text-red-600 text-sm mt-2">
-                                                {errors.course_capacity}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label
-                                            htmlFor="enrollment_count"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            Enrollment Count
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="enrollment_count"
-                                            name="enrollment_count"
-                                            value={data.enrollment_count}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            required
-                                        />
-                                        {errors.enrollment_count && (
-                                            <div className="text-red-600 text-sm mt-2">
-                                                {errors.enrollment_count}
-                                            </div>
-                                        )}
-                                    </div>
+                                    </div>                                    
 
                                     <div className="col-span-6">
                                         <label
@@ -378,7 +330,8 @@ const Edit = ({ auth, semester, degreePrograms}) => {
                                     disabled={processing}
                                     className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Save
+                                     {processing ? "Updating..." : "Update Semester"}
+                                  
                                 </button>
                                 <Link
                                     href={route("semesters.index")}

@@ -11,6 +11,8 @@ use App\Models\Semester;
 use App\Models\CourseRegistration;
 use App\Models\Course; // Import the Course model
 use Illuminate\Support\Carbon;
+use App\Models\User;
+use App\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -18,12 +20,12 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        switch ($user->role_id) {
-            case 1:
-                return Inertia::render('Dashboards/AdminDashboard');
-            case 2:
+        switch ($user->role->role_type) {
+            case 'administrator':
+                return $this->admin($request);
+            case 'student':
                 return $this->student($request);
-            case 3:
+            case 'lecturer':
                 return $this->lecturer($request);
             default:
                 return Inertia::render('Dashboard');
@@ -141,7 +143,42 @@ class DashboardController extends Controller
     }
     
 
-    
+    public function admin(Request $request)
+{
+    $now = Carbon::now();
+
+    // Fetch semesters that are in progress
+    $inProgressSemesters = Semester::where('start_date', '<=', $now)
+        ->where('end_date', '>=', $now)
+        ->with(['degreeProgram','courseRegistrations','timetables'])
+        ->get()
+        ->map(function($semester) {
+            $studentCount = $semester->courseRegistrations->groupBy('user_id')->count();
+            $lecturerCount = $semester->timeTables->groupBy('lecturer')->count();
+            
+            return [
+                'id' => $semester->id,
+                'name' => $semester->name,
+                'degree_program' => $semester->degreeProgram->name,
+                'start_date' => $semester->start_date,
+                'end_date' => $semester->end_date,
+                'student_count' => $studentCount,
+                'lecturer_count' => $lecturerCount,
+                'academic_year'=>$semester->academic_year,
+                'level'=>$semester->level,
+                'semester'=>$semester->semester,
+            ];
+        });
+
+        $roleCounts = Role::withCount('users')->get();
+
+    return Inertia::render('Dashboards/AdminDashboard', [
+        'inProgressSemesters' => $inProgressSemesters,
+        'roleCounts' => $roleCounts,
+        // Additional data can be passed here
+    ]);
+}
+
     
     
 
