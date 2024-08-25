@@ -23,21 +23,14 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
             preserveScroll: true,
         });
     };
-<<<<<<< HEAD
-
     const handleCancelAllCourses = () => {
         const courseIds = filteredCourses.map((course) => course.course.code);
         setData("course_ids", courseIds);
         destroy(route("course-confirmation.cancelAll"), {
-=======
-    
-    const handleCancelCourse = (courseCode) => {
-        setData("course_id", courseCode);
-        post(route("course-confirmation.cancel", { courseCode }), {
->>>>>>> main
             preserveScroll: true,
         });
     };
+
 
     const handleConfirmCourse = (courseId,studentId) => {
         put(`/course-confirmation/confirm/${courseId}/${studentId}`, {

@@ -20,7 +20,6 @@ const minTime = new Date(1970, 1, 1, 8, 0);
 const maxTime = new Date(1970, 1, 1, 19, 0);
 
 const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, users, courseTypes,attendances }) => {
-    console.log(attendances[1]);
 
     const canCreate = auth.permissions.includes("create_event");
     const canEdit = auth.permissions.includes("update_event");
