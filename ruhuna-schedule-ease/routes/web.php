@@ -95,8 +95,11 @@ Route::middleware(['auth'])->group(function () {
     //Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/course-confirmation', [CourseConfirmationController::class, 'index'])->name('course-confirmation.index');
-    Route::post('/course-confirmation/{courseCode}/confirm', [CourseConfirmationController::class, 'confirmCourse'])->name('course-confirmation.confirm');
-    Route::delete('/course-confirmation/{courseCode}/cancel', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
+    Route::put('/course-confirmation/confirm/{courseCode}/{studentId}', [CourseConfirmationController::class, 'confirmCourse'])->name('course-confirmation.confirm');
+    Route::put('/course-confirmation/cancel/{courseCode}/{studentId}', [CourseConfirmationController::class, 'cancelCourse'])->name('course-confirmation.cancel');
+    //Route::post('/course-confirmation/confirm-all', [CourseConfirmationController::class, 'confirmAllCourses'])->name('course-confirmation.confirmAll');
+    //Route::delete('/course-confirmation/cancel-all', [CourseConfirmationController::class, 'cancelAllCourses'])->name('course-confirmation.cancelAll');
+   
 
 
     //Route::match(['get', 'post'], '/generate-events/{semester}', [EventController::class, 'generateEventsFromTimetable']);
