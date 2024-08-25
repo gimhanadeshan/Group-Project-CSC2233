@@ -10,7 +10,8 @@ use App\Models\Course;
 use App\Models\Attendance;
 use App\Models\CourseRegistration; 
 use App\Models\User;
-
+use App\Models\CourseType;
+use App\Models\DegreeProgram;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,7 +30,36 @@ class EventController extends Controller
     $UId=$request->user()->id;
     $Role=$request->user()->role->role_type;
     $adminLecsIds = User::whereIn('role_id', [1, 3])->pluck('id');
+    $courseIds=TimeTable::where('lecturer',$UId)->pluck('course_id');
 
+    error_log('CourseIds = '.$courseIds);
+
+
+    //$semesters = TimeTable::all();
+
+
+    $semesters = Semester::select('semesters.id', 'semesters.academic_year', 'semesters.level', 'semesters.semester', 'degree_programs.name')
+    ->join('degree_programs', 'semesters.degree_program_id', '=', 'degree_programs.id')
+    ->join('time_tables', 'semesters.id', '=', 'time_tables.semester_id')
+    ->where('time_tables.lecturer', $UId)
+    ->groupBy('semesters.id', 'semesters.academic_year', 'semesters.level', 'semesters.semester', 'degree_programs.name')
+    ->get();
+
+
+
+
+    $courses = TimeTable::select('time_tables.course_id', 'courses.code', 'courses.name')
+    ->join('courses', 'time_tables.course_id', '=', 'courses.id')
+    ->groupBy('time_tables.course_id', 'courses.code', 'courses.name')
+    ->get();
+
+    $halls = LectureHall::all();
+    $lecturers = User::where('role_id', 3)->get(); // Assuming role_id 3 is for lecturers
+    $users = User::where('id', $request->user()->id)->get();
+    $courseTypes = CourseType::all();
+    $attendances=Attendance::where('student_id',$UId)->get();
+
+    //dd($semesters);
       // Add the specific user ID to the collection
     $adminLecsIds->push($UId);
     // Fetch the semester_id from the course_registrations table for the logged-in user
@@ -51,8 +81,16 @@ class EventController extends Controller
         })
         ->get();           
 
-     return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
-       
+        return Inertia::render('Events/EventCalendar', [
+            'allevents' => $allevents,
+            'semesters' => $semesters,
+            'courses' => $courses,
+            'halls' => $halls,
+            'lecturers' => $lecturers,
+            'users' => $users,
+            'courseTypes' => $courseTypes,
+            'attendances'=> $attendances,
+        ]);      
     //For Lecturer     
     }else{
         if($Role==='lecturer'){
@@ -64,15 +102,32 @@ class EventController extends Controller
                                                     })
                                 ->get(); 
 
-
-            return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+                                return Inertia::render('Events/EventCalendar', [
+                                    'allevents' => $allevents,
+                                    'semesters' => $semesters,
+                                    'courses' => $courses,
+                                    'halls' => $halls,
+                                    'lecturers' => $lecturers,
+                                    'users' => $users,
+                                    'courseTypes' => $courseTypes,
+                                ]);
+                                
         }
     }
     
     
     
     $allevents = Event::whereNull('semester_id')->whereIn('user_id', $adminLecsIds)->get();
-    return Inertia::render('Events/EventCalendar', ['allevents' => $allevents]);
+    
+    return Inertia::render('Events/EventCalendar', [
+        'allevents' => $allevents,
+        'semesters' => $semesters,
+        'courses' => $courses,
+        'halls' => $halls,
+        'lecturers' => $lecturers,
+        'users' => $users,
+        'courseTypes' => $courseTypes,
+    ]);
 
                
     }
