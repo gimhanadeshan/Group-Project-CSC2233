@@ -10,9 +10,12 @@ class CourseRegistrationController extends Controller
 {
     public function index(){
 
-        $courses = Course::all();
-        return Inertia::render('CourseRegistrations/Index', ['courses' => $courses]);
-    }
+    // Get semesters with open registration for the student's academic year
+    $semesters = Semester::where('registration_start_date', '<=', now())
+        ->where('registration_end_date', '>=', now())
+        ->where('academic_year', $user->academic_year)
+        ->where('degree_program_id', $user->degree_program_id)
+        ->get();
 
     public function store(Request $request)
     {

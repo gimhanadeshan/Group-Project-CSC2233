@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Carbon\Carbon;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Semester>
@@ -19,10 +20,13 @@ class SemesterFactory extends Factory
 
 
 
+        // return [
+        //     'start_date' => $this->faker->date(),
+        //     'end_date' => $this->faker->date(),
+        // ];
         return [
-            'name' => $this->faker->word,  // Generate a random name
-            'start_date' => $this->faker->date(),
-            'end_date' => $this->faker->date(),
+            'start_date' => $start_date = $this->faker->dateTimeBetween('now', '+6 months')->format('Y-m-d'),
+            'end_date' => Carbon::parse($start_date)->addMonths(6)->format('Y-m-d'),
         ];
     }
 }

@@ -38,20 +38,40 @@ class PermissionRoleSeeder extends Seeder
             ['permission_id' => 22, 'role_id' => 1], // Admin can read event
             ['permission_id' => 23, 'role_id' => 1], // Admin can update event
             ['permission_id' => 24, 'role_id' => 1], // Admin can delete event
-            // Editor permissions
-            ['permission_id' => 2, 'role_id' => 2], // Editor can read user
-            ['permission_id' => 3, 'role_id' => 2], // Editor can update user
-            ['permission_id' => 6, 'role_id' => 2], // Editor can read timetable
-            ['permission_id' => 7, 'role_id' => 2], // Editor can update timetable
-            ['permission_id' => 10, 'role_id' => 2], // Editor can read course
-            ['permission_id' => 11, 'role_id' => 2], // Editor can update course
-            ['permission_id' => 14, 'role_id' => 2], // Editor can read lecture hall
-            ['permission_id' => 15, 'role_id' => 2], // Editor can update lecture hall
-            ['permission_id' => 18, 'role_id' => 2], // Editor can read semester
-            ['permission_id' => 19, 'role_id' => 2], // Editor can update semester
-            ['permission_id' => 22, 'role_id' => 2], // Editor can read event
-            ['permission_id' => 23, 'role_id' => 2], // Editor can update event
-            // Add more role-permission associations as needed
+            ['permission_id' => 25, 'role_id' => 1],
+            ['permission_id' => 26, 'role_id' => 1],
+            ['permission_id' => 27, 'role_id' => 1],
+            ['permission_id' => 28, 'role_id' => 1],
+            ['permission_id' => 29, 'role_id' => 1],
+            ['permission_id' => 30, 'role_id' => 1],
+            ['permission_id' => 31, 'role_id' => 1],
+            ['permission_id' => 32, 'role_id' => 1],
+            ['permission_id' => 33, 'role_id' => 1],
+            ['permission_id' => 34, 'role_id' => 1],
+            ['permission_id' => 35, 'role_id' => 1],
+            ['permission_id' => 36, 'role_id' => 1],
+            ['permission_id' => 37, 'role_id' => 1],
+            ['permission_id' => 38, 'role_id' => 1],
+            ['permission_id' => 39, 'role_id' => 1],
+            ['permission_id' => 40, 'role_id' => 1],
+            ['permission_id' => 41, 'role_id' => 1],
+            ['permission_id' => 42, 'role_id' => 1],
+           
+           
+           // Lecturer permissions
+           ['permission_id' => 2, 'role_id' => 3], // Lecturer can read user
+           ['permission_id' => 6, 'role_id' => 3], // Lecturer can read timetable
+           ['permission_id' => 10, 'role_id' => 3], // Lecturer can read course
+           ['permission_id' => 14, 'role_id' => 3], // Lecturer can read lecture hall
+           ['permission_id' => 18, 'role_id' => 3], // Lecturer can read semester
+           ['permission_id' => 22, 'role_id' => 3], // Lecturer can read event
+           ['permission_id' => 38, 'role_id' => 3], // Lecturer can read course confirmation
+
+
+            // Student permissions
+            ['permission_id' => 37, 'role_id' => 2],
+            ['permission_id' => 22, 'role_id' => 2],
+
         ];
 
         DB::table('permission_role')->insert($permission_roles);

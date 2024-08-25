@@ -72,8 +72,13 @@ export default function CreateFromImport({ auth, roles, degreePrograms }) {
         const selectedRoleId = e.target.value;
         setRoleId(selectedRoleId);
 
-        // Check if selected role requires academic info
-        if (selectedRoleId === "2") {
+        // Find the selected role from the roles list
+        const selectedRole = roles.find(
+            (role) => role.id === parseInt(selectedRoleId)
+        );
+
+        // Check if the role was found and if it requires academic info
+        if (selectedRole && selectedRole.role_type === "student") {
             setRoleRequiresAcademicInfo(true); // Set to true for Student role
         } else {
             setRoleRequiresAcademicInfo(false); // Set to false for other roles

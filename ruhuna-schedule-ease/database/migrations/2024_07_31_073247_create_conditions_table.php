@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('lunchtime_start')->nullable();
             $table->string('lunchtime_end')->nullable();
             $table->foreignId('semester_id')->constrained()->onDelete('cascade');
+            $table->boolean('confirmed')->default(false);
             $table->timestamps();
         });
     }

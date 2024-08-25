@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useForm, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 const Index = ({ auth, lectureHalls }) => {
     const { delete: destroy } = useForm();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [minCapacity, setMinCapacity] = useState("");
+    const [maxCapacity, setMaxCapacity] = useState("");
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this lecture hall?")) {
@@ -14,6 +17,16 @@ const Index = ({ auth, lectureHalls }) => {
     const canCreate = auth.permissions.includes("create_lecture_hall");
     const canEdit = auth.permissions.includes("update_lecture_hall");
     const canDelete = auth.permissions.includes("delete_lecture_hall");
+
+    const filteredLectureHalls = lectureHalls.filter((hall) => {
+        const matchesSearch =
+            hall.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesMinCapacity =
+            !minCapacity || hall.capacity >= parseInt(minCapacity);
+        const matchesMaxCapacity =
+            !maxCapacity || hall.capacity <= parseInt(maxCapacity);
+        return matchesSearch && matchesMinCapacity && matchesMaxCapacity;
+    });
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -29,6 +42,29 @@ const Index = ({ auth, lectureHalls }) => {
                         Create New Lecture Hall
                     </Link>
                 )}
+                <div className="mb-6 flex gap-4">
+                    <input
+                        type="text"
+                        placeholder="Search by name"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm w-full"
+                    />
+                    <input
+                        type="number"
+                        placeholder="Min Capacity"
+                        value={minCapacity}
+                        onChange={(e) => setMinCapacity(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm w-full"
+                    />
+                    <input
+                        type="number"
+                        placeholder="Max Capacity"
+                        value={maxCapacity}
+                        onChange={(e) => setMaxCapacity(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm w-full"
+                    />
+                </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
@@ -56,7 +92,7 @@ const Index = ({ auth, lectureHalls }) => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {lectureHalls.map((hall) => (
+                            {filteredLectureHalls.map((hall) => (
                                 <tr key={hall.id}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {hall.name}

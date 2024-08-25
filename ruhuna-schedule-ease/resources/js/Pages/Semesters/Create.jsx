@@ -1,25 +1,32 @@
-import React, { useState } from "react";
-import { Inertia } from "@inertiajs/inertia";
-import { useForm, Link } from "@inertiajs/react";
+import React from "react";
+import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
-const Create = ({ auth }) => {
+const Create = ({ auth, degreePrograms }) => {
     const { data, setData, post, processing, errors } = useForm({
         academic_year: "",
         level: "",
         semester: "",
-        name: "",
         start_date: "",
         end_date: "",
         registration_start_date: "",
         registration_end_date: "",
-        course_registration_open: false,
+        description: "",
+        degree_program_id: "", 
     });
 
     const handleChange = (e) => {
-        const { id, value, type, checked } = e.target;
-        setData(id, type === "checkbox" ? checked : value);
+        const { id, value, type, checked, dataset } = e.target;
+        if (dataset.index >= 0) {
+            const { name, index } = dataset;
+            const updatedArray = [...data[name]];
+            updatedArray[index][id] = type === "checkbox" ? checked : value;
+            setData(name, updatedArray);
+        } else {
+            setData(id, type === "checkbox" ? checked : value);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -39,8 +46,13 @@ const Create = ({ auth }) => {
         if (!Object.keys(errors).length) return null;
 
         return (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <strong className="font-bold">Whoops! Something went wrong.</strong>
+            <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                role="alert"
+            >
+                <strong className="font-bold">
+                    Whoops! Something went wrong.
+                </strong>
                 <ul className="mt-3 list-disc list-inside text-sm">
                     {Object.values(errors).map((error, index) => (
                         <li key={index}>{error}</li>
@@ -51,7 +63,7 @@ const Create = ({ auth }) => {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Create Semester" />
             <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -66,7 +78,10 @@ const Create = ({ auth }) => {
                                 {renderErrors()}
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="academic_year" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="academic_year"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Academic Year
                                         </label>
                                         <select
@@ -77,7 +92,9 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         >
-                                            <option value="">Select Academic Year</option>
+                                            <option value="">
+                                                Select Academic Year
+                                            </option>
                                             {academicYears.map((year) => (
                                                 <option key={year} value={year}>
                                                     {year}
@@ -92,7 +109,10 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="level" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="level"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Level
                                         </label>
                                         <select
@@ -103,9 +123,14 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         >
-                                            <option value="">Select Level</option>
+                                            <option value="">
+                                                Select Level
+                                            </option>
                                             {levels.map((level, index) => (
-                                                <option key={index} value={index + 1}>
+                                                <option
+                                                    key={index}
+                                                    value={index + 1}
+                                                >
                                                     {level}
                                                 </option>
                                             ))}
@@ -118,7 +143,10 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="semester" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="semester"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Semester
                                         </label>
                                         <select
@@ -129,12 +157,19 @@ const Create = ({ auth }) => {
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             required
                                         >
-                                            <option value="">Select Semester</option>
-                                            {semesters.map((semester, index) => (
-                                                <option key={index} value={index + 1}>
-                                                    {semester}
-                                                </option>
-                                            ))}
+                                            <option value="">
+                                                Select Semester
+                                            </option>
+                                            {semesters.map(
+                                                (semester, index) => (
+                                                    <option
+                                                        key={index}
+                                                        value={index + 1}
+                                                    >
+                                                        {semester}
+                                                    </option>
+                                                )
+                                            )}
                                         </select>
                                         {errors.semester && (
                                             <div className="text-red-600 text-sm mt-2">
@@ -144,26 +179,44 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                            Remarks
+                                        <label
+                                            htmlFor="degree_program_id"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Degree Program
                                         </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            value={data.name}
+                                        <select
+                                            id="degree_program_id"
+                                            name="degree_program_id"
+                                            value={data.degree_program_id}
                                             onChange={handleChange}
                                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                        {errors.name && (
+                                            required
+                                        >
+                                            <option value="">
+                                                Select Degree Program
+                                            </option>
+                                            {degreePrograms.map((program) => (
+                                                <option
+                                                    key={program.id}
+                                                    value={program.id}
+                                                >
+                                                    {program.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.degree_program_id && (
                                             <div className="text-red-600 text-sm mt-2">
-                                                {errors.name}
+                                                {errors.degree_program_id}
                                             </div>
                                         )}
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="start_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             Start Date
                                         </label>
                                         <input
@@ -183,7 +236,10 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
+                                        <label
+                                            htmlFor="end_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
                                             End Date
                                         </label>
                                         <input
@@ -203,74 +259,91 @@ const Create = ({ auth }) => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <div className="flex items-center">
-                                            <input
-                                                id="course_registration_open"
-                                                name="course_registration_open"
-                                                type="checkbox"
-                                                checked={data.course_registration_open}
-                                                onChange={handleChange}
-                                                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                            <label htmlFor="course_registration_open" className="ml-2 block text-sm font-medium text-gray-700">
-                                                Open Course Registration
-                                            </label>
-                                        </div>
+                                        <label
+                                            htmlFor="registration_start_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Registration Start Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="registration_start_date"
+                                            name="registration_start_date"
+                                            value={data.registration_start_date}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
+                                        />
+                                        {errors.registration_start_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.registration_start_date}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {data.course_registration_open && (
-                                        <>
-                                            <div className="col-span-6 sm:col-span-3">
-                                                <label htmlFor="registration_start_date" className="block text-sm font-medium text-gray-700">
-                                                    Registration Start Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="registration_start_date"
-                                                    name="registration_start_date"
-                                                    value={data.registration_start_date}
-                                                    onChange={handleChange}
-                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    required
-                                                />
-                                                {errors.registration_start_date && (
-                                                    <div className="text-red-600 text-sm mt-2">
-                                                        {errors.registration_start_date}
-                                                    </div>
-                                                )}
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label
+                                            htmlFor="registration_end_date"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Registration End Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="registration_end_date"
+                                            name="registration_end_date"
+                                            value={data.registration_end_date}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            required
+                                        />
+                                        {errors.registration_end_date && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.registration_end_date}
                                             </div>
+                                        )}
+                                    </div>
 
-                                            <div className="col-span-6 sm:col-span-3">
-                                                <label htmlFor="registration_end_date" className="block text-sm font-medium text-gray-700">
-                                                    Registration End Date
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id="registration_end_date"
-                                                    name="registration_end_date"
-                                                    value={data.registration_end_date}
-                                                    onChange={handleChange}
-                                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                    required
-                                                />
-                                                {errors.registration_end_date && (
-                                                    <div className="text-red-600 text-sm mt-2">
-                                                        {errors.registration_end_date}
-                                                    </div>
-                                                )}
+                                   
+
+                                    <div className="col-span-6">
+                                        <label
+                                            htmlFor="description"
+                                            className="block text-sm font-medium text-gray-700"
+                                        >
+                                            Description
+                                        </label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            value={data.description}
+                                            onChange={handleChange}
+                                            rows="3"
+                                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                           
+                                        ></textarea>
+                                        {errors.description && (
+                                            <div className="text-red-600 text-sm mt-2">
+                                                {errors.description}
                                             </div>
-                                        </>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                            <div className="px-4 py-3 text-right sm:px-6">
                                 <button
                                     type="submit"
-                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     disabled={processing}
+                                    className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                    Create Semester
+                                    {processing ? "Creating..." : "Create Semester"}
                                 </button>
+                                <Link
+                                    href={route("semesters.index")}
+                                    className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </Link>
                             </div>
                         </form>
                     </div>

@@ -1,15 +1,60 @@
-import React from "react";
-import { Link, usePage } from "@inertiajs/react";
+import React, { useState, useEffect } from "react";
+import { Link, usePage,useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
-const Index = ({ auth, semesters }) => {
+const Index = ({ auth, semesters, degreePrograms }) => {
+    const { delete: destroy } = useForm();
+    const [search, setSearch] = useState("");
+    const [academicYear, setAcademicYear] = useState("");
+    const [status, setStatus] = useState("");
+    const [degreeProgram, setDegreeProgram] = useState("");
+
+    const handleDelete = (id) => {
+        if (confirm("Are you sure you want to delete this semester?")) {
+            destroy(route("semesters.destroy", id));
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+    };
+
+    const handleAcademicYearChange = (e) => {
+        setAcademicYear(e.target.value);
+    };
+
+    const handleStatusChange = (e) => {
+        setStatus(e.target.value);
+    };
+
+    const handleDegreeProgramChange = (e) => {
+        setDegreeProgram(e.target.value);
+    };
+
+    const filteredSemesters = semesters.filter((sem) => {
+        return (
+            (sem.academic_year.toLowerCase().includes(search.toLowerCase()) ||
+                sem.degree_program.name
+                    .toLowerCase()
+                    .includes(search.toLowerCase())) &&
+            (academicYear === "" || sem.academic_year === academicYear) &&
+            (status === "" || sem.status === status) &&
+            (degreeProgram === "" ||
+                sem.degree_program.id === parseInt(degreeProgram, 10))
+        );
+    });
+
     const { errors } = usePage().props;
 
     const canCreate = auth.permissions.includes("create_semester");
     const canEdit = auth.permissions.includes("update_semester");
     const canDelete = auth.permissions.includes("delete_semester");
     const canRead = auth.permissions.includes("read_semester");
+
+    // Generate the last 10 years
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -30,6 +75,50 @@ const Index = ({ auth, semesters }) => {
                                 </Link>
                             )}
                         </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <input
+                                type="text"
+                                placeholder="Search by academic year or degree program..."
+                                value={search}
+                                onChange={handleSearchChange}
+                                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                            <select
+                                value={academicYear}
+                                onChange={handleAcademicYearChange}
+                                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            >
+                                <option value="">All Academic Years</option>
+                                {years.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                value={status}
+                                onChange={handleStatusChange}
+                                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            >
+                                <option value="">All Statuses</option>
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="Completed">Completed</option>
+                                <option value="In Progress">In Progress</option>
+                            </select>
+                            <select
+                                value={degreeProgram}
+                                onChange={handleDegreeProgramChange}
+                                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            >
+                                <option value="">All Degree Programs</option>
+                                {degreePrograms.map((program) => (
+                                    <option key={program.id} value={program.id}>
+                                        {program.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead>
@@ -44,7 +133,10 @@ const Index = ({ auth, semesters }) => {
                                             Semester
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Remarks
+                                            Degree Program
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
                                         </th>
                                         {canEdit || canRead || canDelete ? (
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -54,19 +146,22 @@ const Index = ({ auth, semesters }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {semesters.map((semester) => (
-                                        <tr key={semester.id}>
+                                    {filteredSemesters.map((sem) => (
+                                        <tr key={sem.id}>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {semester.academic_year}
+                                                {sem.academic_year}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {semester.level}
+                                                {sem.level}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {semester.semester}
+                                                {sem.semester}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {semester.name}
+                                                {sem.degree_program.name}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {sem.status}
                                             </td>
                                             {canEdit || canRead || canDelete ? (
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -74,7 +169,7 @@ const Index = ({ auth, semesters }) => {
                                                         <Link
                                                             href={route(
                                                                 "semesters.edit",
-                                                                semester.id
+                                                                sem.id
                                                             )}
                                                             className="text-indigo-600 hover:text-indigo-900 mr-4"
                                                         >
@@ -85,7 +180,7 @@ const Index = ({ auth, semesters }) => {
                                                         <Link
                                                             href={route(
                                                                 "semesters.show",
-                                                                semester.id
+                                                                sem.id
                                                             )}
                                                             className="text-green-600 hover:text-green-900 mr-4"
                                                         >
@@ -93,17 +188,16 @@ const Index = ({ auth, semesters }) => {
                                                         </Link>
                                                     )}
                                                     {canDelete && (
-                                                        <Link
-                                                            href={route(
-                                                                "semesters.destroy",
-                                                                semester.id
-                                                            )}
-                                                            method="delete"
-                                                            as="button"
+                                                        <button
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    sem.id
+                                                                )
+                                                            }
                                                             className="text-red-600 hover:text-red-900"
                                                         >
                                                             Delete
-                                                        </Link>
+                                                        </button>
                                                     )}
                                                 </td>
                                             ) : null}
@@ -112,11 +206,6 @@ const Index = ({ auth, semesters }) => {
                                 </tbody>
                             </table>
                         </div>
-                        {semesters.length === 0 && (
-                            <div className="text-center text-gray-500 py-4">
-                                No semesters found.
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

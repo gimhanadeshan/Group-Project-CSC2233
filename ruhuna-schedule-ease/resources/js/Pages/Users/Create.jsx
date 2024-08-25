@@ -40,7 +40,11 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
 
         // Check if selected role requires academic info
         if (name === "role_id") {
-            if (value === "2") {
+            // Find the role type based on the selected role_id
+            const selectedRole = roles.find(
+                (role) => role.id === parseInt(value)
+            );
+            if (selectedRole && selectedRole.role_type === "student") {
                 setRoleRequiresAcademicInfo(true); // Set to true for Student role
             } else {
                 setRoleRequiresAcademicInfo(false); // Set to false for other roles
@@ -123,18 +127,21 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Create Users" />
 
             <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Create Users</h1>
-                <Link
-                    href={route("users.createFromImport")}
-                    className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                    Import From Excel
-                </Link>
-
+                <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+                    Create Users
+                </h1>
+                {auth.permissions.includes("import_users") && (
+                    <Link
+                        href={route("users.createFromImport")}
+                        className="bg-green-600 text-white py-2 px-4 rounded-md inline-block mb-4 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                        Import From Excel
+                    </Link>
+                )}
                 {successMessage && (
                     <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
                         <strong className="font-bold">Success!</strong>{" "}
@@ -151,7 +158,9 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
 
                 <form onSubmit={submit}>
                     <div className="border rounded p-4 mb-6">
-                        <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Common Details</h2>
+                        <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+                            Common Details
+                        </h2>
 
                         <div className="grid grid-cols-4 gap-4">
                             <div>
@@ -178,7 +187,10 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                             </div>
 
                             <div>
-                                <InputLabel htmlFor="password" value="Temporary Password" />
+                                <InputLabel
+                                    htmlFor="password"
+                                    value="Temporary Password"
+                                />
                                 <TextInput
                                     type="password"
                                     id="password"
@@ -197,7 +209,10 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                             {roleRequiresAcademicInfo && (
                                 <>
                                     <div>
-                                        <InputLabel htmlFor="academic_year" value="Academic Year" />
+                                        <InputLabel
+                                            htmlFor="academic_year"
+                                            value="Academic Year"
+                                        />
                                         <select
                                             id="academic_year"
                                             name="academic_year"
@@ -206,21 +221,33 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                             className="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                                             required
                                         >
-                                            <option value="">Select Academic Year</option>
+                                            <option value="">
+                                                Select Academic Year
+                                            </option>
                                             {yearOptions.map((option) => (
-                                                <option key={option.value} value={option.value}>
+                                                <option
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
                                                     {option.label}
                                                 </option>
                                             ))}
                                         </select>
                                         <InputError
-                                            message={errors["commonData.academic_year"]}
+                                            message={
+                                                errors[
+                                                    "commonData.academic_year"
+                                                ]
+                                            }
                                             className="mt-2"
                                         />
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="degree_program_id" value="Degree Program" />
+                                        <InputLabel
+                                            htmlFor="degree_program_id"
+                                            value="Degree Program"
+                                        />
                                         <select
                                             id="degree_program_id"
                                             name="degree_program_id"
@@ -229,15 +256,24 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                             className="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
                                             required
                                         >
-                                            <option value="">Select Degree Program</option>
+                                            <option value="">
+                                                Select Degree Program
+                                            </option>
                                             {degreePrograms.map((program) => (
-                                                <option key={program.id} value={program.id}>
+                                                <option
+                                                    key={program.id}
+                                                    value={program.id}
+                                                >
                                                     {program.name}
                                                 </option>
                                             ))}
                                         </select>
                                         <InputError
-                                            message={errors["commonData.degree_program_id"]}
+                                            message={
+                                                errors[
+                                                    "commonData.degree_program_id"
+                                                ]
+                                            }
                                             className="mt-2"
                                         />
                                     </div>
@@ -251,26 +287,46 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                             <table className="min-w-full bg-white dark:bg-gray-800 border dark:border-gray-700">
                                 <thead>
                                     <tr>
-                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Name</th>
-                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Email</th>
-                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Registration No</th>
-                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">Actions</th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                            Name
+                                        </th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                            Email
+                                        </th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                            Registration No
+                                        </th>
+                                        <th className="px-4 py-2 border dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {users.map((user, index) => (
-                                        <tr key={index} className="border-t dark:border-gray-700">
+                                        <tr
+                                            key={index}
+                                            className="border-t dark:border-gray-700"
+                                        >
                                             <td className="px-4 py-2 border dark:border-gray-700">
                                                 <TextInput
                                                     name="name"
                                                     value={user.name}
-                                                    onChange={(e) => handleInputChange(index, e)}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
                                                     className="mt-1 block w-full"
                                                     autoComplete="name"
                                                     required
                                                 />
                                                 <InputError
-                                                    message={errors[`users.${index}.name`]}
+                                                    message={
+                                                        errors[
+                                                            `users.${index}.name`
+                                                        ]
+                                                    }
                                                     className="mt-2"
                                                 />
                                             </td>
@@ -279,13 +335,22 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                                     type="email"
                                                     name="email"
                                                     value={user.email}
-                                                    onChange={(e) => handleInputChange(index, e)}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
                                                     className="mt-1 block w-full"
                                                     autoComplete="username"
                                                     required
                                                 />
                                                 <InputError
-                                                    message={errors[`users.${index}.email`]}
+                                                    message={
+                                                        errors[
+                                                            `users.${index}.email`
+                                                        ]
+                                                    }
                                                     className="mt-2"
                                                 />
                                             </td>
@@ -293,20 +358,31 @@ export default function CreateUsers({ auth, roles, degreePrograms }) {
                                                 <TextInput
                                                     name="registration_no"
                                                     value={user.registration_no}
-                                                    onChange={(e) => handleInputChange(index, e)}
+                                                    onChange={(e) =>
+                                                        handleInputChange(
+                                                            index,
+                                                            e
+                                                        )
+                                                    }
                                                     className="mt-1 block w-full"
                                                     autoComplete="registration_no"
                                                     required
                                                 />
                                                 <InputError
-                                                    message={errors[`users.${index}.registration_no`]}
+                                                    message={
+                                                        errors[
+                                                            `users.${index}.registration_no`
+                                                        ]
+                                                    }
                                                     className="mt-2"
                                                 />
                                             </td>
                                             <td className="px-4 py-2 border dark:border-gray-700">
                                                 <button
                                                     type="button"
-                                                    onClick={() => removeUser(index)}
+                                                    onClick={() =>
+                                                        removeUser(index)
+                                                    }
                                                     className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 focus:outline-none"
                                                 >
                                                     Remove

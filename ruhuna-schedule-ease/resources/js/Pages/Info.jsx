@@ -1,4 +1,3 @@
-
 // ParticleBackground.jsx
 import { useMemo,React,useEffect,useState } from 'react';
 import Particles, { initParticlesEngine } from "@tsparticles/react";
@@ -42,7 +41,7 @@ const Info = () => {
     },
     {
       id: 2,
-      name: 'Charith Jayasankha',
+      name: 'Charith jayasankha',
       position: 'Member',
       image: '/Team/mem_charith.jpeg',
     },

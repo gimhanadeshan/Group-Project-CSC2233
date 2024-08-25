@@ -38,7 +38,7 @@ const Index = ({ auth, courses }) => {
     });
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Courses" />
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow sm:rounded-lg">
@@ -86,12 +86,14 @@ const Index = ({ auth, courses }) => {
                         </div>
                     </div>
                     <div className="px-4 py-4 sm:p-6">
-                        <Link
-                            href={route("courses.create")}
-                            className="mb-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Create New Course
-                        </Link>
+                        {auth.permissions.includes("create_course") && (
+                            <Link
+                                href={route("courses.create")}
+                                className="mb-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Create New Course
+                            </Link>
+                        )}
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
@@ -162,26 +164,48 @@ const Index = ({ auth, courses }) => {
                                                 {course.is_core ? "Yes" : "No"}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <Link
-                                                    href={route(
-                                                        "courses.edit",
-                                                        course.id
-                                                    )}
-                                                    className="text-indigo-600 hover:text-indigo-900"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <Link
-                                                    href={route(
-                                                        "courses.destroy",
-                                                        course.id
-                                                    )}
-                                                    method="delete"
-                                                    as="button"
-                                                    className="ml-4 text-red-600 hover:text-red-900"
-                                                >
-                                                    Delete
-                                                </Link>
+                                                {auth.permissions.includes(
+                                                    "read_course"
+                                                ) && (
+                                                    <Link
+                                                        href={route(
+                                                            "courses.show",
+                                                            course.id
+                                                        )}
+                                                        className="text-green-600 hover:text-green-900 pr-4"
+                                                    >
+                                                        View
+                                                    </Link>
+                                                )}
+
+                                                {auth.permissions.includes(
+                                                    "update_course"
+                                                ) && (
+                                                    <Link
+                                                        href={route(
+                                                            "courses.edit",
+                                                            course.id
+                                                        )}
+                                                        className="text-indigo-600 hover:text-indigo-900"
+                                                    >
+                                                        Edit
+                                                    </Link>
+                                                )}
+                                                {auth.permissions.includes(
+                                                    "delete_course"
+                                                ) && (
+                                                    <Link
+                                                        href={route(
+                                                            "courses.destroy",
+                                                            course.id
+                                                        )}
+                                                        method="delete"
+                                                        as="button"
+                                                        className="ml-4 text-red-600 hover:text-red-900"
+                                                    >
+                                                        Delete
+                                                    </Link>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
