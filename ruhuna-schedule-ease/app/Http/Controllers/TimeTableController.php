@@ -124,6 +124,7 @@ class TimeTableController extends Controller
     $lunchtimeEnd = $lunchTime['end'];
     $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
+<<<<<<< Updated upstream
     $existingEntries = [];
     foreach ($daysOfWeek as $day) {
         $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
@@ -134,6 +135,19 @@ class TimeTableController extends Controller
             ];
         })->toArray();
     }
+=======
+                        $existingEntries = [];
+                        shuffle($daysOfWeek);
+                        foreach ($daysOfWeek as $day) {
+                            $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
+                                return [
+                                    'start' => $entry->start_time,
+                                    'end' => $entry->end_time,
+                                    'type' => $entry->type,
+                                ];
+                            })->toArray();
+                        }
+>>>>>>> Stashed changes
 
     $levelsExistingEntries = [];
     foreach ($daysOfWeek as $day) {
@@ -152,6 +166,7 @@ class TimeTableController extends Controller
     try {
         DB::beginTransaction();
 
+<<<<<<< Updated upstream
     foreach ($tableData as $entry) {
         $course = $entry['course']['value'];
         $lecturer = $entry['lecturer']['value'];
@@ -205,6 +220,10 @@ class TimeTableController extends Controller
 
         return back()->withErrors(['msg' => $e.getMessage()])->withInput();
     }
+=======
+    return back();
+                        }
+>>>>>>> Stashed changes
 
 
 
@@ -284,8 +303,14 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
             ->where('semester_id', $semester)
             ->get();
+<<<<<<< Updated upstream
         $semesterinfo =Semester::where('id', $semester)->first();
         return Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo]);
+=======
+        $semesterinfo =Semester::with(['degreeProgram'])->where('id', $semester)->first();
+        $confirmation = Condition::where('semester_id', $semester)->pluck('confirmed');
+        return Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo ,'confirmation'=>$confirmation]);
+>>>>>>> Stashed changes
     }
 
     /**
