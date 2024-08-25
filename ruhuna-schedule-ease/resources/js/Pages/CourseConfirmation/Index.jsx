@@ -23,6 +23,7 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
             preserveScroll: true,
         });
     };
+
     const handleCancelAllCourses = () => {
         const courseIds = filteredCourses.map((course) => course.course.code);
         setData("course_ids", courseIds);
