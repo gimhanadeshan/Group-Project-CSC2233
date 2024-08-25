@@ -20,6 +20,17 @@ const minTime = new Date(1970, 1, 1, 8, 0);
 const maxTime = new Date(1970, 1, 1, 19, 0);
 
 const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, users, courseTypes,attendances }) => {
+    
+    var attendanceEventIds=[];
+
+    for (let index = 0; index < attendances.length; index++) {
+        const element = attendances[index];
+        attendanceEventIds[index]=element['event_id'];
+        
+    }
+
+    
+    //console.log(attendanceEventIds);
 
     const canCreate = auth.permissions.includes("create_event");
     const canEdit = auth.permissions.includes("update_event");
@@ -33,6 +44,7 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(null);
     const [isAdding,setIsAdding]=useState(false);
+    
 
 
 
@@ -73,10 +85,19 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
         }
     }, [allevents]);
 
+const [genAttendance,setGenAttendance]=useState(false);
+
+
     const openModal = (event = null) => {
         if (event) {
-            //console.log(event);
+           // console.log(attendances);
             setCurrentEvent(event);
+            
+           if(!attendanceEventIds.includes(event.id)){
+            setGenAttendance(true);
+            console.log('Chcked records')
+           }
+
             setData({
                 id:event.id,
                 event_title: event.event_title,
@@ -94,7 +115,7 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
                 weekly: event.weekly,
                 monthly: event.monthly,
             });
-            console.log(data);
+            //console.log(data);
         } else {
             setCurrentEvent(null);
             reset();
@@ -105,6 +126,7 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
     const closeModal = () => {
         setModalIsOpen(false);
         setIsAdding(false);
+        setGenAttendance(false);
     };
 
     const handleSelectSlot = ({ start, end }) => {
@@ -185,8 +207,8 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
             backgroundColor = '#0e6e28'; // Green
         } else if (roleID == 2) {
             // Loop through attendances to find if this user attended this event
-            for (let index = 0; index < attendances.length; index++) {
-                const element = attendances[index];
+            for (let i = 0; i < attendances.length; i++) {
+                const element = attendances[i];
                 if (element['event_id'] == event.id) {
                     if (element['attended'] == 1) {
                         backgroundColor = '#0e6e28'; // Green
@@ -574,7 +596,17 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
                                 </>                       
                                     }
                             
-                            {roleID!=2 && currentEvent && <Link href={route("events.generateAttendanceRecords",currentEvent.id)}>Generate Attendace Records</Link>}
+                            {roleID != 2 && currentEvent && currentEvent.semester_id && genAttendance &&
+                            <div
+                                className="mt-2 mb-2"
+                            >
+                                <Link href={route("events.generateAttendanceRecords", currentEvent.id)}
+                                    className="  px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                        Generate Attendace Records
+                                </Link>
+                            </div>
+                            }
 
                             {/* Recurrence Checkboxes  */}
                             {canEdit && <div className="mb-4">
@@ -620,7 +652,7 @@ const EventCalendar = ({ allevents, auth,semesters,courses, halls, lecturers, us
 
 
                             {/* Attentedance Checkboxes */}
-                            {auth.user.role.role_type==='student' && data.course_type!=null && currentEvent &&
+                            {auth.user.role.role_type==='student' && data.course_type!=null && currentEvent && !genAttendance &&
                             <div className="mb-4">
                                    <Link href={`/attendance/${data.course_type}/${data.id}/${auth.user.id}`} className="text-blue-500">Update Attendance</Link>
                                      

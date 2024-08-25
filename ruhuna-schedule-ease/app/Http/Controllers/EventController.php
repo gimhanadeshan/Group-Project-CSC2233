@@ -57,8 +57,7 @@ class EventController extends Controller
     $lecturers = User::where('role_id', 3)->get(); // Assuming role_id 3 is for lecturers
     $users = User::where('id', $request->user()->id)->get();
     $courseTypes = CourseType::all();
-    $attendances=Attendance::where('student_id',$UId)->get();
-
+    
     //dd($semesters);
       // Add the specific user ID to the collection
     $adminLecsIds->push($UId);
@@ -73,7 +72,7 @@ class EventController extends Controller
 
     //For Students 
     if ($semesterId && $Role==='student') {
-             
+        $attendances=Attendance::where('student_id',$UId)->get();     
         $allevents = Event::where('semester_id', $semesterId)
         ->orWhere(function($query) use ($adminLecsIds) {
             $query->whereNull('semester_id')
@@ -94,6 +93,7 @@ class EventController extends Controller
     //For Lecturer     
     }else{
         if($Role==='lecturer'){
+            $attendances=Attendance::all();
 
             $allevents = Event::where('lec_id',$UId)
                                 ->orWhere(function($query) use ($adminLecsIds) {
@@ -110,6 +110,7 @@ class EventController extends Controller
                                     'lecturers' => $lecturers,
                                     'users' => $users,
                                     'courseTypes' => $courseTypes,
+                                    'attendances'=> $attendances,
                                 ]);
                                 
         }
