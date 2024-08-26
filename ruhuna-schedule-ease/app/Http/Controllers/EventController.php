@@ -32,7 +32,7 @@ class EventController extends Controller
     $adminLecsIds = User::whereIn('role_id', [1, 3])->pluck('id');
     $courseIds=TimeTable::where('lecturer',$UId)->pluck('course_id');
 
-    error_log('CourseIds = '.$courseIds);
+    //error_log('CourseIds = '.$courseIds);
 
 
     //$semesters = TimeTable::all();
@@ -117,7 +117,7 @@ class EventController extends Controller
     }
     
     
-    
+    $attendances=Attendance::all();
     $allevents = Event::whereNull('semester_id')->whereIn('user_id', $adminLecsIds)->get();
     
     return Inertia::render('Events/EventCalendar', [
@@ -128,6 +128,7 @@ class EventController extends Controller
         'lecturers' => $lecturers,
         'users' => $users,
         'courseTypes' => $courseTypes,
+        'attendances'=> $attendances,
     ]);
 
                
