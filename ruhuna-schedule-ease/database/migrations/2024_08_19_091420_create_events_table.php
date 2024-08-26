@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null'); // Set up foreign key constraint
             
             $table->unsignedBigInteger('hall_id')->nullable();// Add semester_id column
-            $table->foreign('hall_id')->references('hall_id')->on('time_tables')->onDelete('cascade');
+            $table->foreign('hall_id')->references('hall_id')->on('lecture_halls')->onDelete('cascade');
             
             $table->unsignedBigInteger('lec_id')->nullable();// Add semester_id column
             $table->foreign('lec_id')->references('lecturer')->on('time_tables')->onDelete('cascade');
