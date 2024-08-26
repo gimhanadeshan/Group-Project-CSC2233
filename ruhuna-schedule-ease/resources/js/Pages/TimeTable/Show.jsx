@@ -18,6 +18,7 @@ export default function Show({
             deleteTimeTable(route("timetables.destroy", semester));
         }
     };
+    console.log(semesterinfo);
 
     const handleDownloadPDF = () => {
         window.location.href = route("timetables.pdf", { semester });
@@ -37,7 +38,7 @@ export default function Show({
             <Head title="TimeTable" />
             <h1 className="text-2xl font-bold mb-4 text-center">
                 Timetable of Level {semesterinfo.level} - Semester{" "}
-                {semesterinfo.semester} - {semesterinfo.academic_year}
+                {semesterinfo.semester} - {semesterinfo.academic_year} in {semesterinfo.degree_program.name}
             </h1>
 
             <div className="py-12">

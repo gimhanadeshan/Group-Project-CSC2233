@@ -156,6 +156,7 @@ class TimeTableController extends Controller
 
                         $existingEntries = [];
                         shuffle($dayOfWeek);
+
                         foreach ($daysOfWeek as $day) {
                             $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
                                 return [
@@ -315,7 +316,7 @@ private function findAvailableTimeSlot($lecturer,$hall,$lectureTime, $practicalT
         $timetables = TimeTable::with(['course', 'hall', 'lecturer', 'semester'])
             ->where('semester_id', $semester)
             ->get();
-        $semesterinfo =Semester::where('id', $semester)->first();
+        $semesterinfo =Semester::with("degreeProgram")->where('id', $semester)->first();
         $confirmation = Condition::where('semester_id', $semester)->pluck('confirmed');
         return Inertia::render('TimeTable/Show', ['timetables' => $timetables, 'semester' => $semester, 'lunchTime' => $lunchTime, 'semesterinfo' => $semesterinfo ,'confirmation'=>$confirmation]);
     }
