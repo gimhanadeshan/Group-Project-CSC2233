@@ -155,6 +155,7 @@ class TimeTableController extends Controller
                         $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
                         $existingEntries = [];
+                        shuffle($dayOfWeek);
                         foreach ($daysOfWeek as $day) {
                             $existingEntries[$day] = TimeTable::where('day_of_week', $day)->where('semester_id',$semester)->get()->map(function ($entry) {
                                 return [
