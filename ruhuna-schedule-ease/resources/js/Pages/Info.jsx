@@ -41,7 +41,7 @@ const Info = () => {
     },
     {
       id: 2,
-      name: 'Charith jayasankha',
+      name: 'Charith Jayasankha',
       position: 'Member',
       image: '/Team/mem_charith.jpeg',
     },
