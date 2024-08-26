@@ -609,7 +609,7 @@ const [genAttendance,setGenAttendance]=useState(false);
                             }
 
                             {/* Recurrence Checkboxes  */}
-                            {canEdit && <div className="mb-4">
+                            {roleID==1 && <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700">
                                     Recurrence:
                                 </label>
