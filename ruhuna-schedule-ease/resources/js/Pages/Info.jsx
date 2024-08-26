@@ -2,7 +2,7 @@
 import { useMemo,React,useEffect,useState } from 'react';
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadFull } from 'tsparticles';
-import { Link } from '@inertiajs/react';
+import { Link,Head } from '@inertiajs/react';
 import Guest from '@/Layouts/GuestLayout';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -152,6 +152,7 @@ const Info = () => {
         return (
             
         <>
+                <Head title="Welcome" />
                 <div style={{ position: 'relative', zIndex: 1 }}>
                 <div className="flex flex-col min-h-screen ">
             {/* Header Section */}
@@ -168,7 +169,8 @@ const Info = () => {
         </nav>
     </div>
     <div className="text-white py-20 text-center">
-        <h1 data-aos="zoom-in"  data-aos-duration="1500" className="text-7xl font-bold">Streamline Your Academic Operations</h1>
+        <h1 data-aos="zoom-in"  data-aos-duration="1500" className="text-7xl font-bold">Ruhuna Schedule Ease</h1>
+        <h1 data-aos="zoom-in"  data-aos-duration="1500" className="mt-10 text-3xl">Streamline Your Academic Operations</h1>
         <p data-aos="zoom-in"  data-aos-duration="1500" className="mt-4 text-xl">Discover how RUHUNA ScheduleEase can revolutionize academic management.</p>
         <Link data-aos="zoom-in"  data-aos-duration="1500" href={route('login')} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 mt-6">Get Started</Link>
     </div>
@@ -180,9 +182,13 @@ const Info = () => {
     <p className="text-lg text-gray-300">A web application designed to simplify and automate academic management at the University of Ruhuna.</p>
 </section>
 
+<div data-aos="zoom-in"  data-aos-duration="1500" className="container mx-auto py-12 px-6 text-center">
+    <h2 className="text-3xl font-bold mb-4 text-white">Features on RUHUNA ScheduleEase</h2>
+</div>
 
            {/* Features Section */}
 <section id='feature' className="relative py-12">
+
     <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-1 bg-gray-700 h-full"></div>
     </div>
