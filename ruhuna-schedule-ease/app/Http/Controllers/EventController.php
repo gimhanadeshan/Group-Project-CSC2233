@@ -32,7 +32,7 @@ class EventController extends Controller
     $adminLecsIds = User::whereIn('role_id', [1, 3])->pluck('id');
     $courseIds=TimeTable::where('lecturer',$UId)->pluck('course_id');
 
-    error_log('CourseIds = '.$courseIds);
+    //error_log('CourseIds = '.$courseIds);
 
 
     //$semesters = TimeTable::all();
