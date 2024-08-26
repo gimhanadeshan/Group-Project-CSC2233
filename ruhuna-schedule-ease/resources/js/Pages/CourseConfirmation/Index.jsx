@@ -24,7 +24,6 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
         });
     };
 
-
     const handleCancelAllCourses = () => {
         const courseIds = filteredCourses.map((course) => course.course.code);
         setData("course_ids", courseIds);
@@ -32,6 +31,7 @@ const UserRegisteredCourses = ({ auth, userCourses, semesters }) => {
             preserveScroll: true,
         });
     };
+
 
     const handleConfirmCourse = (courseId,studentId) => {
         put(`/course-confirmation/confirm/${courseId}/${studentId}`, {
