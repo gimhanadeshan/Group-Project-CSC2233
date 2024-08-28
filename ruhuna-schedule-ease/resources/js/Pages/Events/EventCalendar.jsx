@@ -255,23 +255,25 @@ const [genAttendance,setGenAttendance]=useState(false);
 
     const [calendarView, setCalendarView] = useState(window.innerWidth < 768 ? 'day' : 'week');
 
-    useEffect(() => {
-        // Function to check the screen width and set the view
-        const updateView = () => {
-            if (window.innerWidth < 768) {
-                setCalendarView('day');
-            } else if (calendarView === 'day') {
-                // Reset view to 'week' only if it was set to 'day' by the mobile condition
-                setCalendarView('week');
-            }
-        };
+useEffect(() => {
+    // Function to check the screen width and set the view
+    const updateView = () => {
+        if (window.innerWidth < 768) {
+            setCalendarView('day');
+        } else if (window.innerWidth >= 768 && calendarView === 'day') {
+            // Reset view to 'week' only if it was set to 'day' by the mobile condition
+            setCalendarView('week');
+        }
+    };
 
-        // Add event listener for window resize
-        window.addEventListener('resize', updateView);
+    // Add event listener for window resize
+    window.addEventListener('resize', updateView);
 
-        // Clean up event listener on component unmount
-        return () => window.removeEventListener('resize', updateView);
-    }, [calendarView]); // Add calendarView as a dependency to ensure it only resets when appropriate
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener('resize', updateView);
+}, []); // Remove calendarView from the dependency array
+
+
 
     
     const handleChange = (e) => {
