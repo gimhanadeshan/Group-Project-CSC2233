@@ -259,19 +259,22 @@ useEffect(() => {
     // Function to check the screen width and set the view
     const updateView = () => {
         if (window.innerWidth < 768) {
-            setCalendarView('day');
-        } else if (window.innerWidth >= 768 && calendarView === 'day') {
-            // Reset view to 'week' only if it was set to 'day' by the mobile condition
-            setCalendarView('week');
+            setCalendarView((prevView) => (prevView === 'week' ? 'day' : prevView));
+        } else {
+            setCalendarView((prevView) => (prevView === 'day' ? 'week' : prevView));
         }
     };
 
     // Add event listener for window resize
     window.addEventListener('resize', updateView);
 
+    // Call updateView initially to set the correct view based on current width
+    updateView();
+
     // Clean up event listener on component unmount
     return () => window.removeEventListener('resize', updateView);
-}, []); // Remove calendarView from the dependency array
+}, []); // Empty dependency array to only run on mount and unmount
+
 
 
 
