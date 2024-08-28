@@ -77,14 +77,27 @@ const Info = () => {
             events: {
               onClick: {
                 enable: true,
-                mode: "push",
+                mode: "bubble",
               },
               onHover: {
                 enable: true,
-                mode: "repulse",
+                mode: "grab",
               },
             },
             modes: {
+              bubble: {
+                distance: 400,
+                duration: 0.5,
+                opacity: 0.5,
+                size: 20,
+                speed: 1,
+            },
+              grab: {
+                distance: 250,
+                line_linked: {
+                    opacity: 0.1,
+                },
+            },
               push: {
                 quantity: 2,
               },
@@ -96,10 +109,8 @@ const Info = () => {
           },
           particles: {
             color: {
-              value: "#d6f797",
-            },
-            // links: {
-            //   color: "#ffffff",
+              value: "#ffffff",
+            },            // links: {            //   color: "#ffffff",
             //   distance: 150,
             //   enable: true,
             //   opacity: 0.5,
@@ -111,18 +122,19 @@ const Info = () => {
               outModes: {
                 default: "bounce",
               },
+              
               random: true,
               speed: 2,
-              straight: true,
+              straight: true,              
             },
             number: {
               density: {
-                enable: true,
+                enable: false,
               },
-              value: 80,
+              value: 50,
             },
             opacity: {
-              value: 0.7,
+              value: 0.8,
             },
             shape: {
               type: "image",
@@ -140,7 +152,7 @@ const Info = () => {
               }
             },
             size: {
-              value: { min: 1, max: 40 },
+              value: { min: 10, max: 40 },
             },
           },
           detectRetina: true,
