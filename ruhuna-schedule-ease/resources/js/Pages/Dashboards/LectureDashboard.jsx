@@ -113,43 +113,43 @@ export default function LecturerDashboard({
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
             <Head title="Lecturer Dashboard" />
 
-            {/*Semester Details*/}
-            <div className="pt-8 m-6 bg-gray-100 dark:bg-gray-900">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                    {/* Combined Semester Progress Chart and Course Details */}
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
+            {/* Main Content */}
+            <div className="p-4  sm:p-6 lg:p-8 bg-gray-100 dark:bg-gray-900">
+                <div className="max-w-7xl mx-auto space-y-6">
+                    {/* Welcome Message */}
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
                         Welcome, {auth.user.name}!
                     </h3>
-                    <div className="flex flex-col md:flex-row gap-6">
-                        {/* Chart */}
-                        <div className="flex-1 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
+
+                    {/* Responsive Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Semester Progress Chart */}
+                        <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
                                 Semester Progress
                             </h3>
-                            <div className="h-72 px-4 sm:px-6 lg:px-8">
-                                <Bar
-                                    data={combinedDurationData}
-                                    options={combinedDurationOptions}
-                                />
-                            </div>
+                            <Bar
+                                data={combinedDurationData}
+                                options={combinedDurationOptions}
+                                className="h-72"
+                            />
                         </div>
 
-                        {/* Course Details */}
-                        <div className="flex-1 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
+                        {/* Semester Details */}
+                        <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                             {currentSemesters.length > 0 ? (
                                 currentSemesters.map((semester) => (
                                     <div
                                         key={semester.id}
                                         className="mb-6 p-4 border rounded-lg shadow-sm dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
                                     >
-                                        <h4 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center">
-                                            <span className="mr-2 inline-block w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
+                                        <h4 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">
                                             Level {semester.level} - Semester{" "}
                                             {semester.semester} -{" "}
                                             {semester.academic_year} (
                                             {semester.degree_program.name})
                                         </h4>
-                                        <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                        <p className="text-gray-600 dark:text-gray-400 mb-2">
                                             Status:{" "}
                                             <span
                                                 className={`font-semibold ${
@@ -163,7 +163,7 @@ export default function LecturerDashboard({
                                         </p>
                                         <ul className="list-disc list-inside text-gray-800 dark:text-gray-100">
                                             {coursesBySemester[semester.id]
-                                                .length > 0 ? (
+                                                ?.length > 0 ? (
                                                 coursesBySemester[
                                                     semester.id
                                                 ].map((course) => (
@@ -184,44 +184,44 @@ export default function LecturerDashboard({
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-gray-500 dark:text-gray-400">
+                                <p className="text-gray-500 dark:text-gray-400">
                                     No active semesters found.
-                                </div>
+                                </p>
                             )}
                         </div>
                     </div>
+
+                    {/* Events Section */}
+                    <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+                            Events
+                        </h3>
+                        {events.length > 0 ? (
+                            <>
+                                <DailyEvents allevents={events} now={now} />
+                                <UpcomingEvents allevents={events} now={now} />
+                            </>
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                No events available.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Weekly Timetable */}
+                    <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+                            Weekly Timetable
+                        </h3>
+                        {events.length > 0 ? (
+                            <WeeklyTimetable allevents={events} />
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                No timetable available.
+                            </p>
+                        )}
+                    </div>
                 </div>
-            </div>
-
-            {/* Events Section */}
-            <div className="p-8 m-6 bg-gray-100 dark:bg-gray-900">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                    Events
-                </h3>
-                {events.length > 0 ? (
-                    <>
-                        <DailyEvents allevents={events} now={now} />
-                        <UpcomingEvents allevents={events} now={now} />
-                    </>
-                ) : (
-                    <div className="text-gray-500 dark:text-gray-400">
-                        No events available.
-                    </div>
-                )}
-            </div>
-
-            {/* Weekly Timetable */}
-            <div className="p-8 m-6 bg-gray-100 dark:bg-gray-900">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                    Weekly Timetable
-                </h3>
-                {events.length > 0 ? (
-                    <WeeklyTimetable allevents={events} />
-                ) : (
-                    <div className="text-gray-500 dark:text-gray-400">
-                        No timetable available.
-                    </div>
-                )}
             </div>
         </AuthenticatedLayout>
     );
