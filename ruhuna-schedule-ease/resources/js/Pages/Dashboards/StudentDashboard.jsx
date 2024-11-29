@@ -97,129 +97,131 @@ export default function Dashboard({
 
     return (
         <AuthenticatedLayout user={auth.user} permissions={auth.permissions}>
-            {/* Display current semester details */}
-            {currentSemester ? (
-                <div className="p-8 m-6  dark:bg-gray-900 dark:text-gray-200">
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        Welcome, {auth.user.name}!
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    Academic Year:
-                                </strong>{" "}
-                                {currentSemester.academic_year}
-                            </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    Degree Program:
-                                </strong>{" "}
-                                {currentSemester.degree_program.name}
-                            </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    Level:
-                                </strong>{" "}
-                                {currentSemester.level}
-                            </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    Semester:
-                                </strong>{" "}
-                                {currentSemester.semester}
-                            </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    Status:
-                                </strong>{" "}
-                                {currentSemester.status}
-                            </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    Start Date:
-                                </strong>{" "}
-                                {currentSemester.start_date}
-                            </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-400 mb-2">
-                                <strong className="text-gray-900 dark:text-gray-200">
-                                    End Date:
-                                </strong>{" "}
-                                {currentSemester.end_date}
-                            </p>
+            {/* Main Container */}
+            <div className="p-4 md:p-6 lg:p-8 bg-gray-100 dark:bg-gray-900">
+                <div className="max-w-7xl mx-auto space-y-8">
+                    {/* Welcome Section */}
+                    <div className="text-center md:text-left">
+                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                            Welcome, {auth.user.name}!
+                        </h3>
+                    </div>
+
+                    {/* Responsive Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Current Semester Details */}
+                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+                            {currentSemester ? (
+                                <>
+                                    <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                                        Current Semester Details
+                                    </h4>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>Academic Year:</strong>{" "}
+                                        {currentSemester.academic_year}
+                                    </p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>Degree Program:</strong>{" "}
+                                        {currentSemester.degree_program.name}
+                                    </p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>Level:</strong>{" "}
+                                        {currentSemester.level}
+                                    </p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>Semester:</strong>{" "}
+                                        {currentSemester.semester}
+                                    </p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>Status:</strong>{" "}
+                                        {currentSemester.status}
+                                    </p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>Start Date:</strong>{" "}
+                                        {currentSemester.start_date}
+                                    </p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400">
+                                        <strong>End Date:</strong>{" "}
+                                        {currentSemester.end_date}
+                                    </p>
+                                </>
+                            ) : (
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    No current semester details available.
+                                </p>
+                            )}
                         </div>
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                            <h4 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-                                Semester Duration & Progress
+
+                        {/* Semester Progress Chart */}
+                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+                            <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                                Semester Progress
                             </h4>
-                            <div className="h-72">
-                                <Bar
-                                    data={durationData}
-                                    options={durationOptions}
-                                />
-                            </div>
+                            <Bar
+                                data={durationData}
+                                options={durationOptions}
+                                className="h-72"
+                            />
                         </div>
                     </div>
 
-                    {/* Display registered courses */}
-                    {registeredCourses?.length > 0 ? (
-                        <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                            <h4 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-                                Registered Courses
-                            </h4>
-                            <ul className="list-disc list-inside text-gray-800 dark:text-gray-200">
+                    {/* Registered Courses */}
+                    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+                        <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                            Registered Courses
+                        </h4>
+                        {registeredCourses?.length > 0 ? (
+                            <ul className="list-disc list-inside">
                                 {registeredCourses.map((course) => (
-                                    <li key={course.id} className="mb-1">
+                                    <li
+                                        key={course.id}
+                                        className="text-gray-800 dark:text-gray-200"
+                                    >
                                         {course.code} - {course.name}
                                     </li>
                                 ))}
                             </ul>
-                        </div>
-                    ) : (
-                        <p className="mt-8 text-gray-600 dark:text-gray-400">
-                            No registered courses found for the current
-                            semester.
-                        </p>
-                    )}
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                No registered courses found.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Events Section */}
+                    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+                        <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                            Events
+                        </h4>
+                        {allevents?.length > 0 ? (
+                            <>
+                                <DailyEvents allevents={allevents} now={now} />
+                                <UpcomingEvents
+                                    allevents={allevents}
+                                    now={now}
+                                />
+                            </>
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                No events available.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Weekly Timetable */}
+                    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+                        <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                            Weekly Timetable
+                        </h4>
+                        {allevents?.length > 0 ? (
+                            <WeeklyTimetable allevents={allevents} />
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                No timetable available.
+                            </p>
+                        )}
+                    </div>
                 </div>
-            ) : (
-                <p className="text-gray-600 dark:text-gray-400">
-                    No current semester found.
-                </p>
-            )}
-
-            <div className="p-8 m-6 dark:bg-gray-900 dark:text-gray-200">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                    Events
-                </h3>
-
-                {allevents.length > 0 ? (
-                    <>
-                        {/* Display daily events */}
-                        <DailyEvents allevents={allevents} now={now} />
-                        {/* Display upcoming events with filter buttons */}
-                        <UpcomingEvents allevents={allevents} now={now} />
-                    </>
-                ) : (
-                    <div className="text-gray-500 dark:text-gray-400">
-                        No events available.
-                    </div>
-                )}
-            </div>
-
-            <div className="p-8 m-6 dark:bg-gray-900 dark:text-gray-200">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-                    Weekly Timetable
-                </h3>
-                {/* Weekly Timetable */}
-                {allevents.length > 0 ? (
-                    <WeeklyTimetable allevents={allevents} />
-                ) : (
-                    <div className="text-gray-500 dark:text-gray-400">
-                        No timetable available.
-                    </div>
-                )}
-                {/* <EventCalendar eventlist={allevents} defaultView="week" height="800px" views={['week']} /> */}
             </div>
         </AuthenticatedLayout>
     );
