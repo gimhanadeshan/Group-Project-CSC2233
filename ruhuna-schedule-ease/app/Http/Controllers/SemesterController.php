@@ -123,9 +123,9 @@ class SemesterController extends Controller
         ]);
 
         // Check if the registration start or end dates have changed
-        if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
-            $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
-        }
+        // if ($originalStartDate !== $request->registration_start_date || $originalEndDate !== $request->registration_end_date) {
+        //     $this->notify($semester->id, $request->registration_start_date, $request->registration_end_date);
+        // }
 
         //DB::commit();
         return redirect()->route('semesters.index')->with('success', 'Semester updated successfully.');
