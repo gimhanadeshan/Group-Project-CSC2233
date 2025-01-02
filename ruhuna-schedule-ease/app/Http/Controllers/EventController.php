@@ -24,7 +24,74 @@ use Illuminate\Support\Facades\Auth;
 class EventController extends Controller
 {
     public function index(Request $request)
-{
+    {
+        $user = Auth::user();
+        $role = $user->role->role_type;
+        $now = Carbon::now();
+    
+        // Define the admin and lecturer IDs for filtering general events
+        $adminLecturerIds = User::whereIn('role_id', [1, 3])->pluck('id');
+        $adminLecturerIds->push($user->id); // Include the current user
+    
+        // Fetch semesters associated with the user
+        $semesters = Semester::select('semesters.id', 'semesters.academic_year', 'semesters.level', 'semesters.semester', 'degree_programs.name')
+            ->join('degree_programs', 'semesters.degree_program_id', '=', 'degree_programs.id')
+            ->groupBy('semesters.id', 'semesters.academic_year', 'semesters.level', 'semesters.semester', 'degree_programs.name')
+            ->get();
+    
+        // Fetch courses based on the user's role
+        if ($role === 'lecturer') {
+            $courseIds = TimeTable::where('lecturer', $user->id)->pluck('course_id');
+        } elseif ($role === 'student') {
+            $courseIds = CourseRegistration::where('user_id', $user->id)
+                ->where('status', 'confirmed')
+                ->pluck('course_id');
+        } else {
+            $courseIds = collect();
+        }
+    
+        // Fetch events for the user based on role and semester
+        $eventsQuery = Event::query();
+    
+        if ($role === 'student') {
+            $semesterId = CourseRegistration::where('user_id', $user->id)
+                ->where('status', 'confirmed')
+                ->latest()
+                ->value('semester_id');
+    
+            $eventsQuery->where(function ($query) use ($semesterId, $courseIds) {
+                $query->where('semester_id', $semesterId)
+                    ->orWhereNull('semester_id');
+            })
+            ->whereIn('course_id', $courseIds);
+        } elseif ($role === 'lecturer') {
+            $eventsQuery->where(function ($query) use ($adminLecturerIds, $courseIds) {
+                $query->whereIn('course_id', $courseIds)
+                    ->orWhere(function ($subQuery) use ($adminLecturerIds) {
+                        $subQuery->whereNull('semester_id')
+                            ->whereIn('user_id', $adminLecturerIds);
+                    });
+            });
+        } else {
+            $eventsQuery->whereNull('semester_id')->whereIn('user_id', $adminLecturerIds);
+        }
+    
+        $events = $eventsQuery->get();
+    
+        // Pass additional resources
+        $courses = Course::all();
+        $halls = LectureHall::all();
+        $lecturers = User::where('role_id', 3)->get(); // Role 3: Lecturer
+    
+        return Inertia::render('Events/EventCalendar', [
+            'allevents' => $events,
+            'semesters' => $semesters,
+            'courses' => $courses,
+            'halls' => $halls,
+            'lecturers' => $lecturers,
+        ]);
+    }
+    
     $this->authorize('read_event', $request->user());
 
     $UId=$request->user()->id;
