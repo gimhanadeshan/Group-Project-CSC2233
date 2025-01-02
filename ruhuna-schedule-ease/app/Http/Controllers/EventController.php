@@ -62,8 +62,8 @@ class EventController extends Controller
       // Add the specific user ID to the collection
     $adminLecsIds->push($UId);
     // Fetch the semester_id from the course_registrations table for the logged-in user
-    $semesterId = CourseRegistration::
-                    where('user_id', $UId)
+    $semesterId = CourseRegistration::with('course')
+    ->where('user_id', $request->user()->id)
                     ->where('status', 'confirmed')
                     ->orderBy('created_at', 'desc') // Adjust ordering as necessary
                     ->value('semester_id');
